@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tools - enfialive</title>
+<style>
+:root{--bg:#f0f2f5;--card:#fff;--primary:#104c82;--text:#1a1a2e;--text2:#636E72;--border:#e1e5ea;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,0.06)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center}
+header{padding:48px 16px 24px;text-align:center}
+header h1{font-size:1.8rem;font-weight:700;color:var(--primary)}
+header p{color:var(--text2);margin-top:6px}
+main{width:100%;max-width:720px;padding:0 16px 48px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;transition:transform .2s,box-shadow .2s;text-decoration:none;color:inherit;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 36px rgba(0,0,0,0.1)}
+.card-header{padding:20px 24px 12px}
+.card-header h2{font-size:1.15rem;font-weight:600}
+.card-body{padding:0 24px 20px;color:var(--text2);line-height:1.6;flex:1}
+.card-footer{padding:12px 24px;border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--primary);font-weight:500}
+.card-footer svg{width:16px;height:16px}
+.icon{display:inline-block;width:40px;height:40px;border-radius:10px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.icon-blue{background:#e8f0fe;color:#1a6db5}
+.icon-green{background:#e6f9f5;color:#00b894}
+footer{text-align:center;padding:24px;color:var(--text2);font-size:.78rem;margin-top:auto}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧰 Tools</h1>
+  <p>enfialive 的在线工具集</p>
+</header>
+<main>
+  <a class="card" href="./projectexpense.html">
+    <div class="card-header">
+      <div class="icon icon-green">📊</div>
+      <h2>项目支出管理</h2>
+    </div>
+    <div class="card-body">项目维度的支出记录与分类管理工具，支持多项目切换、文件附件和数据导出。</div>
+    <div class="card-footer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      打开工具
+    </div>
+  </a>
+  <a class="card" href="./cdr-tool.html">
+    <div class="card-header">
+      <div class="icon icon-blue">🧬</div>
+      <h2>抗体可变区 CDR 标注</h2>
+    </div>
+    <div class="card-body">对抗体可变区进行 CDR / FR 区域标注，支持 Kabat、IMGT、Chothia、Martin 等多种编号和定义方案。</div>
+    <div class="card-footer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      打开工具
+    </div>
+  </a>
+</main>
+<footer>© enfialive · Hosted on GitHub Pages</footer>
+</body>
+</html>

@@ -687,49 +687,53 @@ function renderTableDataToCanvas(tblData) {
   }
 
   const SCALE = 2;
-  const FONT_SIZE = 11;
-  const FONT = FONT_SIZE + 'px SimSun, "Microsoft YaHei", "PingFang SC", sans-serif';
-  const PAD_X = 8;
-  const PAD_Y = 5;
-  const LINE_H = FONT_SIZE + 6;
+  const FONT_PT = 10.5;                                // 五号字
+  const FONT_PX = Math.round(FONT_PT * 96 / 72);      // pt→px ≈ 14px
+  const FONT = FONT_PX + 'px SimSun, "Microsoft YaHei", "PingFang SC", sans-serif';
+  const PAD_X = 6;
+  const PAD_Y = 3;
+  const LINE_H = FONT_PX + 4;
   const BORDER_W = 1;
-  const MIN_COL_W = 42;
-  const TARGET_RENDER_W = 1100; // 目标渲染宽度(px), 用于确定画布像素尺寸
 
-  // 测量上下文
   const mCanvas = document.createElement('canvas');
   const mCtx = mCanvas.getContext('2d');
   mCtx.font = FONT;
   const boldFont = 'bold ' + FONT;
-
   function stripTags(s) { return (s || '').replace(/<br>/gi, '\n').replace(/<[^>]+>/g, ''); }
 
   // 列总数
   const colCount = Math.max(...rows.map(r => r.cells.reduce((s, c) => s + (c.gridSpan || 1), 0)), 1);
 
-  // ===== 核心: 从原始dxa直接算EMU, 像素仅用于渲染 =====
+  // ===== 原始列宽(dxa)比例 =====
   const origDxa = tblData.colWidths;
-  let colDxa; // 每列的 dxa 值
+  let colRatios;
   if (origDxa && origDxa.length >= colCount) {
-    colDxa = origDxa.slice(0, colCount);
+    const sum = origDxa.slice(0, colCount).reduce((s, d) => s + d, 0) || 1;
+    colRatios = origDxa.slice(0, colCount).map(d => d / sum);
   } else if (origDxa && origDxa.length > 0) {
-    colDxa = [];
-    for (let i = 0; i < colCount; i++) colDxa.push(origDxa[i] || origDxa[origDxa.length - 1]);
+    const filled = []; for (let i = 0; i < colCount; i++) filled.push(origDxa[i] || origDxa[origDxa.length - 1]);
+    const sum = filled.reduce((s, d) => s + d, 0) || 1;
+    colRatios = filled.map(d => d / sum);
   } else {
-    // 无原始列宽: 从内容估计 dxa
-    colDxa = new Array(colCount).fill(1440); // 默认 1 英寸
+    colRatios = new Array(colCount).fill(1 / colCount);
   }
-  // 确保最小宽度
-  colDxa = colDxa.map(d => Math.max(d, 200));
 
-  // 总 EMU 宽度 (直接用 dxa*635, 无像素中间层)
-  const totalDxa = colDxa.reduce((s, d) => s + d, 0);
+  // ===== EMU宽度 = 原表格dxa总宽 (图片尺寸=原表格尺寸) =====
+  let totalDxa;
+  if (origDxa && origDxa.length > 0) {
+    totalDxa = 0;
+    const last = origDxa[origDxa.length - 1] || 1440;
+    for (let i = 0; i < colCount; i++) totalDxa += (origDxa[i] || last);
+  } else {
+    totalDxa = colCount * 1440;
+  }
+  if (tblData.tblWidth > 0 && tblData.tblWidth > totalDxa) totalDxa = tblData.tblWidth;
   const totalEmuW = totalDxa * 635;
 
-  // 渲染像素: 按比例从 EMU 映射到像素
-  const pxPerDxa = TARGET_RENDER_W / totalDxa; // 每个 dxa 对应多少渲染像素
-  const colPx = colDxa.map(d => Math.round(d * pxPerDxa));
-  const renderW = colPx.reduce((s, w) => s + w, 0) + BORDER_W * (colCount + 1);
+  // ===== 渲染像素 (固定1500px基准, 2x=3000px canvas → 高清) =====
+  const RENDER_W = 1500;
+  const renderW = RENDER_W;
+  const colPx = colRatios.map(r => Math.round(r * (RENDER_W - BORDER_W * (colCount + 1))));
 
   // ===== 收集单元格信息 =====
   const cellInfo = [];
@@ -739,14 +743,13 @@ function renderTableDataToCanvas(tblData) {
     row.cells.forEach(cell => {
       const text = cell.text || '';
       const lines = text.split('<br>');
-      const cleanLines = lines.map(l => stripTags(l));
-      cellInfo.push({ ri, ci, lines: cleanLines, isHeader: isHdr, bgColor: cell.bgColor,
-        gridSpan: cell.gridSpan || 1, vAlign: cell.vAlign });
+      cellInfo.push({ ri, ci, lines: lines.map(l => stripTags(l)), isHeader: isHdr,
+        bgColor: cell.bgColor, gridSpan: cell.gridSpan || 1, vAlign: cell.vAlign });
       ci += cell.gridSpan || 1;
     });
   });
 
-  // ===== 行高: 像素 + EMU =====
+  // ===== 行高 =====
   const rowHeights = [];
   let yAccPx = BORDER_W;
   for (let ri = 0; ri < rows.length; ri++) {
@@ -757,8 +760,9 @@ function renderTableDataToCanvas(tblData) {
     yAccPx += hPx + BORDER_W;
   }
   const renderH = yAccPx;
-  // 行高 EMU: 按像素比例反推 (renderH / totalEmuW = renderH_px / total_emu_h)
-  const totalEmuH = Math.round(totalEmuW * (renderH / renderW));
+
+  // ===== EMU高度等比例 =====
+  const totalEmuH = Math.round(totalEmuW * (renderH / RENDER_W));
 
   // ===== 2x 高清绘制 =====
   const canvas = document.createElement('canvas');

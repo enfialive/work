@@ -681,6 +681,10 @@ function tableDataToHtml(tblData) {
 function renderTableDataToCanvas(tblData) {
   const rows = tblData.rows;
   if (!rows || rows.length === 0) return null;
+  // 安全检查: 确保所有行都有cells数组
+  for (let ri = 0; ri < rows.length; ri++) {
+    if (!rows[ri].cells || !Array.isArray(rows[ri].cells) || rows[ri].cells.length === 0) return null;
+  }
 
   const FONT_SIZE = 11;
   const FONT = FONT_SIZE + 'px SimSun, "Microsoft YaHei", "PingFang SC", sans-serif';
@@ -889,6 +893,7 @@ async function convertTablesToImages(xmlStr, tableList, zip) {
     }
 
     // 渲染每个分块 (Canvas 2D 直接绘制, 同步完成)
+    // 注意: w:tbl 在 w:body 下, 替换内容必须包裹在 w:p 中才合法
     let replacementXml = '';
     let chunkIdx = 0;
     for (const chunkData of chunks) {
@@ -902,10 +907,9 @@ async function convertTablesToImages(xmlStr, tableList, zip) {
       const renderResult = renderTableDataToCanvas(chunkData);
 
       if (!renderResult) {
-        const fallbackText = '<w:r><w:t xml:space="preserve">[表格' + tblCount +
+        replacementXml += '<w:p><w:r><w:t xml:space="preserve">[表格' + tblCount +
           (chunks.length > 1 ? '-' + chunkIdx : '') + ': ' +
-          escapeHtml(chunkData.caption || '') + ']</w:t></w:r>';
-        replacementXml += fallbackText;
+          escapeHtml(chunkData.caption || '') + ']</w:t></w:r></w:p>';
         continue;
       }
 
@@ -914,8 +918,8 @@ async function convertTablesToImages(xmlStr, tableList, zip) {
       const imgId = 20000 + tblCount * 100 + chunkIdx;
       totalImages++;
 
-      // 构造内联图片XML
-      replacementXml += '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0">' +
+      // 构造内联图片XML (包裹在 w:p 中, 合法body子元素)
+      replacementXml += '<w:p><w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0">' +
         '<wp:extent cx="' + emuW + '" cy="' + emuH + '"/>' +
         '<wp:docPr id="' + imgId + '" name="Table_' + tblCount + '_' + chunkIdx + '" descr="' + escapeHtml(chunkData.caption || '') + '"/>' +
         '<wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"/></wp:cNvGraphicFramePr>' +
@@ -925,14 +929,9 @@ async function convertTablesToImages(xmlStr, tableList, zip) {
         '<pic:nvPicPr><pic:cNvPr id="' + imgId + '" name="Table_' + tblCount + '_' + chunkIdx + '"/><pic:cNvPicPr/></pic:nvPicPr>' +
         '<pic:blipFill><a:blip r:embed="' + relId + '"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>' +
         '<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="' + emuW + '" cy="' + emuH + '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr>' +
-        '</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>';
+        '</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>';
 
       imagesAdded.push({ base64, relId, ext: 'png' });
-
-      // 分块之间添加换行
-      if (chunkIdx < chunks.length) {
-        replacementXml += '<w:r><w:br/></w:r>';
-      }
     }
 
     modifiedXml = modifiedXml.replace(tbl.placeholder, replacementXml);

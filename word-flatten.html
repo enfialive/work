@@ -1104,7 +1104,9 @@ async function runConversion() {
 
   } catch (err) {
     hideSpinner();
-    outputDetail.innerHTML = '<div class="error-box">❌ 转换失败: ' + escapeHtml(err.message) + '</div>';
+    const stack = (err.stack || '').split('\n').slice(0, 4).join('\n');
+    outputDetail.innerHTML = '<div class="error-box">❌ 转换失败: ' + escapeHtml(err.message) +
+      '\n\n— 错误位置 —\n' + escapeHtml(stack) + '</div>';
     outputArea.classList.add('show');
     console.error(err);
   }

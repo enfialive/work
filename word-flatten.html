@@ -31,8 +31,8 @@ a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
 .upload-zone{border:2px dashed #b0bec5;border-radius:var(--radius);padding:48px 24px;text-align:center;cursor:pointer;transition:all .3s;background:#fafcfd;position:relative}
 .upload-zone:hover,.upload-zone.drag-over{border-color:var(--primary);background:#e8f0fe}
 .upload-zone .upload-icon{font-size:3rem;margin-bottom:12px;display:block}
-.upload-zone .upload-text{font-size:1.05rem;color:#555;font-weight:500;margin-bottom:6px}
-.upload-zone .upload-hint{font-size:.8rem;color:var(--text-light)}
+.upload-zone .upload-text{display:block;font-size:1.05rem;color:#555;font-weight:500;margin-bottom:6px}
+.upload-zone .upload-hint{display:block;font-size:.8rem;color:var(--text-light)}
 .upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer}
 .file-info{display:none;align-items:center;gap:10px;margin-top:16px;padding:12px 16px;background:#f0f7ff;border:1px solid #b3d8ff;border-radius:6px;font-size:.9rem}
 .file-info.show{display:flex}
@@ -85,12 +85,12 @@ a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
 <div class="card" id="upload-card">
 <div class="card-header"><h2>📄 上传 Word 文档</h2></div>
 <div class="card-body">
-<label class="upload-zone" id="upload-zone">
+<div class="upload-zone" id="upload-zone">
   <span class="upload-icon">📤</span>
-  <div class="upload-text">拖拽 .docx 文件到此处，或点击选择文件</div>
-  <div class="upload-hint">支持 .docx 格式（Word 2007及以上）· 无文件大小限制 · 输出为扁平化的 .docx</div>
+  <span class="upload-text">拖拽 .docx 文件到此处，或点击选择文件</span>
+  <span class="upload-hint">支持 .docx 格式（Word 2007及以上）· 无文件大小限制 · 输出为扁平化的 .docx</span>
   <input type="file" id="file-input" accept=".docx" />
-</label>
+</div>
 <div class="file-info" id="file-info">
   <span>📎</span>
   <span class="file-name" id="file-name"></span>
@@ -105,7 +105,7 @@ a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
     <div class="pipeline-step" id="step-1"><div class="step-num">1</div>浮动→内联</div>
     <div class="pipeline-step" id="step-2"><div class="step-num">2</div>移除超链接</div>
     <div class="pipeline-step" id="step-3"><div class="step-num">3</div>OLE→图片</div>
-    <div class="pipeline-step" id="step-4"><div class="step-num">4</div>表格清理</div>
+    <div class="pipeline-step" id="step-4"><div class="step-num">4</div>表格→纯图</div>
     <div class="pipeline-step" id="step-5"><div class="step-num">5</div>打包下载</div>
   </div>
 </div>
@@ -445,8 +445,35 @@ function findAndMarkOleObjects(docXml, relsXml, origXmlStr) {
       }
     }
 
-    const oleWidth = oleObj.getAttribute('w:dxaOrig') || obj.getAttribute('w:dxaOrig') || '';
-    const oleHeight = oleObj.getAttribute('w:dyaOrig') || obj.getAttribute('w:dyaOrig') || '';
+    // 获取OLE预览图的正确尺寸 — 从 v:shape style 提取 (匹配预览图实际宽高)
+    // v:shape 的 style="width:XXXpt;height:YYYpt" 与 WMF/EMF 预览图尺寸一致
+    let emuWidth = 0, emuHeight = 0;
+    const shapes = findAllByLocalName(obj, 'shape');
+    shapes.forEach(shape => {
+      const style = shape.getAttribute('style') || '';
+      const wMatch = style.match(/width:\s*([\d.]+)\s*(pt|in|cm|px)/i);
+      const hMatch = style.match(/height:\s*([\d.]+)\s*(pt|in|cm|px)/i);
+      if (wMatch) {
+        const val = parseFloat(wMatch[1]);
+        const unit = wMatch[2].toLowerCase();
+        emuWidth = Math.round((unit === 'in' ? val * 72 : unit === 'cm' ? val * 28.346 : unit === 'px' ? val * 0.75 : val) * 12700);
+      }
+      if (hMatch) {
+        const val = parseFloat(hMatch[1]);
+        const unit = hMatch[2].toLowerCase();
+        emuHeight = Math.round((unit === 'in' ? val * 72 : unit === 'cm' ? val * 28.346 : unit === 'px' ? val * 0.75 : val) * 12700);
+      }
+    });
+
+    // 回退: dxaOrig (twips) → EMU: 1 twip = 635 EMU
+    if (emuWidth === 0) {
+      const dxa = parseInt(oleObj.getAttribute('w:dxaOrig') || obj.getAttribute('w:dxaOrig') || '0');
+      emuWidth = dxa > 0 ? dxa * 635 : 0;
+    }
+    if (emuHeight === 0) {
+      const dya = parseInt(oleObj.getAttribute('w:dyaOrig') || obj.getAttribute('w:dyaOrig') || '0');
+      emuHeight = dya > 0 ? dya * 635 : 0;
+    }
 
     if (previewRelId && relMap[previewRelId]) {
       const placeholder = `__OLE_PLACEHOLDER_${idx}__`;
@@ -459,8 +486,8 @@ function findAndMarkOleObjects(docXml, relsXml, origXmlStr) {
         previewRelId: previewRelId,
         previewPath: 'word/' + relMap[previewRelId].target,
         previewExt: relMap[previewRelId].target.split('.').pop().toLowerCase(),
-        width: oleWidth,
-        height: oleHeight
+        emuWidth: emuWidth,
+        emuHeight: emuHeight
       });
     }
   });
@@ -497,9 +524,10 @@ async function convertOleObjects(xmlStr, oleList, zip) {
       continue;
     }
 
-    // dxa (twips) → EMU: 1 twip = 635 EMU
-    const cx = ole.width ? parseInt(ole.width) * 635 : 3000000;
-    const cy = ole.height ? parseInt(ole.height) * 635 : 3000000;
+    // 使用从 v:shape style 提取的 EMU 尺寸 (已做长宽比修正)
+    // 如果尺寸为0则使用合理默认值
+    const cx = ole.emuWidth > 0 ? ole.emuWidth : 3000000;
+    const cy = ole.emuHeight > 0 ? ole.emuHeight : 3000000;
     const relId = 'rId_ole_' + oleCount + '_' + uniqueIdCounter;
     const imgId = oleCount + 10000; // 避免与其他元素ID冲突
 
@@ -523,23 +551,254 @@ async function convertOleObjects(xmlStr, oleList, zip) {
   return { xml: modifiedXml, oleCount, oleToInline };
 }
 
-// ==================== Pass 4: 表格清理 ====================
-function cleanTables(xmlStr) {
+// ==================== Pass 4: 表格→纯图 ====================
+// 解析 w:tbl 为结构化数据
+function parseTableData(tblEl) {
+  // 表格属性
+  const tblPr = qs(tblEl, 'tblPr');
+  let tblWidth = 0, caption = '';
+  if (tblPr) {
+    const tblW = qs(tblPr, 'tblW');
+    if (tblW) {
+      const w = parseInt(tblW.getAttribute('w:w') || '0');
+      const type = tblW.getAttribute('w:type') || '';
+      // dxa (twips) 转像素近似: 1dxa ≈ 0.75px at 96dpi
+      tblWidth = type === 'pct' ? 0 : Math.round(w * 0.75);
+    }
+    const cap = qs(tblPr, 'tblCaption');
+    if (cap) caption = cap.getAttribute('w:val') || '';
+  }
+
+  // 列宽 (w:tblGrid)
+  const colWidths = [];
+  const tblGrid = qs(tblEl, 'tblGrid');
+  if (tblGrid) {
+    const gridCols = qsa(tblGrid, 'gridCol');
+    gridCols.forEach(gc => {
+      colWidths.push(parseInt(gc.getAttribute('w:w') || '2000'));
+    });
+  }
+
+  // 行数据
+  const rows = [];
+  const trEls = qsa(tblEl, 'tr');
+  trEls.forEach(tr => {
+    const cells = [];
+    const tcEls = qsa(tr, 'tc');
+    tcEls.forEach(tc => {
+      // 解析单元格文本 (保留格式)
+      let text = '';
+      const pEls = qsa(tc, 'p');
+      pEls.forEach(p => {
+        const rEls = qsa(p, 'r');
+        rEls.forEach(r => {
+          let runText = '';
+          const tEls = qsa(r, 't');
+          tEls.forEach(t => { runText += t.textContent || ''; });
+          const isBold = qs(r, 'b') !== null;
+          const isItalic = qs(r, 'i') !== null;
+          if (runText) {
+            if (isBold && isItalic) runText = '<b><i>' + escapeHtml(runText) + '</i></b>';
+            else if (isBold) runText = '<b>' + escapeHtml(runText) + '</b>';
+            else if (isItalic) runText = '<i>' + escapeHtml(runText) + '</i>';
+            else runText = escapeHtml(runText);
+            text += runText;
+          }
+        });
+        if (p !== pEls[pEls.length - 1]) text += '<br>';
+      });
+
+      // 单元格属性
+      const tcPr = qs(tc, 'tcPr');
+      let gridSpan = 1, vAlign = 'top';
+      let bgColor = '', width = 0;
+      if (tcPr) {
+        const gs = qs(tcPr, 'gridSpan');
+        if (gs) gridSpan = parseInt(gs.getAttribute('w:val') || '1');
+        const vAl = qs(tcPr, 'vAlign');
+        if (vAl) vAlign = vAl.getAttribute('w:val') || 'top';
+        const shd = qs(tcPr, 'shd');
+        if (shd) {
+          const fill = shd.getAttribute('w:fill') || shd.getAttribute('w:bgColor') || '';
+          if (fill && fill !== 'auto') bgColor = '#' + fill;
+        }
+        const tcW = qs(tcPr, 'tcW');
+        if (tcW) width = parseInt(tcW.getAttribute('w:w') || '0');
+      }
+
+      cells.push({ text, gridSpan, vAlign, bgColor, width });
+    });
+    rows.push({ cells });
+  });
+
+  // 首行是否标题行
+  let headerRow = false;
+  if (tblPr) {
+    const tblLook = qs(tblPr, 'tblLook');
+    if (tblLook && tblLook.getAttribute('w:firstRow') === '1') headerRow = true;
+  }
+
+  return { caption, colWidths, rows, headerRow, tblWidth };
+}
+
+// 将表格数据构建为 HTML 字符串
+function tableDataToHtml(tblData) {
+  const { caption, rows, headerRow } = tblData;
+  if (rows.length === 0) return '<p>(空表格)</p>';
+
+  let clsRowIdx = 0;
+  let html = '<table style="border-collapse:collapse;font-family:SimSun,\'Microsoft YaHei\',sans-serif;font-size:12px;width:auto;">';
+  if (caption) html += '<caption style="font-weight:bold;margin-bottom:4px;">' + escapeHtml(caption) + '</caption>';
+
+  rows.forEach((row, ri) => {
+    const isHeader = headerRow && ri === 0;
+    html += '<tr>';
+    row.cells.forEach(cell => {
+      const tag = isHeader ? 'th' : 'td';
+      let style = 'border:1px solid #333;padding:3px 8px;vertical-align:' + cell.vAlign + ';';
+      if (cell.bgColor) style += 'background-color:' + cell.bgColor + ';';
+      if (isHeader) style += 'font-weight:bold;text-align:center;background:#e8e8e8;';
+      if (cell.gridSpan > 1) html += '<' + tag + ' colspan="' + cell.gridSpan + '" style="' + style + '">';
+      else html += '<' + tag + ' style="' + style + '">';
+      html += (cell.text || '&nbsp;') + '</' + tag + '>';
+    });
+    html += '</tr>';
+    clsRowIdx++;
+  });
+
+  html += '</table>';
+  return html;
+}
+
+// 将 HTML 表格渲染为 PNG 图片 (SVG foreignObject → Canvas 方案)
+function renderTableToImage(htmlContent) {
+  return new Promise((resolve) => {
+    // 1. 在离屏 div 中测量尺寸
+    const measureDiv = document.createElement('div');
+    measureDiv.style.cssText = 'position:absolute;left:-9999px;top:-9999px;visibility:hidden;';
+    measureDiv.innerHTML = htmlContent;
+    document.body.appendChild(measureDiv);
+
+    const tableEl = measureDiv.querySelector('table');
+    const naturalWidth = tableEl ? tableEl.offsetWidth : 600;
+    const naturalHeight = tableEl ? tableEl.offsetHeight : 400;
+
+    // 设置合理的最小/最大尺寸
+    const PADDING = 16;
+    const SCALE = 2; // 2x for retina quality
+    const width = Math.max(200, Math.min(naturalWidth, 1200)) + PADDING * 2;
+    const height = Math.max(40, Math.min(naturalHeight, 4000)) + PADDING * 2;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width * SCALE;
+    canvas.height = height * SCALE;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(SCALE, SCALE);
+    // 白色背景
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, width, height);
+
+    // 2. 构建 SVG (带良好样式)
+    const svgStr = '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">' +
+      '<foreignObject width="100%" height="100%">' +
+      '<div xmlns="http://www.w3.org/1999/xhtml" style="padding:' + PADDING + 'px;font-size:12px;">' +
+      htmlContent +
+      '</div></foreignObject></svg>';
+
+    // 3. 通过 Image 加载 SVG, 绘制到 canvas
+    const img = new Image();
+    const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
+
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0);
+      URL.revokeObjectURL(url);
+      document.body.removeChild(measureDiv);
+
+      // canvas → base64 PNG
+      const dataUrl = canvas.toDataURL('image/png');
+      const base64 = dataUrl.replace(/^data:image\/png;base64,/, '');
+      resolve({ base64: base64, width: width * SCALE, height: height * SCALE, emuW: Math.round(width * 9525), emuH: Math.round(height * 9525) });
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      document.body.removeChild(measureDiv);
+      resolve(null); // 渲染失败
+    };
+
+    img.src = url;
+  });
+}
+
+// 在 DOM 中查找并标记表格 (用占位符替换)
+function findAndMarkTables(docXml, origXmlStr) {
+  const tableList = [];
+  const tblEls = findAllByLocalName(docXml.documentElement || docXml, 'tbl');
+
+  tblEls.forEach((tbl, idx) => {
+    try {
+      const tblData = parseTableData(tbl);
+      const placeholder = '__TBL_PLACEHOLDER_' + idx + '__';
+      const textNode = tbl.ownerDocument.createTextNode(placeholder);
+      tbl.parentNode.replaceChild(textNode, tbl);
+
+      tableList.push({ placeholder: placeholder, data: tblData });
+    } catch(e) {
+      console.warn('Failed to parse table at index', idx, e);
+    }
+  });
+
+  let modifiedXml = new XMLSerializer().serializeToString(docXml);
+  modifiedXml = modifiedXml.replace(/^<\?xml[^?]*\?>\s*/g, '');
+  const origDecl = origXmlStr.match(/^<\?xml[^?]*\?>/);
+  if (origDecl) modifiedXml = origDecl[0] + '\n' + modifiedXml;
+
+  return { xml: modifiedXml, tableList };
+}
+
+// 异步处理所有表格占位符
+async function convertTablesToImages(xmlStr, tableList, zip) {
   let modifiedXml = xmlStr;
-  let tblFloatCount = 0;
-  let tblHyperlinkCount = 0;
+  let tblCount = 0;
+  const imagesAdded = [];
+  const counter = Date.now();
 
-  // 4a: 删除表格浮动定位 <w:tblpPr .../>
-  const tblpPrRe = /<w:tblpPr\b[^>]*\/>/g;
-  const matches1 = modifiedXml.match(tblpPrRe);
-  if (matches1) tblFloatCount = matches1.length;
-  modifiedXml = modifiedXml.replace(tblpPrRe, '');
+  for (const tbl of tableList) {
+    tblCount++;
+    const html = tableDataToHtml(tbl.data);
 
-  // 4b: 表格内的超链接已在Pass 2中全局处理
-  // 这里检查w:tbl内的w:hyperlink (已经由Pass 2处理, 仅统计)
-  // Pass 2已经全局处理了所有w:hyperlink, 此处不再重复
+    // 渲染为图片
+    const renderResult = await renderTableToImage(html);
+    if (!renderResult) {
+      // 渲染失败: 保留占位符位置但写入原始HTML (回退)
+      const fallbackText = '<w:r><w:t xml:space="preserve">[表格' + tblCount + ': ' + escapeHtml(tbl.data.caption || '') + ']</w:t></w:r>';
+      modifiedXml = modifiedXml.replace(tbl.placeholder, fallbackText);
+      continue;
+    }
 
-  return { xml: modifiedXml, tblFloatCount, tblHyperlinkCount: 0 };
+    const { base64, emuW, emuH } = renderResult;
+    const relId = 'rId_tbl_' + tblCount + '_' + counter;
+    const imgId = 20000 + tblCount;
+
+    // 构造内联图片XML
+    const newImageXml = '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0">' +
+      '<wp:extent cx="' + emuW + '" cy="' + emuH + '"/>' +
+      '<wp:docPr id="' + imgId + '" name="Table_' + tblCount + '" descr="' + escapeHtml(tbl.data.caption || '') + '"/>' +
+      '<wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"/></wp:cNvGraphicFramePr>' +
+      '<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">' +
+      '<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">' +
+      '<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">' +
+      '<pic:nvPicPr><pic:cNvPr id="' + imgId + '" name="Table_' + tblCount + '"/><pic:cNvPicPr/></pic:nvPicPr>' +
+      '<pic:blipFill><a:blip r:embed="' + relId + '"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>' +
+      '<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="' + emuW + '" cy="' + emuH + '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr>' +
+      '</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>';
+
+    modifiedXml = modifiedXml.replace(tbl.placeholder, newImageXml);
+    imagesAdded.push({ base64, relId, ext: 'png' });
+  }
+
+  return { xml: modifiedXml, tblCount, imagesAdded };
 }
 
 // ==================== 主转换流程 ====================
@@ -575,56 +834,82 @@ async function runConversion() {
     const origHlinks = hlinkMatches ? hlinkMatches.length : 0;
     const origHyperlinks = hyperlinkMatches ? hyperlinkMatches.length : 0;
     const origOles = oleMatches ? oleMatches.length : 0;
-    const origTblFloat = tblpPrMatches ? tblpPrMatches.length : 0;
+    const origTbls = (docXmlStr.match(/<w:tbl\b/g) || []).length;
 
     conversionStats = {
-      origAnchors, origHlinks, origHyperlinks, origOles, origTblFloat,
+      origAnchors, origHlinks, origHyperlinks, origOles, origTblFloat: origTbls,
       convertedAnchors: 0, removedHlinks: 0, removedHyperlinks: 0,
-      convertedOles: 0, cleanedTblFloat: 0,
+      convertedOles: 0, cleanedTblFloat: 0, convertedTables: 0,
       extraImagesAdded: 0
     };
+    const origTblCount = origTbls;
 
     let workingXml = docXmlStr;
     let workingRels = relsStr;
     let workingContentTypes = contentTypesStr;
 
-    // ===== Pass 3 (前置): OLE对象→预览图 (先处理OLE, 避免anchor转换影响DOM结构) =====
-    showSpinner('Pass 3/4: OLE对象 → 内联图片…');
+    // ===== 前置处理: OLE对象 + 表格 → 占位符 (同一DOM遍历) =====
+    showSpinner('分析文档结构: OLE对象 + 表格检测…');
     const docXml = parser.parseFromString(workingXml, 'application/xml');
-    const { xml: oleMarkedXml, oleList } = findAndMarkOleObjects(docXml, relsXml, workingXml);
-    // findAndMarkOleObjects 已包含 XML 声明, 使用前清理
-    workingXml = oleMarkedXml;
 
+    // 标记 OLE 对象
+    const oleResult = findAndMarkOleObjects(docXml, relsXml, workingXml);
+    // 标记表格 (在同一个已修改DOM上, OLE已被替换为文本节点)
+    const tableResult = findAndMarkTables(docXml, workingXml);
+    workingXml = tableResult.xml; // 第二次序列化已包含OLE+表格占位符
+
+    // 处理OLE占位符
     let oleToInline = [];
-    if (oleList.length > 0) {
-      const pass3 = await convertOleObjects(workingXml, oleList, fileZip);
+    if (oleResult.oleList.length > 0) {
+      showSpinner('Pass 3/4: OLE对象 → 内联图片…');
+      const pass3 = await convertOleObjects(workingXml, oleResult.oleList, fileZip);
       workingXml = pass3.xml;
       conversionStats.convertedOles = pass3.oleCount;
       oleToInline = pass3.oleToInline;
 
       if (oleToInline.length > 0) {
-        // 添加图片关系到 rels
         let relsInsert = '';
         oleToInline.forEach(o => {
           const mediaName = 'ole_preview_' + o.relId + '.' + (o.ext || 'wmf');
-          const mediaPath = 'word/media/' + mediaName;
-          fileZip.file(mediaPath, o.base64, { base64: true });
+          fileZip.file('word/media/' + mediaName, o.base64, { base64: true });
           relsInsert += `<Relationship Id="${o.relId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/${mediaName}"/>`;
-
-          // 更新 [Content_Types].xml 添加图片类型
           const extMap = { wmf: 'wmf', emf: 'emf', png: 'png', jpg: 'jpeg', jpeg: 'jpeg', gif: 'gif', bmp: 'bmp', svg: 'svg' };
           const ctExt = extMap[o.ext] || o.ext;
           if (workingContentTypes && !workingContentTypes.includes('Extension="' + ctExt + '"')) {
-            workingContentTypes = workingContentTypes.replace(
-              /<\/Types>/,
-              '<Default Extension="' + ctExt + '" ContentType="image/' + (ctExt === 'wmf' ? 'x-wmf' : ctExt === 'emf' ? 'x-emf' : ctExt) + '"/></Types>'
-            );
+            workingContentTypes = workingContentTypes.replace(/<\/Types>/,
+              '<Default Extension="' + ctExt + '" ContentType="image/' + (ctExt === 'wmf' ? 'x-wmf' : ctExt === 'emf' ? 'x-emf' : ctExt) + '"/></Types>');
           }
         });
         workingRels = workingRels.replace(/<\/Relationships>/, relsInsert + '</Relationships>');
       }
     }
     document.getElementById('step-3').classList.add('done');
+
+    // 处理表格占位符 → PNG纯图
+    let tableImages = [];
+    if (tableResult.tableList.length > 0) {
+      showSpinner('Pass 4/4: 表格 → 纯图 (SVG渲染)…');
+      const pass4 = await convertTablesToImages(workingXml, tableResult.tableList, fileZip);
+      workingXml = pass4.xml;
+      conversionStats.convertedTables = pass4.tblCount;
+      tableImages = pass4.imagesAdded;
+
+      if (tableImages.length > 0) {
+        let relsInsert = '';
+        tableImages.forEach(img => {
+          const mediaName = 'table_' + img.relId + '.png';
+          fileZip.file('word/media/' + mediaName, img.base64, { base64: true });
+          relsInsert += `<Relationship Id="${img.relId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/${mediaName}"/>`;
+        });
+        workingRels = workingRels.replace(/<\/Relationships>/, relsInsert + '</Relationships>');
+        // 确保 PNG 在 Content_Types 中声明
+        if (workingContentTypes && !workingContentTypes.includes('Extension="png"')) {
+          workingContentTypes = workingContentTypes.replace(/<\/Types>/,
+            '<Default Extension="png" ContentType="image/png"/></Types>');
+        }
+      }
+    }
+    document.getElementById('step-4').classList.add('done');
 
     // ===== Pass 1: 浮动→内联 =====
     showSpinner('Pass 1/4: 浮动元素 → 内联…');
@@ -641,13 +926,6 @@ async function runConversion() {
     conversionStats.removedHlinks = pass2.hlinkCount;
     conversionStats.removedHyperlinks = pass2.hyperlinkCount;
     document.getElementById('step-2').classList.add('done');
-
-    // ===== Pass 4: 表格清理 =====
-    showSpinner('Pass 4/4: 表格清理…');
-    const pass4 = cleanTables(workingXml);
-    workingXml = pass4.xml;
-    conversionStats.cleanedTblFloat = pass4.tblFloatCount;
-    document.getElementById('step-4').classList.add('done');
 
     // ===== 打包输出 =====
     showSpinner('正在打包输出.docx…');
@@ -683,7 +961,7 @@ function displayReport() {
   if (!s) return;
 
   // 统计汇总
-  const totalChanges = s.convertedAnchors + s.removedHlinks + s.removedHyperlinks + s.convertedOles + s.cleanedTblFloat;
+  const totalChanges = s.convertedAnchors + s.removedHlinks + s.removedHyperlinks + s.convertedOles + s.convertedTables;
   const hasChanges = totalChanges > 0;
 
   summaryGrid.innerHTML = `
@@ -691,13 +969,13 @@ function displayReport() {
     <div class="summary-item modified"><div class="count">${s.removedHlinks}</div><div class="label">图片超链接移除</div></div>
     <div class="summary-item modified"><div class="count">${s.removedHyperlinks}</div><div class="label">文本超链接移除</div></div>
     <div class="summary-item modified"><div class="count">${s.convertedOles}</div><div class="label">OLE→图片</div></div>
-    <div class="summary-item"><div class="count">${s.cleanedTblFloat}</div><div class="label">浮动表格清理</div></div>
+    <div class="summary-item modified"><div class="count">${s.convertedTables}</div><div class="label">表格→纯图</div></div>
   `;
 
   // 详细报告
   let reportHtml = '';
-  if (s.origAnchors === 0 && s.origHlinks === 0 && s.origHyperlinks === 0 && s.origOles === 0 && s.origTblFloat === 0) {
-    reportHtml += '<li class="info">ℹ 未检测到需要处理的悬浮元素或超链接，文档可能已经是纯图格式</li>';
+  if (s.origAnchors === 0 && s.origHlinks === 0 && s.origHyperlinks === 0 && s.origOles === 0 && s.convertedTables === 0 && origTblCount === 0) {
+    reportHtml += '<li class="info">ℹ 未检测到需要处理的悬浮元素、超链接或表格，文档可能已经是纯图格式</li>';
   } else {
     if (s.convertedAnchors > 0) {
       reportHtml += `<li>✅ 已将 <strong>${s.convertedAnchors}</strong> 个浮动图片/形状转换为内联格式（wp:anchor → wp:inline）</li>`;
@@ -719,8 +997,8 @@ function displayReport() {
       reportHtml += `<li class="warn">⚠ 检测到 ${s.origOles} 个OLE对象，但未能提取预览图（可能为链接式OLE对象）</li>`;
     }
 
-    if (s.cleanedTblFloat > 0) {
-      reportHtml += `<li>✅ 已清理 <strong>${s.cleanedTblFloat}</strong> 个浮动表格的定位属性</li>`;
+    if (s.convertedTables > 0) {
+      reportHtml += `<li>✅ 已将 <strong>${s.convertedTables}</strong> 个表格渲染为纯图PNG（SVG渲染 → Canvas → 内联图片）</li>`;
     }
   }
 
@@ -733,7 +1011,7 @@ function displayReport() {
     reportHtml += '<li class="warn">⚠ 文档包含OLE对象但无预览图。请在Word中打开原文档，确认公式/结构式正常显示</li>';
   }
 
-  reportHtml += `<li class="info">ℹ 原始检测: ${s.origAnchors}浮动 · ${s.origHlinks}图片链接 · ${s.origHyperlinks}文本链接 · ${s.origOles}OLE对象 · ${s.origTblFloat}浮动表格</li>`;
+  reportHtml += `<li class="info">ℹ 原始检测: ${s.origAnchors}浮动 · ${s.origHlinks}图片链接 · ${s.origHyperlinks}文本链接 · ${s.origOles}OLE对象 · ${origTblCount}表格</li>`;
 
   reportList.innerHTML = reportHtml;
   reportArea.classList.add('show');
@@ -750,7 +1028,7 @@ function displayReport() {
   detail += `  图片超链接移除 (a:hlinkClick):     ${s.removedHlinks}\n`;
   detail += `  文本超链接移除 (w:hyperlink):      ${s.removedHyperlinks}\n`;
   detail += `  OLE对象→图片:                    ${s.convertedOles}\n`;
-  detail += `  浮动表格清理 (w:tblpPr):          ${s.cleanedTblFloat}\n`;
+  detail += `  表格→纯图 (PNG渲染):            ${s.convertedTables}\n`;
   detail += `  总变更数:                         ${totalChanges}\n\n`;
   detail += '— 输出格式 —\n';
   detail += '  .docx (Office Open XML)\n';

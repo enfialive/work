@@ -911,21 +911,46 @@ const Renderer={
 
   _prevMonth(ym){const[y,m]=ym.split('-').map(Number);let py=y,pm=m-1;if(pm<1){py--;pm=12}return `${py}-${String(pm).padStart(2,'0')}`},
 
+  /** Build filter dropdowns once. Called at init + when projects/cats change. */
+  initFilters(){
+    const txns=Store.getAllTransactions(),cats=Store.getAllCategories(),projects=Store.getAllProjects();
+    const months=Calculator.getAvailableMonths(txns);
+    Utils.$('#filterMonth').innerHTML='<option value="all">全部月份（'+txns.length+'条）</option>'+months.map(m=>`<option value="${m}">${m}</option>`).join('');
+    Utils.$('#filterCategory').innerHTML='<option value="all">全部分类</option>'+cats.map(c=>`<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+    Utils.$('#filterProject').innerHTML='<option value="all">全部项目</option><option value="__none__">仅未归属</option>'+projects.map(p=>`<option value="${p.id}">${p.icon} ${Renderer._esc(p.name)}</option>`).join('');
+    // Ensure all default to 'all'
+    Utils.$('#filterMonth').value='all';
+    Utils.$('#filterCategory').value='all';
+    Utils.$('#filterProject').value='all';
+  },
+
+  /** Lightweight: update filter dropdown options when data changes, preserving selected value */
+  syncFilters(){
+    const txns=Store.getAllTransactions(),cats=Store.getAllCategories(),projects=Store.getAllProjects();
+    const months=Calculator.getAvailableMonths(txns);
+    const fm=Utils.$('#filterMonth').value,fc=Utils.$('#filterCategory').value,fp=Utils.$('#filterProject').value;
+    let mo='<option value="all"'+(fm==='all'?' selected':'')+'>全部月份（'+txns.length+'条）</option>';for(const m of months)mo+=`<option value="${m}" ${fm===m?'selected':''}>${m}</option>`;
+    Utils.$('#filterMonth').innerHTML=mo;
+    Utils.$('#filterCategory').innerHTML='<option value="all"'+(fc==='all'?' selected':'')+'>全部分类</option>'+cats.map(c=>`<option value="${c.id}" ${fc===c.id?'selected':''}>${c.icon} ${c.name}</option>`).join('');
+    Utils.$('#filterProject').innerHTML='<option value="all"'+(fp==='all'?' selected':'')+'>全部项目</option><option value="__none__"'+('__none__'===fp?' selected':'')+'>仅未归属</option>'+projects.map(p=>`<option value="${p.id}" ${fp===p.id?'selected':''}>${p.icon} ${Renderer._esc(p.name)}</option>`).join('');
+  },
+
   renderTransactions(){
     const txns=Store.getAllTransactions(),cats=Store.getAllCategories(),projects=Store.getAllProjects();
     const cm={};for(const c of cats)cm[c.id]=c;
     const pm={};for(const p of projects)pm[p.id]=p;
+
+    // Sync filter options (preserves selected values)
+    this.syncFilters();
+
+    // Read current filter values AFTER sync
     const fm=Utils.$('#filterMonth').value,fc=Utils.$('#filterCategory').value,fp=Utils.$('#filterProject').value,fk=Utils.$('#filterKeyword').value.trim();
+    window.__DEBUG_FILTERS={txns:txns.length,fm,fc,fp,fk};
+    console.log('📋 renderTransactions DEBUG:',JSON.stringify(window.__DEBUG_FILTERS),'| Records:',txns.map(t=>t.id.slice(-6)+' date='+t.date+' cat='+(t.categoryId||'none')+' proj='+(t.projectId||'none')));
+
     const filters={month:fm!=='all'?fm:null,categoryId:fc,projectId:fp,keyword:fk};
     const filtered=Calculator.filterTransactions(txns,filters);
-
-    // Update filter dropdowns
-    const months=Calculator.getAvailableMonths(txns);
-    Utils.$('#filterMonth').innerHTML='<option value="all"'+(fm==='all'?' selected':'')+'>全部月份（'+txns.length+'条）</option>'+months.map(m=>`<option value="${m}" ${fm===m?'selected':''}>${m}</option>`).join('');
-
-    Utils.$('#filterCategory').innerHTML='<option value="all">全部分类</option>'+cats.map(c=>`<option value="${c.id}" ${fc===c.id?'selected':''}>${c.icon} ${c.name}</option>`).join('');
-
-    Utils.$('#filterProject').innerHTML='<option value="all">全部项目</option><option value="__none__"'+('__none__'===fp?' selected':'')+'>仅未归属</option>'+projects.map(p=>`<option value="${p.id}" ${fp===p.id?'selected':''}>${p.icon} ${Renderer._esc(p.name)}</option>`).join('');
+    console.log('🔍 Filtered:',filtered.length,'/',txns.length);
 
     Utils.$('#filterResultCount').textContent=txns.length!==filtered.length?`筛选 ${filtered.length} / 共 ${txns.length} 条`:`共 ${txns.length} 条`;
 
@@ -1495,6 +1520,7 @@ function init(){
   };
 
   // Now render after all public methods are available
+  Renderer.initFilters();
   Renderer.renderSidebar();Events.init();Events._refreshCurrentTab();
 }
 

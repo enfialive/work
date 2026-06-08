@@ -807,32 +807,33 @@ const Renderer={
 
   /** Render the Dashboard tab */
   renderDashboard(){
-    const month=Store.getActiveMonth(),txns=Store.getAllTransactions(),cats=Store.getAllCategories(),projects=Store.getAllProjects(),ap=Store.getActiveProject();
+    const txns=Store.getAllTransactions(),cats=Store.getAllCategories(),projects=Store.getAllProjects(),ap=Store.getActiveProject();
     const cm={};for(const c of cats)cm[c.id]=c;
     const pm={};for(const p of projects)pm[p.id]=p;
 
-    const monthTxns=Calculator._filterByProject(txns.filter(t=>t.date.startsWith(month)),ap);
-    const monthTotal=monthTxns.reduce((s,t)=>s+t.amount,0);
-    const prevMonth=this._prevMonth(month);
-    const prevTxns=Calculator._filterByProject(txns.filter(t=>t.date.startsWith(prevMonth)),ap);
-    const prevTotal=prevTxns.reduce((s,t)=>s+t.amount,0);
+    // Show ALL records — Dashboard is a true overview, not month-filtered
+    const allTxns=Calculator._filterByProject(txns,ap);
+    const allTotal=allTxns.reduce((s,t)=>s+t.amount,0);
+    const allCount=allTxns.length;
+    const months=Calculator.getAvailableMonths(txns);
+    const monthCount=months.length;
 
-    const daysInMonth=Utils.getDaysInMonth(...month.split('-').map(Number));
-    const dayAvg=monthTxns.length>0?monthTotal/daysInMonth:0;
+    // Average per month
+    const avgPerMonth=monthCount>0?allTotal/monthCount:0;
 
-    // Delta vs prev month
-    const delta=prevTotal>0?Math.round((monthTotal-prevTotal)/prevTotal*100):(monthTotal>0?100:0);
-    const deltaUp=delta>0;
+    // Project ranking (all-time)
+    const projExp=Calculator.getExpenseByProject(txns,Utils.getCurrentMonth());
+    // Also compute all-time project ranking
+    const projExpAll={};for(const t of allTxns){const pid=t.projectId||'__none__';projExpAll[pid]=(projExpAll[pid]||0)+t.amount}
+    const projRank=Object.entries(projExpAll).filter(([pid])=>pid!=='__none__').map(([pid,v])=>({id:pid,name:(pm[pid]||{name:'已删除项目'}).name,icon:(pm[pid]||{icon:'❓'}).icon,color:(pm[pid]||{color:'#B2BEC3'}).color,value:v})).sort((a,b)=>b.value-a.value);
+    const unassignedExp=projExpAll['__none__']||0;
 
-    // Project ranking
-    const projExp=Calculator.getExpenseByProject(txns,month);
-    const projRank=Object.entries(projExp).filter(([pid])=>pid!=='__none__').map(([pid,v])=>({id:pid,name:(pm[pid]||{name:'已删除项目'}).name,icon:(pm[pid]||{icon:'❓'}).icon,color:(pm[pid]||{color:'#B2BEC3'}).color,value:v})).sort((a,b)=>b.value-a.value);
-    const unassignedExp=projExp['__none__']||0;
+    // Recent transactions (all-time, most recent 5)
+    const recent=allTxns.slice(0,5);
 
-    // Recent transactions
-    const recent=monthTxns.slice(0,5);
-
-    // Budget status
+    // Budget status (current month budget for selected project)
+    const curMonth=Utils.getCurrentMonth();
+    const monthTotal=Calculator._filterByProject(txns.filter(t=>t.date.startsWith(curMonth)),ap).reduce((s,t)=>s+t.amount,0);
     let budgetHTML='';
     if(ap!=='__all__'&&ap){
       const proj=pm[ap];
@@ -841,7 +842,7 @@ const Renderer={
         const barClass=pct<70?'safe':(pct<100?'warn':'over');
         const statusIcon=pct>=100?'🔴':(pct>=70?'🟡':'🟢');
         budgetHTML=`<div class="card" style="margin-bottom:var(--spacing-md);">
-          <div class="card-header"><span class="card-title">💰 预算使用</span><span>${statusIcon} ${pct}%</span></div>
+          <div class="card-header"><span class="card-title">💰 ${Renderer._esc(proj.name)} - 本月预算</span><span>${statusIcon} ${pct}%</span></div>
           <div style="display:flex;justify-content:space-between;font-size:var(--font-size-sm);margin-bottom:4px;"><span>已用 ${Utils.formatCurrency(monthTotal)}</span><span>预算 ${Utils.formatCurrency(proj.budget)}</span></div>
           <div class="budget-bar-wrap"><div class="budget-bar ${barClass}" style="width:${Math.min(pct,100)}%"></div></div>
           ${pct>=100?`<div style="margin-top:8px;padding:8px 12px;background:var(--color-expense-bg);border-radius:var(--radius-sm);font-size:var(--font-size-xs);color:var(--color-danger);">⚠️ 已超出预算 ${Utils.formatCurrency(monthTotal-proj.budget)}</div>`:''}
@@ -851,18 +852,16 @@ const Renderer={
 
     // Build HTML
     let h='';
-    // Month indicator + total count bar
-    const [my,mm]=month.split('-');
-    const allTimeTotal=Calculator.getTotalExpense(txns,ap),allTimeCount=Calculator._filterByProject(txns,ap).length;
+    // All-time summary bar
     h+=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--spacing-md);padding:10px 16px;background:var(--color-primary-light);border-radius:var(--radius-md);font-size:var(--font-size-sm);">
-      <span>📅 当前查看：<strong>${parseInt(my)}年${parseInt(mm)}月</strong>（顶部月份选择器可切换）</span>
-      <span>📋 累计：<strong>${Utils.formatCurrency(allTimeTotal)}</strong> / <strong>${allTimeCount}笔</strong></span>
+      <span>📊 <strong>全部概览</strong>${ap!=='__all__'?` — 项目：${(pm[ap]||{}).icon||''} ${(pm[ap]||{}).name||''}`:''}</span>
+      <span>📋 累计：<strong>${Utils.formatCurrency(allTotal)}</strong> / <strong>${allCount}笔</strong> / <strong>${monthCount}个月</strong></span>
     </div>`;
-    // Stats cards
+    // Stats cards (all-time)
     h+=`<div class="stats-grid">
-      <div class="stat-card"><div class="stat-value expense" id="statTotal">${Utils.formatCurrency(monthTotal)}</div><div class="stat-label">本月支出</div>${delta!==0?`<span class="stat-delta ${deltaUp?'up':'down'}">${deltaUp?'↑':'↓'} ${Math.abs(delta)}% 环比</span>`:''}</div>
-      <div class="stat-card"><div class="stat-value">${Utils.formatCurrency(dayAvg)}</div><div class="stat-label">日均支出</div><div class="stat-sub">${daysInMonth}天</div></div>
-      <div class="stat-card"><div class="stat-value">${monthTxns.length}</div><div class="stat-label">支出笔数</div>${monthTxns.length>0?`<div class="stat-sub">平均 ${Utils.formatCurrency(monthTxns.length>0?monthTotal/monthTxns.length:0)}/笔</div>`:''}</div>
+      <div class="stat-card"><div class="stat-value expense">${Utils.formatCurrency(allTotal)}</div><div class="stat-label">累计支出</div><div class="stat-sub">全部时间</div></div>
+      <div class="stat-card"><div class="stat-value">${Utils.formatCurrency(avgPerMonth)}</div><div class="stat-label">月均支出</div><div class="stat-sub">${monthCount}个月</div></div>
+      <div class="stat-card"><div class="stat-value">${allCount}</div><div class="stat-label">支出笔数</div>${allCount>0?`<div class="stat-sub">平均 ${Utils.formatCurrency(allCount>0?allTotal/allCount:0)}/笔</div>`:''}</div>
       <div class="stat-card"><div class="stat-value">${projects.length}</div><div class="stat-label">活跃项目</div>${unassignedExp>0?`<div class="stat-sub">未归属 ${Utils.formatCurrency(unassignedExp)}</div>`:''}</div>
     </div>`;
 
@@ -871,9 +870,9 @@ const Renderer={
 
     // Project ranking + Recent transactions row
     h+=`<div class="chart-row">
-      <div class="chart-container"><div class="chart-title">🏆 项目支出排行</div>`;
+      <div class="chart-container"><div class="chart-title">🏆 项目支出排行（累计）</div>`;
     if(projRank.length===0){
-      h+=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">本月暂无项目支出</div></div>`;
+      h+=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">暂无项目支出</div></div>`;
     }else{
       h+=`<ul class="rank-list">`;
       for(let i=0;i<Math.min(projRank.length,5);i++){

@@ -811,8 +811,8 @@ const Renderer={
     const cm={};for(const c of cats)cm[c.id]=c;
     const pm={};for(const p of projects)pm[p.id]=p;
 
-    // Show ALL records — Dashboard is a true overview, not month-filtered
-    const allTxns=Calculator._filterByProject(txns,ap);
+    // Dashboard always shows ALL records — independent of sidebar project selection
+    const allTxns=txns;  // use ALL transactions, not filtered by active project
     const allTotal=allTxns.reduce((s,t)=>s+t.amount,0);
     const allCount=allTxns.length;
     const months=Calculator.getAvailableMonths(txns);

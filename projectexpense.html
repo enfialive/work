@@ -387,8 +387,9 @@ body{font-family:var(--font-family);background:var(--color-bg);color:var(--color
           </div>
         </div>
         <div class="filter-bar">
+          <select class="form-select" id="filterMonth" aria-label="筛选月份"><option value="all">全部月份</option></select>
           <select class="form-select" id="filterCategory" aria-label="筛选分类"><option value="all">全部分类</option></select>
-          <select class="form-select" id="filterProject" aria-label="筛选项目"><option value="__inherit__">继承当前项目</option><option value="all">全部项目</option><option value="__none__">未归属</option></select>
+          <select class="form-select" id="filterProject" aria-label="筛选项目"><option value="all">全部项目</option><option value="__none__">未归属</option></select>
           <input type="text" class="form-input search-input" id="filterKeyword" placeholder="🔍 搜索备注或分类..." aria-label="搜索"/>
           <span class="filter-result-count" id="filterResultCount"></span>
         </div>
@@ -611,12 +612,10 @@ const Calculator={
     return result;
   },
   filterTransactions(txns,filters){
-    const ap=Store.getActiveProject();
     return txns.filter(tx=>{
       if(filters.month&&!tx.date.startsWith(filters.month))return false;
       if(filters.categoryId&&filters.categoryId!=='all'&&tx.categoryId!==filters.categoryId)return false;
-      if(filters.projectId==='__inherit__'){if(ap!=='__all__'&&tx.projectId!==ap)return false}
-      else if(filters.projectId==='__none__'){if(tx.projectId)return false}
+      if(filters.projectId==='__none__'){if(tx.projectId)return false}
       else if(filters.projectId&&filters.projectId!=='all'){if(tx.projectId!==filters.projectId)return false}
       if(filters.keyword){const kw=filters.keyword.toLowerCase();const cat=Store.getAllCategories().find(c=>c.id===tx.categoryId);if(!(tx.note||'').toLowerCase().includes(kw)&&!(cat?cat.name:'').toLowerCase().includes(kw))return false}
       return true;
@@ -906,19 +905,24 @@ const Renderer={
   _prevMonth(ym){const[y,m]=ym.split('-').map(Number);let py=y,pm=m-1;if(pm<1){py--;pm=12}return `${py}-${String(pm).padStart(2,'0')}`},
 
   renderTransactions(){
-    const month=Store.getActiveMonth(),txns=Store.getAllTransactions(),cats=Store.getAllCategories(),projects=Store.getAllProjects();
+    const txns=Store.getAllTransactions(),cats=Store.getAllCategories(),projects=Store.getAllProjects();
     const cm={};for(const c of cats)cm[c.id]=c;
     const pm={};for(const p of projects)pm[p.id]=p;
-    const fc=Utils.$('#filterCategory').value,fp=Utils.$('#filterProject').value,fk=Utils.$('#filterKeyword').value.trim();
-    const filters={month,categoryId:fc,projectId:fp,keyword:fk};
+    const fm=Utils.$('#filterMonth').value,fc=Utils.$('#filterCategory').value,fp=Utils.$('#filterProject').value,fk=Utils.$('#filterKeyword').value.trim();
+    const filters={month:fm!=='all'?fm:null,categoryId:fc,projectId:fp,keyword:fk};
     const filtered=Calculator.filterTransactions(txns,filters);
 
     // Update filter dropdowns
+    const months=Calculator.getAvailableMonths(txns);
+    let mo='<option value="all">全部月份</option>';
+    for(const m of months)mo+=`<option value="${m}" ${fm===m?'selected':''}>${m}</option>`;
+    Utils.$('#filterMonth').innerHTML=mo;
+
     let co='<option value="all">全部分类</option>';
     for(const c of cats)co+=`<option value="${c.id}" ${fc===c.id?'selected':''}>${c.icon} ${c.name}</option>`;
     Utils.$('#filterCategory').innerHTML=co;
 
-    let po='<option value="__inherit__">继承当前项目</option><option value="all">全部项目</option><option value="__none__">仅未归属</option>';
+    let po='<option value="all">全部项目</option><option value="__none__">仅未归属</option>';
     for(const p of projects)po+=`<option value="${p.id}" ${fp===p.id?'selected':''}>${p.icon} ${p.name}</option>`;
     Utils.$('#filterProject').innerHTML=po;
 
@@ -926,13 +930,14 @@ const Renderer={
 
     // Active filter tags
     let tags='';
+    if(fm!=='all')tags+=`<span class="filter-tag" onclick="BudgetApp._clearFilter('month')">📅 ${fm} <span class="filter-tag-x">×</span></span>`;
     if(fc!=='all'){const cat=cm[fc];if(cat)tags+=`<span class="filter-tag" onclick="BudgetApp._clearFilter('category')">${cat.icon} ${cat.name} <span class="filter-tag-x">×</span></span>`}
-    if(fp!=='__inherit__'&&fp!=='all'){
+    if(fp!=='all'){
       if(fp==='__none__')tags+=`<span class="filter-tag" onclick="BudgetApp._clearFilter('project')">📭 未归属 <span class="filter-tag-x">×</span></span>`;
       else{const proj=pm[fp];if(proj)tags+=`<span class="filter-tag" onclick="BudgetApp._clearFilter('project')">${proj.icon} ${proj.name} <span class="filter-tag-x">×</span></span>`}
     }
     if(fk)tags+=`<span class="filter-tag" onclick="BudgetApp._clearFilter('keyword')">🔍 "${fk}" <span class="filter-tag-x">×</span></span>`;
-    if((fc!=='all'||(fp!=='__inherit__'&&fp!=='all')||fk))tags+=`<span class="filter-tag" onclick="BudgetApp._clearAllFilters()" style="background:var(--color-expense-bg);color:var(--color-danger);">清除全部</span>`;
+    if(fm!=='all'||fc!=='all'||fp!=='all'||fk)tags+=`<span class="filter-tag" onclick="BudgetApp._clearAllFilters()" style="background:var(--color-expense-bg);color:var(--color-danger);">清除全部</span>`;
     Utils.$('#filterActiveTags').innerHTML=tags;
 
     const ct=Utils.$('#transactionList');
@@ -940,7 +945,7 @@ const Renderer={
       ct.innerHTML=`<div class="empty-state"><div class="empty-icon">🏷️</div><div class="empty-text">尚未创建支出分类</div><button class="btn btn-accent btn-sm" onclick="BudgetApp._openSetupWizard()">🎯 快速设置分类</button></div>`;return;
     }
     if(!filtered.length){
-      ct.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">${fk||fc!=='all'||(fp!=='__inherit__'&&fp!=='all')?'没有符合条件的支出记录':'本月暂无支出记录'}</div>${(!fk&&fc==='all'&&(fp==='__inherit__'||fp==='all'))?`<button class="btn btn-primary btn-sm" onclick="BudgetApp._addTransaction()">+ 新增第一笔支出</button>`:''}</div>`;return;
+      ct.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">${fk||fc!=='all'||fp!=='all'||fm!=='all'?'没有符合条件的支出记录':'暂无支出记录'}</div>${(!fk&&fc==='all'&&fp==='all'&&fm==='all')?`<button class="btn btn-primary btn-sm" onclick="BudgetApp._addTransaction()">+ 新增第一笔支出</button>`:''}</div>`;return;
     }
 
     const groups={};
@@ -1111,6 +1116,7 @@ const Events={
 
   _bindTransactions(){
     Utils.$('#btnAddTransaction').addEventListener('click',()=>this._openTxnModal(null));
+    Utils.$('#filterMonth').addEventListener('change',()=>Renderer.renderTransactions());
     Utils.$('#filterCategory').addEventListener('change',()=>Renderer.renderTransactions());
     Utils.$('#filterProject').addEventListener('change',()=>Renderer.renderTransactions());
     Utils.$('#filterKeyword').addEventListener('input',Utils.debounce(()=>Renderer.renderTransactions(),300));
@@ -1443,15 +1449,17 @@ function init(){
   BudgetApp._addTransaction=()=>Events._openTxnModal(null);
   BudgetApp._clearFilter=(type)=>{
     switch(type){
+      case'month':Utils.$('#filterMonth').value='all';break;
       case'category':Utils.$('#filterCategory').value='all';break;
-      case'project':Utils.$('#filterProject').value='__inherit__';break;
+      case'project':Utils.$('#filterProject').value='all';break;
       case'keyword':Utils.$('#filterKeyword').value='';break;
     }
     Renderer.renderTransactions();
   };
   BudgetApp._clearAllFilters=()=>{
+    Utils.$('#filterMonth').value='all';
     Utils.$('#filterCategory').value='all';
-    Utils.$('#filterProject').value='__inherit__';
+    Utils.$('#filterProject').value='all';
     Utils.$('#filterKeyword').value='';
     Renderer.renderTransactions();
   };

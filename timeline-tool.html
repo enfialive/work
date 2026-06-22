@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>药物研发全景时间线</title>
+<style>
+/* ========== CSS 变量 ========== */
+:root {
+  --patent: #4A6FA5;
+  --patent-dark: #3A5982;
+  --patent-light: #E8EFF7;
+  --patent-dot: #5B8EC9;
+  --rnd: #2EAC9B;
+  --rnd-dark: #1F8A7B;
+  --rnd-light: #E6F7F4;
+  --rnd-dot: #3DC0AD;
+  --bg: #F5F6FA;
+  --card-bg: #FFFFFF;
+  --text: #2D3436;
+  --text-secondary: #636E72;
+  --text-muted: #A0AEC0;
+  --border: #DFE6E9;
+  --line: #D0D5DD;
+  --danger: #E74C3C;
+  --danger-light: #FDEDEC;
+  --success: #27AE60;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.12);
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --transition: 0.2s ease;
+  --input-panel-width: 30%;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+/* ========== 全局重置 ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  font-size: 14.5px;
+  color: var(--text);
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* ========== 应用外壳 ========== */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 100%;
+}
+
+/* ========== 顶部栏 ========== */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.app-header .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  user-select: none;
+}
+
+.app-header .logo .icon {
+  font-size: 22px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ========== 按钮系统 ========== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  user-select: none;
+  line-height: 1.4;
+}
+
+.btn:hover { background: var(--bg); border-color: #C0C7CF; }
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--patent);
+  color: #fff;
+  border-color: var(--patent);
+}
+.btn-primary:hover { background: var(--patent-dark); border-color: var(--patent-dark); }
+
+.btn-accent {
+  background: var(--rnd);
+  color: #fff;
+  border-color: var(--rnd);
+}
+.btn-accent:hover { background: var(--rnd-dark); border-color: var(--rnd-dark); }
+
+.btn-success {
+  background: var(--success);
+  color: #fff;
+  border-color: var(--success);
+}
+
+.btn-sm { padding: 4px 10px; font-size: 13px; }
+.btn-xs { padding: 2px 8px; font-size: 13px; border-radius: 3px; }
+
+.btn-icon {
+  width: 28px; height: 28px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm);
+}
+
+/* ========== 主体布局 ========== */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ========== 输入面板 ========== */
+.input-panel {
+  width: var(--input-panel-width);
+  min-width: var(--input-panel-width);
+  background: var(--card-bg);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.input-panel-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
+/* 面板区块 */
+.panel-section {
+  border-bottom: 1px solid var(--border);
+  padding: 14px 18px;
+}
+
+.panel-section:last-child {
+  border-bottom: none;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.section-label .dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.section-label .dot.patent { background: var(--patent-dot); }
+.section-label .dot.rnd { background: var(--rnd-dot); }
+
+.section-count {
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--bg);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+/* 表单 */
+.track-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.track-form .form-row {
+  display: flex;
+  gap: 6px;
+}
+
+.track-form .form-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.track-form input,
+.track-form textarea {
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.track-form input:focus,
+.track-form textarea:focus {
+  border-color: var(--patent);
+  box-shadow: 0 0 0 3px rgba(74,111,165,0.1);
+  background: #fff;
+}
+
+.track-form.rnd-track input:focus,
+.track-form.rnd-track textarea:focus {
+  border-color: var(--rnd);
+  box-shadow: 0 0 0 3px rgba(46,172,155,0.1);
+}
+
+.track-form textarea {
+  resize: vertical;
+  min-height: 50px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.form-actions .btn { flex: 1; justify-content: center; }
+.form-actions .btn-primary,
+.form-actions .btn-accent { flex: 2; }
+
+/* 事件列表 */
+.event-list {
+  list-style: none;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.event-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 6px;
+  cursor: pointer;
+  transition: background var(--transition);
+  border-radius: var(--radius-sm);
+  margin-bottom: 1px;
+}
+
+.event-item:hover { background: var(--bg); }
+.event-item.active.patent { background: var(--patent-light); }
+.event-item.active.rnd { background: var(--rnd-light); }
+
+.event-item-drag {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+.event-item-drag button {
+  width: 20px; height: 16px;
+  border: none; background: none;
+  color: var(--text-muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 2px; font-size: 9px; padding: 0; line-height: 1;
+}
+
+.event-item-drag button:hover { color: var(--patent); background: var(--patent-light); }
+
+.event-item-content {
+  flex: 1; min-width: 0;
+}
+
+.event-item-date {
+  font-size: 13px; font-weight: 600;
+  color: var(--text-secondary); margin-bottom: 1px;
+}
+
+.event-item-title {
+  font-size: 14px; font-weight: 500;
+  color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.event-item-actions {
+  display: flex; gap: 2px; opacity: 0;
+  transition: opacity var(--transition); flex-shrink: 0;
+}
+
+.event-item:hover .event-item-actions { opacity: 1; }
+
+.event-item-actions button {
+  width: 26px; height: 26px; border: none; background: none;
+  color: var(--text-muted); cursor: pointer; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--transition);
+}
+
+.event-item-actions button:hover { background: var(--bg); }
+.event-item-actions .btn-edit:hover { color: var(--patent); }
+.event-item-actions .btn-delete:hover { color: var(--danger); background: var(--danger-light); }
+
+/* 阶段管理 */
+.phase-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.phase-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.phase-color {
+  width: 12px; height: 12px;
+  border-radius: 3px; flex-shrink: 0;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.phase-label {
+  flex: 1; font-weight: 500; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.phase-dates {
+  font-size: 13px; color: var(--text-muted);
+  white-space: nowrap; flex-shrink: 0;
+}
+
+/* ========== 预览面板 ========== */
+.preview-panel {
+  flex: 1;
+  overflow-y: auto;
+  background: #EDEFF4;
+  display: flex;
+  justify-content: center;
+  padding: 28px 32px 48px;
+}
+
+.preview-container {
+  width: 100%;
+  max-width: 960px;
+}
+
+/* 标题 */
+.preview-header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 20px 32px;
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.preview-title {
+  font-size: 26px; font-weight: 700;
+  color: var(--text); margin-bottom: 4px; line-height: 1.3;
+}
+
+.preview-title:empty::before {
+  content: "药物研发全景时间线";
+  color: var(--text-muted); font-style: italic;
+}
+
+.preview-subtitle {
+  font-size: 14px; color: var(--text-secondary);
+}
+
+/* 图例 */
+.preview-legend {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.legend-dot.patent { background: var(--patent-dot); }
+.legend-dot.rnd { background: var(--rnd-dot); }
+
+/* ========== 预览区域（阶段列 + 同步时间线） ========== */
+.preview-area {
+  display: flex;
+  gap: 0;
+  align-items: stretch;
+}
+
+/* 垂直阶段列 */
+.phase-column {
+  width: 64px;
+  min-width: 64px;
+  position: relative;
+  border-right: 1px solid var(--border);
+  margin-right: 8px;
+}
+
+.phase-bar {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  border-radius: 5px;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 1;
+  min-height: 28px;
+  border: 1px solid rgba(0,0,0,0.08);
+  transition: box-shadow 0.15s;
+}
+
+.phase-bar:hover {
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,0.15);
+  z-index: 3;
+}
+
+.phase-bar.dragging {
+  cursor: grabbing;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  z-index: 5;
+  opacity: 0.9;
+}
+
+.phase-bar-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(0,0,0,0.5);
+  text-align: center;
+  line-height: 1.4;
+  pointer-events: none;
+  user-select: none;
+  writing-mode: vertical-rl;
+  letter-spacing: 3px;
+}
+
+/* 拉伸手柄 */
+.resize-handle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 7px;
+  z-index: 2;
+}
+
+.resize-handle-top { top: 0; cursor: ns-resize; }
+.resize-handle-bottom { bottom: 0; cursor: ns-resize; }
+
+.resize-handle::after {
+  content: "";
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  top: 50%;
+  height: 2px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 1px;
+  transform: translateY(-50%);
+}
+
+/* ========== 同步双轨时间线 ========== */
+.sync-timeline {
+  flex: 1;
+  position: relative;
+  padding: 8px 0 20px;
+}
+
+/* 垂直中线 */
+.sync-timeline::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2.5px;
+  background: var(--line);
+  border-radius: 2px;
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+/* 每一行 = 一个时间节点（左右可能各有一个卡片） */
+.sync-row {
+  display: grid;
+  grid-template-columns: 1fr 110px 1fr;
+  align-items: start;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  animation: syncFadeIn 0.35s ease forwards;
+}
+
+.sync-row:last-child { margin-bottom: 0; }
+
+@keyframes syncFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 左列 —— 专利事件 */
+.sync-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  padding-right: 18px;
+}
+
+/* 右列 —— 研发事件 */
+.sync-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding-left: 18px;
+}
+
+/* 中间列 —— 日期 + 连接点 */
+.sync-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.sync-date {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-align: center;
+  background: var(--card-bg);
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+}
+
+/* 连接点 */
+.sync-dot {
+  width: 12px; height: 12px;
+  border: 2.5px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px currentColor;
+  flex-shrink: 0;
+  margin: 4px 0;
+  transition: transform var(--transition);
+}
+
+.sync-dot:hover { transform: scale(1.3); }
+
+.sync-dot.patent { color: var(--patent-dot); background: var(--patent-dot); }
+.sync-dot.rnd { color: var(--rnd-dot); background: var(--rnd-dot); }
+
+/* ===== We Are Here 星形标记 ===== */
+.we-are-here {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  cursor: grab;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: auto;
+  user-select: none;
+  transition: filter 0.15s ease;
+}
+.we-are-here:hover { filter: brightness(1.1); }
+.we-are-here.dragging { cursor: grabbing; filter: brightness(1.2); }
+
+.we-are-here .star-icon {
+  font-size: 28px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(255,180,0,0.5));
+  animation: starPulse 2s ease-in-out infinite;
+}
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+.we-are-here .star-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #B8860B;
+  background: rgba(255,255,255,0.85);
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* 事件卡片 */
+.sync-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  box-shadow: var(--shadow);
+  transition: box-shadow var(--transition), transform var(--transition);
+  max-width: 320px;
+  position: relative;
+}
+
+.sync-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+
+.sync-card.patent {
+  border-left: 3px solid var(--patent-dot);
+  text-align: left;
+}
+
+.sync-card.rnd {
+  border-left: 3px solid var(--rnd-dot);
+  text-align: left;
+}
+
+/* 卡片到中线的连接线 */
+.sync-card::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  width: 18px;
+  height: 2px;
+}
+
+.sync-left .sync-card::after {
+  right: -18px;
+}
+
+.sync-right .sync-card::after {
+  left: -18px;
+}
+
+.sync-card.patent::after { background: var(--patent-light); }
+.sync-card.rnd::after { background: var(--rnd-light); }
+
+.sync-card-title {
+  font-size: 15px; font-weight: 600;
+  color: var(--text); margin-bottom: 5px; line-height: 1.4;
+}
+
+.sync-card-note {
+  font-size: 14px; color: var(--text-secondary);
+  line-height: 1.6; white-space: pre-wrap;
+}
+
+.sync-card-note:empty { display: none; }
+
+/* 空时间线 */
+.timeline-empty {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.timeline-empty .icon { font-size: 48px; margin-bottom: 12px; opacity: 0.4; }
+.timeline-empty h3 { font-size: 15px; color: var(--text-secondary); margin-bottom: 4px; }
+.timeline-empty p { font-size: 13px; color: var(--text-muted); }
+
+/* ========== 模态框 ========== */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: 90%;
+  max-width: 460px;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal h3 {
+  font-size: 15px; font-weight: 600;
+  margin-bottom: 14px; color: var(--text);
+}
+
+.modal .form-group {
+  margin-bottom: 12px;
+}
+
+.modal .form-group label {
+  display: block; font-size: 13px; font-weight: 500;
+  color: var(--text-secondary); margin-bottom: 4px;
+}
+
+.modal .form-group input,
+.modal .form-group textarea {
+  width: 100%; padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px; font-family: var(--font);
+  color: var(--text); background: var(--bg);
+  outline: none;
+}
+
+.modal .form-group input:focus,
+.modal .form-group textarea:focus {
+  border-color: var(--patent);
+  box-shadow: 0 0 0 3px rgba(74,111,165,0.1);
+  background: #fff;
+}
+
+.modal-actions {
+  display: flex; gap: 8px; justify-content: flex-end;
+  margin-top: 16px;
+}
+
+/* ========== Toast ========== */
+.toast-container {
+  position: fixed; top: 16px; right: 16px;
+  z-index: 200; display: flex; flex-direction: column; gap: 6px;
+}
+
+.toast {
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  box-shadow: var(--shadow-lg);
+  border-left: 3px solid var(--success);
+  font-size: 14px; color: var(--text);
+  animation: toastIn 0.3s ease;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.toast.error { border-left-color: var(--danger); }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 860px) {
+  .app-body { flex-direction: column; }
+  .input-panel {
+    width: 100%; min-width: 100%;
+    max-height: 45vh;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .preview-panel { padding: 20px 16px 32px; }
+  .phase-column { width: 48px; min-width: 48px; margin-right: 4px; }
+  .phase-bar-label { font-size: 13px; writing-mode: vertical-rl; letter-spacing: 1px; }
+  .sync-timeline::before { left: 14px; }
+  .sync-row {
+    grid-template-columns: 1fr 50px 1fr;
+    gap: 3px;
+  }
+  .sync-left { padding-right: 8px; }
+  .sync-right { padding-left: 8px; }
+  .sync-card { max-width: none; padding: 10px 12px; }
+  .sync-card-title { font-size: 14px; }
+  .sync-card-note { font-size: 13px; }
+  .sync-date { font-size: 13px; padding: 2px 6px; }
+  .sync-dot { width: 10px; height: 10px; }
+  .we-are-here .star-icon { font-size: 22px; }
+  .we-are-here .star-label { font-size: 9px; padding: 1px 6px; }
+
+  .event-item-actions { opacity: 1; }
+}
+
+/* ========== 打印优化 ========== */
+@media print {
+  .input-panel, .app-header, .toast-container, .modal-overlay {
+    display: none !important;
+  }
+  .preview-panel { padding: 0; background: #fff; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <!-- 顶部栏 -->
+  <header class="app-header">
+    <div class="logo">
+      <span class="icon">🧬</span> 药物研发全景时间线
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-success" id="btnExport" title="导出为PNG图片">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        导出PNG
+      </button>
+      <button class="btn" id="btnClear" title="清空所有数据">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        清空
+      </button>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <!-- ========== 输入面板 ========== -->
+    <aside class="input-panel">
+      <div class="input-panel-scroll">
+
+        <!-- 时间线标题 -->
+        <div class="panel-section">
+          <div class="section-header">
+            <span class="section-label">📝 时间线标题</span>
+          </div>
+          <input type="text" id="inputTimelineTitle" placeholder="如：XXX单抗药物开发全景"
+                 style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:var(--font);outline:none;background:var(--bg);"
+                 maxlength="100">
+        </div>
+
+        <!-- 专利事件区 -->
+        <div class="panel-section">
+          <div class="section-header">
+            <span class="section-label">
+              <span class="dot patent"></span> 专利事件
+            </span>
+            <span class="section-count" id="patentCount">0</span>
+          </div>
+          <form class="track-form" id="patentForm" autocomplete="off" novalidate>
+            <div class="form-row">
+              <input type="text" id="patentDate" placeholder="日期（如2024-03）" required maxlength="40" style="flex:0.8;">
+              <input type="text" id="patentTitle" placeholder="事件标题" required maxlength="100" style="flex:1.2;">
+            </div>
+            <textarea id="patentNote" placeholder="备注（可选）" rows="2" maxlength="500"></textarea>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                添加
+              </button>
+              <button type="button" class="btn btn-sm patent-cancel-edit" style="display:none;">取消</button>
+            </div>
+            <input type="hidden" id="patentEditId" value="">
+          </form>
+          <ul class="event-list" id="patentList"></ul>
+        </div>
+
+        <!-- 研发事件区 -->
+        <div class="panel-section">
+          <div class="section-header">
+            <span class="section-label">
+              <span class="dot rnd"></span> 研发事件
+            </span>
+            <span class="section-count" id="rndCount">0</span>
+          </div>
+          <form class="track-form rnd-track" id="rndForm" autocomplete="off" novalidate>
+            <div class="form-row">
+              <input type="text" id="rndDate" placeholder="日期（如2024-03）" required maxlength="40" style="flex:0.8;">
+              <input type="text" id="rndTitle" placeholder="事件标题" required maxlength="100" style="flex:1.2;">
+            </div>
+            <textarea id="rndNote" placeholder="备注（可选）" rows="2" maxlength="500"></textarea>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-accent btn-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                添加
+              </button>
+              <button type="button" class="btn btn-sm rnd-cancel-edit" style="display:none;">取消</button>
+            </div>
+            <input type="hidden" id="rndEditId" value="">
+          </form>
+          <ul class="event-list" id="rndList"></ul>
+        </div>
+
+        <!-- 研发阶段管理 -->
+        <div class="panel-section">
+          <div class="section-header">
+            <span class="section-label">🏷️ 研发阶段</span>
+            <button class="btn btn-xs" id="btnResetPhases" title="恢复默认阶段">默认</button>
+          </div>
+          <div class="phase-list" id="phaseList"></div>
+          <button class="btn btn-sm" id="btnAddPhase" style="width:100%;justify-content:center;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            添加阶段
+          </button>
+        </div>
+
+        <!-- We Are Here 标记 -->
+        <div class="panel-section">
+          <div class="section-header">
+            <span class="section-label">⭐ 当前位置</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;gap:6px;">
+              <input type="text" id="weAreHereDate" placeholder="日期（如2025-06）" maxlength="40"
+                     style="flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:var(--font);outline:none;background:var(--bg);">
+              <button class="btn btn-sm" id="btnSetWeAreHere" style="white-space:nowrap;">设置</button>
+              <button class="btn btn-sm" id="btnClearWeAreHere" style="white-space:nowrap;display:none;">清除</button>
+            </div>
+            <p style="font-size:11px;color:var(--text-muted);margin:0;">在时间线上添加一个可拖拽的当前进度标记</p>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- ========== 预览面板 ========== -->
+    <main class="preview-panel" id="previewPanel">
+      <div class="preview-container" id="previewContainer">
+        <!-- 动态渲染 -->
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Toast 容器 -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- 编辑模态框 -->
+<div class="modal-overlay" id="modalOverlay" style="display:none;">
+  <div class="modal">
+    <h3 id="modalTitle">编辑事件</h3>
+    <form id="modalForm" autocomplete="off">
+      <div class="form-group">
+        <label>日期</label>
+        <input type="text" id="modalDate" required maxlength="40">
+      </div>
+      <div class="form-group">
+        <label>事件标题</label>
+        <input type="text" id="modalTitleInput" required maxlength="100">
+      </div>
+      <div class="form-group">
+        <label>备注</label>
+        <textarea id="modalNote" rows="3" maxlength="500"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="btnModalCancel">取消</button>
+        <button type="submit" class="btn btn-primary">保存</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+ * 药物研发全景时间线 — PharmaTimeline
+ * 双轨并行：专利时间线（蓝）+ 研发时间线（绿）
+ * 含研发阶段背景色带、独立双区输入、PNG 导出
+ * ================================================================ */
+const PharmaTimeline = (() => {
+  'use strict';
+
+  /* ==================== 常量 ==================== */
+  const LS = {
+    PATENT: 'pharma_patent_events',
+    RND: 'pharma_rnd_events',
+    TITLE: 'pharma_timeline_title',
+    PHASES: 'pharma_phases',
+    WE_ARE_HERE: 'pharma_we_are_here'
+  };
+  const HTML2CANVAS_CDN = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+
+  /* 默认研发阶段 */
+  const DEFAULT_PHASES = [
+    { id: 'ph1', label: '早期研发',   start: '2021-01', end: '2022-06', color: '#E3F2FD' },
+    { id: 'ph2', label: '临床前',     start: '2022-07', end: '2023-06', color: '#E8F5E9' },
+    { id: 'ph3', label: 'IND 注册',   start: '2023-07', end: '2024-03', color: '#FFF3E0' },
+    { id: 'ph4', label: '临床 I-III 期', start: '2024-04', end: '2026-03', color: '#F3E5F5' },
+    { id: 'ph5', label: 'NDA / 上市后',  start: '2026-04', end: '2028-01', color: '#E8EAF6' },
+  ];
+
+  /* 默认示例数据（单抗药物） */
+  const SAMPLE_PATENT = [
+    { date: '2021-06', title: '首次专利申请（中国）',   note: 'CN优先权申请，涵盖核心序列与CDR定义' },
+    { date: '2022-06', title: 'PCT 国际申请',          note: 'PCT/CN2022/XXXXXX，指定美欧日韩等主要市场' },
+    { date: '2023-12', title: '进入国家阶段',           note: 'US、EP、JP、KR同时进入，启动各国实质审查' },
+    { date: '2024-06', title: '收到中国实审意见',       note: 'OA1涉及创造性问题，需提交实验数据支持' },
+    { date: '2025-03', title: '美国专利授权',           note: 'US专利率先授权，权利要求范围覆盖主要实施例' },
+    { date: '2025-09', title: '中国专利授权',           note: 'CN专利经答复审查意见后授权，保护期至2041年' },
+  ];
+
+  const SAMPLE_RND = [
+    { date: '2021-03', title: '靶点发现与验证',         note: '完成靶点表达谱分析及疾病关联性验证' },
+    { date: '2021-08', title: '杂交瘤筛选与先导分子',    note: '获得3株高亲和力候选杂交瘤，完成人源化设计' },
+    { date: '2022-03', title: '先导化合物确定',          note: '确定lead分子，亲和力KD<1nM，初步体内药效验证' },
+    { date: '2022-09', title: '临床前药理学研究',        note: '完成MOA研究、PD标志物鉴定、多种动物模型药效评估' },
+    { date: '2023-03', title: 'CMC 工艺开发',           note: '确定2000L规模生产工艺，完成制剂处方筛选' },
+    { date: '2023-06', title: 'IND 申报',               note: '向CDE提交IND申请，包含药学、药理毒理全套资料' },
+    { date: '2023-12', title: '临床 I 期启动（FIH）',    note: '首次人体试验，评估安全性、耐受性及初步PK/PD' },
+    { date: '2024-09', title: '临床 II 期启动',          note: '剂量探索与概念验证，扩展安全性及有效性数据' },
+    { date: '2025-06', title: '临床 III 期启动',         note: '随机双盲对照确证性试验，全球多中心入组' },
+    { date: '2026-06', title: 'NDA/BLA 申报',           note: '滚动提交上市申请，同步准备Pre-NDA meeting' },
+  ];
+
+  /* ==================== Utils ==================== */
+  const U = {
+    genId() { return 'ev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7); },
+    genPhaseId() { return 'ph_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 5); },
+
+    esc(s) {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+      return String(s).replace(/[&<>"']/g, c => map[c]);
+    },
+
+    /** 将任意日期字符串解析为 {year, month} 或 null */
+    parseDate(raw) {
+      const s = String(raw).trim();
+      if (!s) return null;
+      // 尝试匹配 2024-03, 2024/03, 2024.03, 2024年3月, 2024年03月, 202403
+      let m = s.match(/(\d{4})\s*[年\-\/\.]\s*(\d{1,2})/);
+      if (m) return { year: +m[1], month: +m[2] };
+      m = s.match(/^(\d{4})(\d{2})$/);
+      if (m && +m[2] >= 1 && +m[2] <= 12) return { year: +m[1], month: +m[2] };
+      m = s.match(/^(\d{4})$/);
+      if (m) return { year: +m[1], month: 6 }; // 仅年份，默认年中
+      // 尝试原生Date解析（如 "2024-03-15"）
+      const d = new Date(s);
+      if (!isNaN(d.getTime())) return { year: d.getFullYear(), month: d.getMonth() + 1 };
+      return null;
+    },
+
+    /** 格式化为显示用 */
+    formatDate(raw) {
+      const p = this.parseDate(raw);
+      if (p) return `${p.year}年${p.month}月`;
+      return raw.trim();
+    },
+
+    /** 转换为排序用数值 (year * 12 + month) */
+    toSortKey(raw) {
+      const p = this.parseDate(raw);
+      return p ? p.year * 12 + p.month : Infinity;
+    },
+
+    /** Toast 通知 */
+    toast(msg, type = '') {
+      const c = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      el.className = 'toast ' + type;
+      el.textContent = msg;
+      c.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.3s';
+        setTimeout(() => el.remove(), 300);
+      }, 2000);
+    }
+  };
+
+  /* ==================== Store ==================== */
+  const Store = {
+    _get(k) { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : null; } catch { return null; } },
+    _set(k, v) { localStorage.setItem(k, JSON.stringify(v)); },
+
+    /* 专利事件 */
+    getPatent() { return this._get(LS.PATENT) || []; },
+    setPatent(arr) { this._set(LS.PATENT, arr); },
+    addPatent(date, title, note) {
+      const arr = this.getPatent();
+      const maxO = arr.reduce((m, e) => Math.max(m, e.order), -1);
+      const ev = { id: U.genId(), date: date.trim(), title: title.trim(), note: note.trim(), order: maxO + 1, createdAt: new Date().toISOString() };
+      arr.push(ev); this.setPatent(arr); return ev;
+    },
+    updatePatent(id, date, title, note) {
+      const arr = this.getPatent(); const e = arr.find(x => x.id === id);
+      if (!e) return null;
+      e.date = date.trim(); e.title = title.trim(); e.note = note.trim();
+      this.setPatent(arr); return e;
+    },
+    removePatent(id) { this.setPatent(this.getPatent().filter(e => e.id !== id)); },
+
+    /* 研发事件 */
+    getRnd() { return this._get(LS.RND) || []; },
+    setRnd(arr) { this._set(LS.RND, arr); },
+    addRnd(date, title, note) {
+      const arr = this.getRnd();
+      const maxO = arr.reduce((m, e) => Math.max(m, e.order), -1);
+      const ev = { id: U.genId(), date: date.trim(), title: title.trim(), note: note.trim(), order: maxO + 1, createdAt: new Date().toISOString() };
+      arr.push(ev); this.setRnd(arr); return ev;
+    },
+    updateRnd(id, date, title, note) {
+      const arr = this.getRnd(); const e = arr.find(x => x.id === id);
+      if (!e) return null;
+      e.date = date.trim(); e.title = title.trim(); e.note = note.trim();
+      this.setRnd(arr); return e;
+    },
+    removeRnd(id) { this.setRnd(this.getRnd().filter(e => e.id !== id)); },
+
+    /* 通用操作 — 接受 track 字符串避免 this 丢失 */
+    swapOrder(track, idA, idB) {
+      const arr = track === 'patent' ? this.getPatent() : this.getRnd();
+      const a = arr.find(e => e.id === idA), b = arr.find(e => e.id === idB);
+      if (!a || !b) return;
+      [a.order, b.order] = [b.order, a.order];
+      track === 'patent' ? this.setPatent(arr) : this.setRnd(arr);
+    },
+    normalizeOrder(track) {
+      const arr = (track === 'patent' ? this.getPatent() : this.getRnd()).sort((a, b) => a.order - b.order);
+      arr.forEach((e, i) => { e.order = i; });
+      track === 'patent' ? this.setPatent(arr) : this.setRnd(arr);
+    },
+
+    /* 标题 */
+    getTitle() { return localStorage.getItem(LS.TITLE) || ''; },
+    setTitle(t) { localStorage.setItem(LS.TITLE, t); },
+
+    /* 阶段 */
+    getPhases() { return this._get(LS.PHASES) || DEFAULT_PHASES.map(p => ({...p})); },
+    setPhases(arr) { this._set(LS.PHASES, arr); },
+    resetPhases() { localStorage.removeItem(LS.PHASES); },
+
+    /* We Are Here 标记 */
+    getWeAreHere() { return localStorage.getItem(LS.WE_ARE_HERE) || null; },
+    setWeAreHere(date) { if (date) localStorage.setItem(LS.WE_ARE_HERE, date); else localStorage.removeItem(LS.WE_ARE_HERE); },
+
+    /* 清空 */
+    clearAll() {
+      this.setPatent([]);
+      this.setRnd([]);
+      this.setTitle('');
+      this.resetPhases();
+      this.setWeAreHere(null);
+    }
+  };
+
+  /* ==================== State ==================== */
+  const State = {
+    patentEditingId: null,
+    rndEditingId: null
+  };
+
+  /* ==================== Renderer ==================== */
+  const Renderer = {
+    /* ---- 预览渲染 ---- */
+    renderPreview() {
+      const container = document.getElementById('previewContainer');
+      const patent = Store.getPatent().sort((a, b) => a.order - b.order);
+      const rnd = Store.getRnd().sort((a, b) => a.order - b.order);
+      const title = Store.getTitle();
+      const phases = Store.getPhases();
+
+      if (patent.length === 0 && rnd.length === 0) {
+        container.innerHTML = `
+          <div class="preview-header">
+            <div class="preview-title"></div>
+            <div class="preview-subtitle">在左侧添加专利和研发事件，这里将自动生成双轨时间线</div>
+          </div>
+          <div class="timeline-empty">
+            <div class="icon">🧬</div>
+            <h3>双轨时间线预览</h3>
+            <p>请输入药物研发各阶段的关键事件</p>
+          </div>`;
+        return;
+      }
+
+      // 合并双轨事件：按日期对齐
+      const timeline = new Map();
+      const addToMap = (ev, track) => {
+        const key = U.toSortKey(ev.date);
+        if (!timeline.has(key)) timeline.set(key, { patent: [], rnd: [], date: ev.date });
+        timeline.get(key)[track].push(ev);
+      };
+      patent.forEach(ev => addToMap(ev, 'patent'));
+      rnd.forEach(ev => addToMap(ev, 'rnd'));
+
+      const entries = [...timeline.entries()].sort((a, b) => a[0] - b[0]);
+
+      // 计算总时间范围（含阶段）
+      let minKey = entries.length > 0 ? entries[0][0] : Infinity;
+      let maxKey = entries.length > 0 ? entries[entries.length - 1][0] : -Infinity;
+      phases.forEach(ph => {
+        const s = U.toSortKey(ph.start), e = U.toSortKey(ph.end);
+        if (s < minKey) minKey = s;
+        if (e > maxKey) maxKey = e;
+      });
+      if (!isFinite(minKey)) { minKey = 2020 * 12 + 1; maxKey = 2028 * 12 + 6; }
+      const pad = 3; // 前后各留3个月余量
+      const spanStart = minKey - pad;
+      const spanEnd = maxKey + pad;
+      const totalSpan = spanEnd - spanStart || 1;
+
+      let html = '<div class="preview-header">';
+      html += `<div class="preview-title">${U.esc(title) || ''}</div>`;
+      html += `<div class="preview-subtitle">专利 ${patent.length} 事件 · 研发 ${rnd.length} 事件 · ${phases.length} 阶段</div>`;
+      html += '</div>';
+
+      // 图例
+      html += '<div class="preview-legend">';
+      html += '<div class="legend-item"><span class="legend-dot patent"></span> 专利时间线</div>';
+      html += '<div class="legend-item"><span class="legend-dot rnd"></span> 研发时间线</div>';
+      html += '</div>';
+
+      // 预览区：垂直阶段列 + 同步时间线
+      html += '<div class="preview-area">';
+
+      // 垂直阶段列
+      html += '<div class="phase-column" id="phaseColumn">';
+      phases.forEach(ph => {
+        const ps = U.toSortKey(ph.start), pe = U.toSortKey(ph.end);
+        const topPct = ((ps - spanStart) / totalSpan * 100).toFixed(2);
+        const hPct = Math.max(((pe - ps) / totalSpan * 100), 2).toFixed(2);
+        html += `<div class="phase-bar" data-phase-id="${ph.id}"
+          style="top:${topPct}%;height:${hPct}%;background:${ph.color};"
+          title="${U.esc(ph.label)}: ${U.esc(ph.start)} → ${U.esc(ph.end)}">
+          <div class="resize-handle resize-handle-top" data-handle="top" data-phase-id="${ph.id}"></div>
+          <div class="phase-bar-label">${U.esc(ph.label)}</div>
+          <div class="resize-handle resize-handle-bottom" data-handle="bottom" data-phase-id="${ph.id}"></div>
+        </div>`;
+      });
+      html += '</div>';
+
+      // 同步双轨时间线
+      html += '<div class="sync-timeline" id="syncTimeline">';
+      entries.forEach(([key, group], i) => {
+        const dateDisplay = U.formatDate(group.date);
+        const hasPatent = group.patent.length > 0;
+        const hasRnd = group.rnd.length > 0;
+
+        html += `<div class="sync-row" style="animation-delay:${i * 0.07}s">`;
+
+        html += '<div class="sync-left">';
+        group.patent.forEach(ev => {
+          html += `<div class="sync-card patent">
+            <div class="sync-card-title">${U.esc(ev.title)}</div>
+            ${ev.note ? `<div class="sync-card-note">${U.esc(ev.note)}</div>` : ''}
+          </div>`;
+        });
+        html += '</div>';
+
+        html += '<div class="sync-center">';
+        if (hasPatent) html += '<div class="sync-dot patent"></div>';
+        html += `<div class="sync-date">${U.esc(dateDisplay)}</div>`;
+        if (hasRnd) html += '<div class="sync-dot rnd"></div>';
+        html += '</div>';
+
+        html += '<div class="sync-right">';
+        group.rnd.forEach(ev => {
+          html += `<div class="sync-card rnd">
+            <div class="sync-card-title">${U.esc(ev.title)}</div>
+            ${ev.note ? `<div class="sync-card-note">${U.esc(ev.note)}</div>` : ''}
+          </div>`;
+        });
+        html += '</div>';
+
+        html += '</div>';
+      });
+      // We Are Here 星形标记
+      const wahDate = Store.getWeAreHere();
+      if (wahDate) {
+        const wahKey = U.toSortKey(wahDate);
+        const wahTop = ((wahKey - spanStart) / totalSpan * 100).toFixed(2);
+        html += `<div class="we-are-here" id="weAreHere" data-date="${U.esc(wahDate)}"
+          style="top:${wahTop}%;">
+          <span class="star-icon">⭐</span>
+          <span class="star-label">We Are Here</span>
+        </div>`;
+      }
+      html += '</div>'; // sync-timeline
+
+      html += '</div>'; // preview-area
+
+      container.innerHTML = html;
+
+      // 初始化阶段拖拽和 We Are Here 标记拖拽
+      setTimeout(() => {
+        this._initPhaseDrag(spanStart, totalSpan);
+        this._initWeAreHereDrag(spanStart, totalSpan);
+      }, 50);
+    },
+
+    /** 初始化阶段条的拖拽和拉伸 */
+    _initPhaseDrag(spanStart, totalSpan) {
+      const column = document.getElementById('phaseColumn');
+      const syncTL = document.getElementById('syncTimeline');
+      if (!column || !syncTL) return;
+
+      // 让阶段列高度与时间线同步
+      column.style.height = syncTL.offsetHeight + 'px';
+
+      const bars = column.querySelectorAll('.phase-bar');
+      bars.forEach(bar => {
+        let dragging = false, resizing = null;
+        let startY, startTop, startH;
+
+        const onMove = (e) => {
+          const dy = e.clientY - startY;
+          const dpct = dy / column.offsetHeight * 100;
+
+          if (resizing === 'top') {
+            const newTop = Math.max(0, Math.min(startTop + startH - 2, startTop + dpct));
+            const newH = Math.max(2, startH + startTop - newTop);
+            bar.style.top = newTop + '%';
+            bar.style.height = newH + '%';
+          } else if (resizing === 'bottom') {
+            const newH = Math.max(2, Math.min(100 - startTop, startH + dpct));
+            bar.style.height = newH + '%';
+          } else {
+            const newTop = Math.max(0, Math.min(100 - startH, startTop + dpct));
+            bar.style.top = newTop + '%';
+          }
+        };
+
+        const onUp = () => {
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+          bar.classList.remove('dragging');
+          if (dragging || resizing) {
+            // 同步更新阶段数据
+            const phaseId = bar.dataset.phaseId;
+            const topPct = parseFloat(bar.style.top);
+            const hPct = parseFloat(bar.style.height);
+            const newStart = spanStart + topPct / 100 * totalSpan;
+            const newEnd = spanStart + (topPct + hPct) / 100 * totalSpan;
+            const toYM = (k) => {
+              const y = Math.floor(k / 12), m = Math.round(k % 12);
+              return `${y}-${String(Math.max(1, Math.min(12, m || 12))).padStart(2, '0')}`;
+            };
+            const phases = Store.getPhases();
+            const ph = phases.find(p => p.id === phaseId);
+            if (ph && Math.abs(newStart - newEnd) >= 1) {
+              ph.start = toYM(newStart);
+              ph.end = toYM(newEnd);
+              Store.setPhases(phases);
+              this.renderAll();
+            }
+          }
+          dragging = false; resizing = null;
+        };
+
+        bar.addEventListener('mousedown', (e) => {
+          if (e.button !== 0) return;
+          const handle = e.target.dataset.handle;
+          if (handle === 'top' || handle === 'bottom') {
+            resizing = handle;
+          } else {
+            dragging = true;
+          }
+          startY = e.clientY;
+          startTop = parseFloat(bar.style.top) || 0;
+          startH = parseFloat(bar.style.height) || 0;
+          bar.classList.add('dragging');
+          document.addEventListener('mousemove', onMove);
+          document.addEventListener('mouseup', onUp);
+          e.preventDefault();
+        });
+      });
+    },
+
+    /** 初始化 We Are Here 星形标记的拖拽 */
+    _initWeAreHereDrag(spanStart, totalSpan) {
+      const marker = document.getElementById('weAreHere');
+      const syncTL = document.getElementById('syncTimeline');
+      if (!marker || !syncTL) return;
+
+      let dragging = false, startY, startTop;
+
+      const onMove = (e) => {
+        const dy = e.clientY - startY;
+        const dpct = dy / syncTL.offsetHeight * 100;
+        const newTop = Math.max(0, Math.min(100, startTop + dpct));
+        marker.style.top = newTop + '%';
+      };
+
+      const onUp = () => {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        marker.classList.remove('dragging');
+        if (dragging) {
+          const topPct = parseFloat(marker.style.top);
+          const newKey = spanStart + topPct / 100 * totalSpan;
+          const y = Math.floor(newKey / 12);
+          const m = Math.round(newKey % 12);
+          const newDate = `${y}-${String(Math.max(1, Math.min(12, m || 12))).padStart(2, '0')}`;
+          Store.setWeAreHere(newDate);
+          this.renderAll();
+        }
+        dragging = false;
+      };
+
+      marker.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        dragging = true;
+        startY = e.clientY;
+        startTop = parseFloat(marker.style.top) || 0;
+        marker.classList.add('dragging');
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+        e.preventDefault();
+      });
+    },
+
+    /* ---- 事件列表渲染 ---- */
+    renderEventList(track) {
+      const prefix = track === 'patent' ? 'patent' : 'rnd';
+      const list = document.getElementById(`${prefix}List`);
+      const countEl = document.getElementById(`${prefix}Count`);
+      const editingId = track === 'patent' ? State.patentEditingId : State.rndEditingId;
+      const events = (track === 'patent' ? Store.getPatent() : Store.getRnd()).sort((a, b) => a.order - b.order);
+
+      countEl.textContent = events.length;
+
+      if (events.length === 0) {
+        list.innerHTML = `<li style="text-align:center;color:var(--text-muted);font-size:13px;padding:16px 0;">暂无事件，使用上方表单添加</li>`;
+        return;
+      }
+
+      list.innerHTML = events.map((ev, i) => `
+        <li class="event-item ${editingId === ev.id ? 'active ' + track : ''}" data-id="${ev.id}" data-track="${track}">
+          <div class="event-item-drag">
+            ${i > 0 ? `<button title="上移" data-action="up" data-id="${ev.id}" data-track="${track}">▲</button>` : '<span style="width:20px;height:16px;"></span>'}
+            ${i < events.length - 1 ? `<button title="下移" data-action="down" data-id="${ev.id}" data-track="${track}">▼</button>` : '<span style="width:20px;height:16px;"></span>'}
+          </div>
+          <div class="event-item-content" data-action="edit" data-id="${ev.id}" data-track="${track}">
+            <div class="event-item-date">${U.esc(U.formatDate(ev.date))}</div>
+            <div class="event-item-title">${U.esc(ev.title)}</div>
+          </div>
+          <div class="event-item-actions">
+            <button class="btn-edit" title="编辑" data-action="edit" data-id="${ev.id}" data-track="${track}">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="btn-delete" title="删除" data-action="delete" data-id="${ev.id}" data-track="${track}">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+        </li>`).join('');
+    },
+
+    /* ---- 阶段列表渲染 ---- */
+    renderPhaseList() {
+      const list = document.getElementById('phaseList');
+      const phases = Store.getPhases();
+      list.innerHTML = phases.map(ph => `
+        <div class="phase-item" data-phase-id="${ph.id}">
+          <span class="phase-color" style="background:${ph.color};" title="颜色"></span>
+          <span class="phase-label">${U.esc(ph.label)}</span>
+          <span class="phase-dates">${U.esc(ph.start)} → ${U.esc(ph.end)}</span>
+          <button class="btn-icon" title="编辑阶段" data-action="editPhase" data-phase-id="${ph.id}" style="width:24px;height:24px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn-icon" title="删除阶段" data-action="deletePhase" data-phase-id="${ph.id}" style="width:24px;height:24px;color:var(--danger);">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>`).join('');
+    },
+
+    /* ---- 渲染全部 ---- */
+    renderAll() {
+      try {
+        this.renderPreview();
+        this.renderEventList('patent');
+        this.renderEventList('rnd');
+        this.renderPhaseList();
+      } catch(err) {
+        console.error('❌ renderAll 错误:', err);
+        alert('渲染错误: ' + err.message);
+      }
+    },
+
+    /* ---- 表单操作 ---- */
+    fillForm(track, ev) {
+      const p = track === 'patent' ? 'patent' : 'rnd';
+      document.getElementById(`${p}Date`).value = ev.date;
+      document.getElementById(`${p}Title`).value = ev.title;
+      document.getElementById(`${p}Note`).value = ev.note;
+      document.getElementById(`${p}EditId`).value = ev.id;
+      const submitBtn = document.querySelector(`#${p}Form button[type="submit"]`);
+      submitBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> 保存`;
+      document.querySelector(`.${p}-cancel-edit`).style.display = 'inline-flex';
+      if (track === 'patent') State.patentEditingId = ev.id;
+      else State.rndEditingId = ev.id;
+    },
+
+    resetForm(track) {
+      const p = track === 'patent' ? 'patent' : 'rnd';
+      const form = document.getElementById(`${p}Form`);
+      form.reset();
+      document.getElementById(`${p}EditId`).value = '';
+      const submitBtn = document.querySelector(`#${p}Form button[type="submit"]`);
+      submitBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> 添加`;
+      document.querySelector(`.${p}-cancel-edit`).style.display = 'none';
+      if (track === 'patent') State.patentEditingId = null;
+      else State.rndEditingId = null;
+    }
+  };
+
+  /* ==================== Exporter ==================== */
+  const Exporter = {
+    _loaded: false,
+    _loading: false,
+
+    async _ensureLib() {
+      if (this._loaded) return true;
+      if (window.html2canvas) { this._loaded = true; return true; }
+      if (this._loading) {
+        let tries = 0;
+        while (this._loading && tries < 100) { await new Promise(r => setTimeout(r, 100)); tries++; }
+        return this._loaded;
+      }
+      this._loading = true;
+      return new Promise((resolve) => {
+        const s = document.createElement('script');
+        s.src = HTML2CANVAS_CDN;
+        s.onload = () => { this._loaded = true; this._loading = false; resolve(true); };
+        s.onerror = () => { this._loading = false; resolve(false); };
+        document.head.appendChild(s);
+      });
+    },
+
+    async exportPNG() {
+      const patent = Store.getPatent();
+      const rnd = Store.getRnd();
+      if (patent.length === 0 && rnd.length === 0) {
+        U.toast('请先添加至少一个事件', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btnExport');
+      const orig = btn.innerHTML;
+      btn.innerHTML = '⏳ 正在生成...';
+      btn.disabled = true;
+
+      const ok = await this._ensureLib();
+      if (!ok) {
+        U.toast('导出库加载失败，请检查网络', 'error');
+        btn.innerHTML = orig; btn.disabled = false;
+        return;
+      }
+
+      try {
+        // 强制完成动画
+        const allRows = document.querySelectorAll('.sync-row');
+        allRows.forEach(r => { r.style.opacity = '1'; r.style.animation = 'none'; });
+
+        // 确保阶段列高度同步
+        const srcColumn = document.getElementById('phaseColumn');
+        const srcTL = document.getElementById('syncTimeline');
+        if (srcColumn && srcTL) srcColumn.style.height = srcTL.offsetHeight + 'px';
+
+        await new Promise(r => setTimeout(r, 150));
+
+        // 构建离屏导出容器，精确控制尺寸
+        const src = document.getElementById('previewContainer');
+        const header = src.querySelector('.preview-header');
+        const legend = src.querySelector('.preview-legend');
+        const area = src.querySelector('.preview-area');
+        if (!area) throw new Error('未找到预览内容');
+
+        // 测量实际内容尺寸
+        const headerH = header ? header.offsetHeight + 20 : 20;
+        const legendH = legend ? legend.offsetHeight + 16 : 0;
+        const timelineH = (srcTL ? srcTL.scrollHeight : 0) + 8;
+        const totalH = headerH + legendH + timelineH + 40;
+        const pcW = srcColumn ? 70 : 0;
+        const tlW = srcTL ? (srcTL.scrollWidth || 600) : 600;
+        const totalW = pcW + tlW + 40;
+
+        // 创建离屏克隆
+        const wrap = document.createElement('div');
+        wrap.style.cssText = `position:fixed;left:-9999px;top:0;width:${totalW}px;background:#fff;padding:24px 20px 32px;font-family:${getComputedStyle(src).fontFamily};`;
+        wrap.innerHTML = src.innerHTML;
+        document.body.appendChild(wrap);
+
+        // 修复克隆中的样式
+        const clonePC = wrap.querySelector('#phaseColumn');
+        const cloneST = wrap.querySelector('#syncTimeline');
+        if (clonePC && cloneST) clonePC.style.height = cloneST.scrollHeight + 'px';
+        wrap.querySelectorAll('.sync-row').forEach(r => {
+          r.style.opacity = '1'; r.style.animation = 'none';
+          const leftW = Math.floor((tlW - 110) / 2);
+          r.style.gridTemplateColumns = leftW + 'px 110px ' + leftW + 'px';
+        });
+        // 用 <br> 逐字换行模拟竖排（html2canvas 不支持 writing-mode）
+        wrap.querySelectorAll('.phase-bar-label').forEach(l => {
+          const chars = l.textContent.split('');
+          l.innerHTML = chars.join('<br>');
+          l.style.writingMode = 'horizontal-tb';
+          l.style.letterSpacing = '0';
+          l.style.fontSize = '13px';
+          l.style.lineHeight = '1.3';
+        });
+        // 修复 We Are Here 标记（禁用动画以确保导出清晰）
+        const cloneWAH = wrap.querySelector('.we-are-here');
+        if (cloneWAH) {
+          cloneWAH.querySelector('.star-icon').style.animation = 'none';
+        }
+        // 移除 max-width 限制
+        wrap.style.maxWidth = 'none';
+        const inner = wrap.querySelector('.preview-container');
+        if (inner) { inner.style.maxWidth = 'none'; inner.style.width = totalW + 'px'; }
+
+        await new Promise(r => setTimeout(r, 100));
+
+        const canvas = await html2canvas(wrap, {
+          backgroundColor: '#ffffff',
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          logging: false
+        });
+
+        // 清理克隆节点
+        if (wrap.parentNode) document.body.removeChild(wrap);
+
+        const a = document.createElement('a');
+        const t = Store.getTitle() || '药物研发全景时间线';
+        a.download = `${t}_${new Date().toISOString().slice(0,10)}.png`;
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+        U.toast('✅ PNG 导出成功（2x高清）');
+      } catch (err) {
+        // 清理可能残留的克隆节点
+        const leftover = document.querySelector('div[style*="left:-9999px"]');
+        if (leftover) leftover.remove();
+        console.error(err);
+        U.toast('导出失败，请重试', 'error');
+      } finally {
+        btn.innerHTML = orig;
+        btn.disabled = false;
+      }
+    }
+  };
+
+  /* ==================== Events ==================== */
+  const Events = {
+    init() {
+      this._bindForms();
+      this._bindLists();
+      this._bindHeader();
+      this._bindModal();
+      this._bindPhases();
+      this._bindTitle();
+      this._bindWeAreHere();
+    },
+
+    /* 双表单提交 */
+    _bindForms() {
+      ['patent', 'rnd'].forEach(track => {
+        const p = track;
+        const form = document.getElementById(`${p}Form`);
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          try {
+          const date = document.getElementById(`${p}Date`).value.trim();
+          const title = document.getElementById(`${p}Title`).value.trim();
+          const note = document.getElementById(`${p}Note`).value.trim();
+          const editId = document.getElementById(`${p}EditId`).value;
+
+          if (!date || !title) { U.toast('请填写日期和事件标题', 'error'); return; }
+
+          if (editId) {
+            Store[track === 'patent' ? 'updatePatent' : 'updateRnd'](editId, date, title, note);
+            U.toast('事件已更新');
+          } else {
+            Store[track === 'patent' ? 'addPatent' : 'addRnd'](date, title, note);
+            U.toast('事件已添加');
+          }
+          Renderer.resetForm(track);
+          Renderer.renderAll();
+          console.log(`✅ ${track} 表单提交成功，共 ${Store.getPatent().length + Store.getRnd().length} 事件`);
+          } catch(err) {
+            console.error('❌ 表单提交错误:', err);
+            alert('错误: ' + err.message);
+          }
+        });
+
+        // 取消编辑
+        document.querySelector(`.${p}-cancel-edit`).addEventListener('click', () => {
+          Renderer.resetForm(track);
+          Renderer.renderAll();
+        });
+
+        // 回车提交
+        document.getElementById(`${p}Title`).addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            form.dispatchEvent(new Event('submit'));
+          }
+        });
+      });
+    },
+
+    /* 事件列表交互 */
+    _bindLists() {
+      ['patent', 'rnd'].forEach(track => {
+        const listId = track === 'patent' ? 'patentList' : 'rndList';
+        const list = document.getElementById(listId);
+        list.addEventListener('click', (e) => {
+          const btn = e.target.closest('[data-action]');
+          if (!btn) return;
+          const action = btn.dataset.action;
+          const id = btn.dataset.id;
+          const tr = btn.dataset.track;
+          // 直接调用避免 this 丢失
+          const events = (tr === 'patent' ? Store.getPatent() : Store.getRnd()).sort((a, b) => a.order - b.order);
+
+          if (action === 'edit') {
+            try {
+              const ev = events.find(x => x.id === id);
+              if (ev) {
+                const other = tr === 'patent' ? 'rnd' : 'patent';
+                Renderer.resetForm(other);
+                Renderer.fillForm(tr, ev);
+                Renderer.renderAll();
+                const dateEl = document.getElementById(`${tr}Date`);
+                if (dateEl) dateEl.scrollIntoView({ behavior: 'smooth' });
+              }
+            } catch(err) {
+              console.error('编辑事件失败:', tr, id, err);
+              U.toast('编辑失败，请刷新后重试', 'error');
+            }
+          }
+
+          if (action === 'delete') {
+            if (!confirm('确定要删除这个事件吗？')) return;
+            Store[tr === 'patent' ? 'removePatent' : 'removeRnd'](id);
+            if ((tr === 'patent' ? State.patentEditingId : State.rndEditingId) === id) {
+              Renderer.resetForm(tr);
+            }
+            Store.normalizeOrder(tr);
+            Renderer.renderAll();
+            U.toast('事件已删除');
+          }
+
+          if (action === 'up' || action === 'down') {
+            const idx = events.findIndex(x => x.id === id);
+            const target = action === 'up' ? idx - 1 : idx + 1;
+            if (target < 0 || target >= events.length) return;
+            Store.swapOrder(tr, id, events[target].id);
+            Renderer.renderAll();
+          }
+        });
+      });
+    },
+
+    /* 顶部栏 */
+    _bindHeader() {
+      document.getElementById('btnExport').addEventListener('click', () => Exporter.exportPNG());
+      document.getElementById('btnClear').addEventListener('click', () => {
+        const p = Store.getPatent().length, r = Store.getRnd().length;
+        if (p + r === 0) return;
+        if (!confirm(`确定清空全部数据（${p}专利 + ${r}研发事件）？不可恢复。`)) return;
+        Store.clearAll();
+        State.patentEditingId = null; State.rndEditingId = null;
+        Renderer.resetForm('patent'); Renderer.resetForm('rnd');
+        document.getElementById('inputTimelineTitle').value = '';
+        Renderer.renderAll();
+        U.toast('已清空全部数据');
+      });
+    },
+
+    /* 模态框 */
+    _bindModal() {
+      document.getElementById('btnModalCancel').addEventListener('click', () => {
+        document.getElementById('modalOverlay').style.display = 'none';
+      });
+      document.getElementById('modalOverlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) document.getElementById('modalOverlay').style.display = 'none';
+      });
+
+      document.getElementById('modalForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const overlay = document.getElementById('modalOverlay');
+        const id = overlay.dataset.editId;
+        const track = overlay.dataset.editTrack;
+        const date = document.getElementById('modalDate').value.trim();
+        const title = document.getElementById('modalTitleInput').value.trim();
+        const note = document.getElementById('modalNote').value.trim();
+        if (!date || !title) { U.toast('请填写日期和标题', 'error'); return; }
+        Store[track === 'patent' ? 'updatePatent' : 'updateRnd'](id, date, title, note);
+        document.getElementById('modalOverlay').style.display = 'none';
+        Renderer.renderAll();
+        U.toast('事件已更新');
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          document.getElementById('modalOverlay').style.display = 'none';
+          Renderer.resetForm('patent');
+          Renderer.resetForm('rnd');
+          Renderer.renderAll();
+        }
+      });
+    },
+
+    /* 阶段管理 */
+    _bindPhases() {
+      document.getElementById('btnResetPhases').addEventListener('click', () => {
+        if (!confirm('恢复为默认研发阶段？')) return;
+        Store.resetPhases();
+        Renderer.renderAll();
+        U.toast('已恢复默认阶段');
+      });
+
+      document.getElementById('btnAddPhase').addEventListener('click', () => {
+        const label = prompt('阶段名称（如"临床前"）：');
+        if (!label || !label.trim()) return;
+        const start = prompt('开始日期（如 2024-01）：');
+        if (!start || !start.trim()) return;
+        const end = prompt('结束日期（如 2025-06）：');
+        if (!end || !end.trim()) return;
+        const phases = Store.getPhases();
+        phases.push({ id: U.genPhaseId(), label: label.trim(), start: start.trim(), end: end.trim(), color: '#F0F4F8' });
+        Store.setPhases(phases);
+        Renderer.renderAll();
+        U.toast('阶段已添加');
+      });
+
+      document.getElementById('phaseList').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        const phaseId = btn.dataset.phaseId;
+        const phases = Store.getPhases();
+
+        if (btn.dataset.action === 'editPhase') {
+          const ph = phases.find(p => p.id === phaseId);
+          if (!ph) return;
+          const label = prompt('阶段名称：', ph.label);
+          if (label === null) return;
+          const start = prompt('开始日期：', ph.start);
+          if (start === null) return;
+          const end = prompt('结束日期：', ph.end);
+          if (end === null) return;
+          ph.label = label.trim() || ph.label;
+          ph.start = start.trim() || ph.start;
+          ph.end = end.trim() || ph.end;
+          Store.setPhases(phases);
+          Renderer.renderAll();
+          U.toast('阶段已更新');
+        }
+
+        if (btn.dataset.action === 'deletePhase') {
+          if (!confirm('删除这个阶段？')) return;
+          Store.setPhases(phases.filter(p => p.id !== phaseId));
+          Renderer.renderAll();
+          U.toast('阶段已删除');
+        }
+      });
+    },
+
+    /* 标题自动保存 */
+    _bindTitle() {
+      const input = document.getElementById('inputTimelineTitle');
+      input.addEventListener('input', () => {
+        Store.setTitle(input.value.trim());
+        Renderer.renderPreview();
+      });
+    },
+
+    /* We Are Here 标记 */
+    _bindWeAreHere() {
+      const dateInput = document.getElementById('weAreHereDate');
+      const btnSet = document.getElementById('btnSetWeAreHere');
+      const btnClear = document.getElementById('btnClearWeAreHere');
+
+      // 初始状态
+      const current = Store.getWeAreHere();
+      if (current) {
+        dateInput.value = current;
+        btnClear.style.display = '';
+      }
+
+      btnSet.addEventListener('click', () => {
+        const date = dateInput.value.trim();
+        if (!date || !U.parseDate(date)) {
+          U.toast('请输入有效日期（如2025-06）', 'error');
+          return;
+        }
+        Store.setWeAreHere(date);
+        btnClear.style.display = '';
+        Renderer.renderAll();
+        U.toast('⭐ 当前位置已标记');
+      });
+
+      btnClear.addEventListener('click', () => {
+        Store.setWeAreHere(null);
+        dateInput.value = '';
+        btnClear.style.display = 'none';
+        Renderer.renderAll();
+        U.toast('标记已清除');
+      });
+
+      // 回车快捷设置
+      dateInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          btnSet.click();
+        }
+      });
+    }
+  };
+
+  /* ==================== 初始化 ==================== */
+  function loadSampleData() {
+    const patent = Store.getPatent();
+    const rnd = Store.getRnd();
+    // 仅在完全为空时加载示例
+    if (patent.length === 0 && rnd.length === 0) {
+      SAMPLE_PATENT.forEach(s => Store.addPatent(s.date, s.title, s.note));
+      SAMPLE_RND.forEach(s => Store.addRnd(s.date, s.title, s.note));
+      if (!Store.getTitle()) Store.setTitle('示例：某单克隆抗体药物开发全景');
+      // 确保阶段使用默认值
+      if (!localStorage.getItem(LS.PHASES)) {
+        Store.setPhases(DEFAULT_PHASES.map(p => ({...p})));
+      }
+    }
+  }
+
+  function init() {
+    loadSampleData();
+
+    const savedTitle = Store.getTitle();
+    document.getElementById('inputTimelineTitle').value = savedTitle;
+
+    Store.normalizeOrder('patent');
+    Store.normalizeOrder('rnd');
+
+    Events.init();
+    Renderer.renderAll();
+
+    setTimeout(() => Exporter._ensureLib(), 1000);
+
+    const pCount = Store.getPatent().length;
+    const rCount = Store.getRnd().length;
+    console.log('🧬 药物研发全景时间线已就绪');
+    console.log(`   📜 ${pCount} 专利事件  🔬 ${rCount} 研发事件  🏷️ ${Store.getPhases().length} 阶段`);
+  }
+
+  return { init };
+})();
+
+document.addEventListener('DOMContentLoaded', PharmaTimeline.init);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目支出管理</title>
+<style>
+:root {
+  --color-primary: #4A90D9; --color-primary-dark: #3570B0; --color-primary-light: #EBF3FC;
+  --color-expense: #FF6B6B; --color-expense-bg: #FFE8E8;
+  --color-warning: #F39C12; --color-warning-bg: #FFF8E1;
+  --color-danger: #E74C3C; --color-success: #00B894; --color-success-bg: #E6F9F5;
+  --color-bg: #F5F6F8; --color-surface: #FFFFFF;
+  --color-border: #E1E5EA; --color-text: #1A1A2E;
+  --color-text-secondary: #636E72; --color-text-muted: #B2BEC3;
+  --sidebar-width: 28%; --spacing-xs: 4px; --spacing-sm: 8px;
+  --spacing-md: 16px; --spacing-lg: 24px; --spacing-xl: 32px;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+  --font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  --font-size-xs: 0.75rem; --font-size-sm: 0.875rem; --font-size-md: 1rem;
+  --font-size-lg: 1.125rem; --font-size-xl: 1.375rem; --font-size-xxl: 2rem;
+  --transition-fast: 150ms ease; --transition-normal: 250ms ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-family);background:var(--color-bg);color:var(--color-text);line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+.app-shell{display:flex;min-height:100vh;max-width:1280px;margin:0 auto}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--sidebar-width);min-width:var(--sidebar-width);background:var(--color-surface);border-right:1px solid var(--color-border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:100}
+.sidebar-header{padding:var(--spacing-md);border-bottom:1px solid var(--color-border);display:flex;align-items:center;gap:var(--spacing-sm);font-size:var(--font-size-md);font-weight:700;color:var(--color-primary-dark)}
+.sidebar-nav{flex:1;padding:var(--spacing-sm);overflow-y:auto}
+.sidebar-section-title{font-size:var(--font-size-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.5px;padding:var(--spacing-sm);margin-top:var(--spacing-xs)}
+.sidebar-item{display:flex;align-items:center;gap:var(--spacing-sm);padding:10px var(--spacing-sm);border-radius:var(--radius-md);cursor:pointer;font-size:var(--font-size-sm);font-weight:500;color:var(--color-text-secondary);transition:all var(--transition-fast);position:relative;margin-bottom:2px}
+.sidebar-item:hover{background:var(--color-bg);color:var(--color-text)}
+.sidebar-item.active{background:var(--color-primary);color:#fff}
+.sidebar-item .proj-color{width:4px;height:20px;border-radius:2px;flex-shrink:0}
+.sidebar-item .proj-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-item .proj-counts{display:flex;flex-direction:column;align-items:flex-end;line-height:1.2}
+.sidebar-item .proj-count{font-size:var(--font-size-xs);opacity:.7;background:rgba(0,0,0,.08);padding:1px 8px;border-radius:99px;white-space:nowrap}
+.sidebar-item.active .proj-count{background:rgba(255,255,255,.2)}
+.sidebar-item .proj-count-total{font-size:10px;opacity:.5}
+.sidebar-item.active .proj-count-total{opacity:.7}
+/* 项目操作按钮始终可见 */
+.sidebar-item .proj-actions{display:flex;gap:2px;flex-shrink:0;opacity:.35;transition:opacity var(--transition-fast)}
+.sidebar-item:hover .proj-actions,.sidebar-item.active .proj-actions,.sidebar-item:focus-within .proj-actions{opacity:1}
+.sidebar-item .proj-act-btn{width:26px;height:26px;border:none;background:rgba(0,0,0,.08);border-radius:var(--radius-sm);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all var(--transition-fast);color:inherit}
+.sidebar-item.active .proj-act-btn{background:rgba(255,255,255,.2);color:#fff}
+.sidebar-item .proj-act-btn:hover{background:rgba(0,0,0,.18);transform:scale(1.1)}
+.sidebar-item.active .proj-act-btn:hover{background:rgba(255,255,255,.4)}
+.sidebar-footer{padding:var(--spacing-sm);border-top:1px solid var(--color-border)}
+.sidebar-footer .btn{width:100%;justify-content:center}
+
+/* ===== MAIN AREA ===== */
+.main-area{flex:1;display:flex;flex-direction:column;min-width:0;padding:var(--spacing-md);gap:var(--spacing-md)}
+.app-header{background:var(--color-surface);border-radius:var(--radius-lg);padding:var(--spacing-md) var(--spacing-lg);box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--spacing-sm)}
+.app-header .current-project-name{font-size:var(--font-size-lg);font-weight:600;color:var(--color-text)}
+.month-selector input[type="month"]{padding:var(--spacing-sm) var(--spacing-md);border:1.5px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--font-size-md);font-family:var(--font-family);background:var(--color-bg);color:var(--color-text);cursor:pointer;outline:none;transition:border-color var(--transition-fast)}
+.month-selector input[type="month"]:focus{border-color:var(--color-primary)}
+
+/* ===== TABS ===== */
+.tab-bar{display:flex;background:var(--color-surface);border-radius:var(--radius-lg);padding:var(--spacing-xs);box-shadow:var(--shadow-sm);gap:2px}
+.tab-btn{flex:1;padding:10px var(--spacing-sm);border:none;background:transparent;border-radius:var(--radius-md);cursor:pointer;font-size:var(--font-size-sm);font-family:var(--font-family);color:var(--color-text-secondary);transition:all var(--transition-fast);white-space:nowrap;font-weight:500;display:flex;align-items:center;justify-content:center;gap:4px}
+.tab-btn:hover{color:var(--color-text);background:var(--color-bg)}
+.tab-btn.active{background:var(--color-primary);color:#fff;box-shadow:var(--shadow-sm)}
+.tab-btn .tab-label-full{display:inline}
+.tab-btn .tab-label-short{display:none}
+.tab-content{display:none;flex:1}
+.tab-content.active{display:block}
+
+/* ===== CARDS ===== */
+.card{background:var(--color-surface);border-radius:var(--radius-lg);padding:var(--spacing-lg);margin-bottom:var(--spacing-md);box-shadow:var(--shadow-sm)}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--spacing-md)}
+.card-title{font-size:var(--font-size-lg);font-weight:600;color:var(--color-text)}
+
+/* ===== STATS / DASHBOARD ===== */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:var(--spacing-md);margin-bottom:var(--spacing-md)}
+.stat-card{background:var(--color-surface);border-radius:var(--radius-lg);padding:var(--spacing-lg);box-shadow:var(--shadow-sm);text-align:center;transition:transform var(--transition-fast)}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-card .stat-value{font-size:var(--font-size-xxl);font-weight:700;color:var(--color-text);line-height:1.2}
+.stat-card .stat-value.expense{color:var(--color-expense)}
+.stat-card .stat-value.budget-ok{color:var(--color-success)}
+.stat-card .stat-value.budget-warn{color:var(--color-warning)}
+.stat-card .stat-value.budget-over{color:var(--color-danger)}
+.stat-card .stat-label{font-size:var(--font-size-xs);color:var(--color-text-muted);margin-top:var(--spacing-xs)}
+.stat-card .stat-sub{font-size:var(--font-size-xs);color:var(--color-text-secondary);margin-top:2px}
+.stat-card .stat-delta{display:inline-flex;align-items:center;gap:2px;font-size:var(--font-size-xs);padding:2px 6px;border-radius:99px;margin-top:4px}
+.stat-card .stat-delta.up{background:var(--color-expense-bg);color:var(--color-expense)}
+.stat-card .stat-delta.down{background:var(--color-success-bg);color:var(--color-success)}
+
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-md);margin-bottom:var(--spacing-md)}
+.chart-container{background:var(--color-surface);border-radius:var(--radius-lg);padding:var(--spacing-lg);box-shadow:var(--shadow-sm)}
+.chart-container .chart-title{font-size:var(--font-size-sm);font-weight:600;color:var(--color-text-secondary);margin-bottom:var(--spacing-md);text-align:center}
+.chart-container canvas{display:block;margin:0 auto;max-width:100%}
+
+.rank-list{list-style:none}
+.rank-item{display:flex;align-items:center;gap:var(--spacing-sm);padding:8px 0;border-bottom:1px solid var(--color-border)}
+.rank-item:last-child{border-bottom:none}
+.rank-item .rank-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--font-size-xs);font-weight:700;color:#fff;flex-shrink:0}
+.rank-item .rank-num.gold{background:#F39C12}
+.rank-item .rank-num.silver{background:#B2BEC3}
+.rank-item .rank-num.bronze{background:#E17055}
+.rank-item .rank-info{flex:1;min-width:0}
+.rank-item .rank-name{font-size:var(--font-size-sm);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-item .rank-bar-wrap{height:6px;background:var(--color-bg);border-radius:3px;margin-top:3px;overflow:hidden}
+.rank-item .rank-bar{height:100%;border-radius:3px;transition:width .5s ease}
+.rank-item .rank-amount{font-weight:600;font-size:var(--font-size-sm);white-space:nowrap;color:var(--color-expense)}
+
+.recent-list{list-style:none}
+.recent-item{display:flex;align-items:center;gap:var(--spacing-sm);padding:6px 0;border-bottom:1px solid var(--color-border);font-size:var(--font-size-sm);cursor:pointer;transition:background var(--transition-fast);border-radius:var(--radius-sm);padding:6px}
+.recent-item:hover{background:var(--color-bg)}
+.recent-item:last-child{border-bottom:none}
+.recent-item .recent-icon{font-size:1.1rem;flex-shrink:0}
+.recent-item .recent-info{flex:1;min-width:0}
+.recent-item .recent-name{font-weight:500}
+.recent-item .recent-date{font-size:var(--font-size-xs);color:var(--color-text-muted)}
+.recent-item .recent-amount{font-weight:600;color:var(--color-expense);white-space:nowrap}
+
+/* ===== BUDGET PROGRESS ===== */
+.budget-bar-wrap{height:8px;background:var(--color-bg);border-radius:4px;overflow:hidden;margin-top:4px}
+.budget-bar{height:100%;border-radius:4px;transition:width .5s ease,background .5s ease}
+.budget-bar.safe{background:var(--color-success)}
+.budget-bar.warn{background:var(--color-warning)}
+.budget-bar.over{background:var(--color-danger)}
+.budget-text{font-size:var(--font-size-xs);color:var(--color-text-secondary);margin-top:2px}
+
+/* ===== BUTTONS ===== */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:none;border-radius:var(--radius-md);cursor:pointer;font-size:var(--font-size-sm);font-family:var(--font-family);font-weight:500;transition:all var(--transition-fast)}
+.btn-primary{background:var(--color-primary);color:#fff}
+.btn-primary:hover{background:var(--color-primary-dark)}
+.btn-secondary{background:var(--color-bg);color:var(--color-text);border:1.5px solid var(--color-border)}
+.btn-secondary:hover{background:var(--color-border)}
+.btn-danger{background:var(--color-expense-bg);color:var(--color-danger)}
+.btn-danger:hover{background:#ffd4d4}
+.btn-sm{padding:5px 12px;font-size:var(--font-size-xs)}
+.btn-accent{background:var(--color-warning);color:#fff}
+.btn-accent:hover{background:#e08e0b}
+.btn-icon{width:32px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);background:transparent;border:none;cursor:pointer;font-size:var(--font-size-md);transition:background var(--transition-fast)}
+.btn-icon:hover{background:var(--color-bg)}
+.btn-icon.danger:hover{background:var(--color-expense-bg);color:var(--color-danger)}
+
+/* ===== FORMS ===== */
+.form-group{margin-bottom:var(--spacing-md)}
+.form-group label{display:block;font-size:var(--font-size-sm);font-weight:500;margin-bottom:var(--spacing-xs);color:var(--color-text-secondary)}
+.form-input,.form-select,.form-textarea{width:100%;padding:10px 14px;border:1.5px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--font-size-md);font-family:var(--font-family);background:var(--color-bg);color:var(--color-text);outline:none;transition:border-color var(--transition-fast)}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(74,144,217,.1)}
+.form-textarea{resize:vertical;min-height:60px}
+.form-row{display:flex;gap:var(--spacing-sm)}
+.form-row .form-group{flex:1}
+
+/* ===== FILTER BAR ===== */
+.filter-bar{display:flex;gap:var(--spacing-sm);flex-wrap:wrap;align-items:center;margin-bottom:var(--spacing-md)}
+.filter-bar .form-input,.filter-bar .form-select{width:auto;min-width:100px}
+.filter-bar .search-input{flex:1;min-width:150px}
+.filter-result-count{font-size:var(--font-size-xs);color:var(--color-text-muted);white-space:nowrap}
+.filter-active-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:var(--spacing-sm)}
+.filter-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:99px;font-size:var(--font-size-xs);background:var(--color-primary-light);color:var(--color-primary);cursor:pointer;transition:background var(--transition-fast)}
+.filter-tag:hover{background:#d0e3f8}
+.filter-tag .filter-tag-x{font-weight:700;opacity:.6}
+
+/* ===== BREADCRUMB ===== */
+.breadcrumb{display:flex;align-items:center;gap:4px;font-size:var(--font-size-xs);color:var(--color-text-muted);margin-bottom:var(--spacing-sm);flex-wrap:wrap}
+.breadcrumb span.active{color:var(--color-text);font-weight:500}
+
+/* ===== BADGES ===== */
+.proj-badge{display:inline-flex;align-items:center;gap:3px;padding:1px 8px;border-radius:99px;font-size:var(--font-size-xs);font-weight:500;white-space:nowrap;cursor:pointer;transition:transform var(--transition-fast)}
+.proj-badge:hover{transform:scale(1.05)}
+.cat-badge{display:inline-flex;align-items:center;gap:3px;padding:1px 8px;border-radius:99px;font-size:var(--font-size-xs);font-weight:500;white-space:nowrap;cursor:pointer;transition:transform var(--transition-fast)}
+.cat-badge:hover{transform:scale(1.05)}
+
+/* ===== TRANSACTION LIST ===== */
+.txn-date-group{margin-bottom:var(--spacing-md)}
+.txn-date-header{font-size:var(--font-size-sm);font-weight:600;color:var(--color-text-secondary);padding:var(--spacing-xs) var(--spacing-sm);margin-bottom:var(--spacing-xs);display:flex;align-items:center;gap:var(--spacing-sm)}
+.txn-date-header .date-total{font-size:var(--font-size-xs);color:var(--color-expense);font-weight:500}
+.txn-list{list-style:none}
+.txn-item{display:flex;align-items:center;gap:var(--spacing-sm);padding:12px var(--spacing-md);background:var(--color-surface);border-radius:var(--radius-md);margin-bottom:4px;transition:all var(--transition-fast);position:relative;overflow:hidden}
+.txn-item:hover{background:var(--color-bg)}
+.txn-icon{font-size:1.4rem;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--color-bg);border-radius:var(--radius-md);flex-shrink:0}
+.txn-info{flex:1;min-width:0}
+.txn-info .txn-category{font-size:var(--font-size-sm);font-weight:500}
+.txn-info .txn-meta{display:flex;align-items:center;gap:var(--spacing-xs);flex-wrap:wrap}
+.txn-info .txn-note{font-size:var(--font-size-xs);color:var(--color-text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.txn-amount{font-weight:600;font-size:var(--font-size-md);white-space:nowrap;color:var(--color-expense)}
+.txn-attach{font-size:1.1rem;cursor:pointer;opacity:.5;transition:opacity var(--transition-fast);flex-shrink:0}
+.txn-attach:hover{opacity:1}
+.txn-actions{display:flex;gap:2px;opacity:.35;transition:opacity var(--transition-fast)}
+.txn-item:hover .txn-actions,.txn-item:focus-within .txn-actions{opacity:1}
+
+/* ===== ATTACHMENT ===== */
+.attach-zone{border:2px dashed var(--color-border);border-radius:var(--radius-md);padding:var(--spacing-md);text-align:center;cursor:pointer;transition:all var(--transition-fast);margin-top:var(--spacing-sm)}
+.attach-zone:hover{border-color:var(--color-primary);background:#f8faff}
+.attach-zone.has-file{border-style:solid;border-color:var(--color-success);background:var(--color-success-bg)}
+.attach-zone .attach-icon{font-size:2rem;margin-bottom:var(--spacing-xs)}
+.attach-zone .attach-text{font-size:var(--font-size-xs);color:var(--color-text-muted)}
+.attach-preview{display:flex;align-items:center;gap:var(--spacing-sm);margin-top:var(--spacing-sm)}
+.attach-preview img{max-width:100%;max-height:150px;border-radius:var(--radius-sm)}
+.attach-preview .attach-info{flex:1;font-size:var(--font-size-xs)}
+.attach-preview .attach-name{font-weight:500}
+.attach-preview .attach-size{color:var(--color-text-muted)}
+
+/* ===== EXPORT ===== */
+.export-options{display:flex;gap:var(--spacing-md);flex-wrap:wrap;align-items:flex-end;margin-bottom:var(--spacing-lg)}
+.export-preview{max-height:300px;overflow-y:auto;background:var(--color-bg);border-radius:var(--radius-md);padding:var(--spacing-md);font-family:Consolas,"Courier New",monospace;font-size:var(--font-size-xs);white-space:pre;line-height:1.8}
+
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease}
+.modal{background:var(--color-surface);border-radius:var(--radius-lg);padding:var(--spacing-lg);width:90%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:slideUp .25s ease}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--spacing-md)}
+.modal-title{font-size:var(--font-size-lg);font-weight:600}
+.modal-close{width:32px;height:32px;border:none;background:var(--color-bg);border-radius:50%;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:background var(--transition-fast)}
+.modal-close:hover{background:var(--color-border)}
+.modal-footer{display:flex;justify-content:flex-end;gap:var(--spacing-sm);margin-top:var(--spacing-lg)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ===== TOAST ===== */
+.toast-container{position:fixed;top:20px;right:20px;z-index:2000;display:flex;flex-direction:column;gap:var(--spacing-sm)}
+.toast{padding:12px 20px;border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-lg);font-size:var(--font-size-sm);font-weight:500;display:flex;align-items:center;gap:var(--spacing-sm);animation:slideIn .3s ease;min-width:200px}
+.toast.success{border-left:4px solid var(--color-success)}
+.toast.error{border-left:4px solid var(--color-danger)}
+.toast.warning{border-left:4px solid var(--color-warning)}
+.toast .toast-undo{margin-left:auto;padding:4px 10px;border-radius:var(--radius-sm);border:1px solid currentColor;background:transparent;cursor:pointer;font-size:var(--font-size-xs);font-weight:600;color:var(--color-primary);transition:background var(--transition-fast);white-space:nowrap}
+.toast .toast-undo:hover{background:var(--color-primary-light)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ===== EMPTY STATE ===== */
+.empty-state{text-align:center;padding:var(--spacing-xl) var(--spacing-md);color:var(--color-text-muted)}
+.empty-state .empty-icon{font-size:3rem;margin-bottom:var(--spacing-md)}
+.empty-state .empty-text{font-size:var(--font-size-sm);margin-bottom:var(--spacing-md)}
+
+/* ===== CATEGORY MANAGEMENT ===== */
+.cat-manage-list{list-style:none}
+.cat-manage-item{display:flex;align-items:center;gap:var(--spacing-sm);padding:8px var(--spacing-sm);border-bottom:1px solid var(--color-border)}
+
+/* ===== SETUP BANNER ===== */
+.setup-banner{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border-radius:var(--radius-lg);padding:var(--spacing-lg);margin-bottom:var(--spacing-md);box-shadow:var(--shadow-md)}
+.setup-banner h3{font-size:var(--font-size-lg);margin-bottom:var(--spacing-sm)}
+.setup-banner p{font-size:var(--font-size-sm);opacity:.9;margin-bottom:var(--spacing-md)}
+.setup-banner .btn{background:#fff;color:#764ba2}
+.setup-banner .btn:hover{background:#f0e6ff}
+
+/* ===== COLOR/ICON OPTIONS ===== */
+.color-options{display:flex;gap:var(--spacing-sm);flex-wrap:wrap}
+.color-option{width:28px;height:28px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all var(--transition-fast)}
+.color-option:hover{transform:scale(1.15)}
+.color-option.selected{border-color:var(--color-text);box-shadow:0 0 0 2px var(--color-surface),0 0 0 4px currentColor}
+.icon-options{display:flex;gap:4px;flex-wrap:wrap;max-height:120px;overflow-y:auto}
+.icon-option{width:32px;height:32px;border:2px solid transparent;border-radius:var(--radius-sm);cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;background:var(--color-bg);transition:all var(--transition-fast)}
+.icon-option:hover{border-color:var(--color-primary)}
+.icon-option.selected{border-color:var(--color-primary);background:#EBF3FC}
+
+.quick-cat-create{display:flex;gap:var(--spacing-sm);align-items:center;padding:var(--spacing-sm);background:var(--color-bg);border-radius:var(--radius-md);margin-top:var(--spacing-sm)}
+.quick-cat-create input{flex:1}
+
+/* ===== MOBILE PROJECT STRIP ===== */
+.mobile-project-strip{display:none;overflow-x:auto;gap:var(--spacing-sm);padding:var(--spacing-xs) 0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mobile-project-strip::-webkit-scrollbar{display:none}
+.mobile-project-chip{display:flex;align-items:center;gap:4px;padding:8px 14px;border-radius:99px;background:var(--color-surface);border:1.5px solid var(--color-border);font-size:var(--font-size-sm);font-weight:500;white-space:nowrap;cursor:pointer;transition:all var(--transition-fast);flex-shrink:0;position:relative}
+.mobile-project-chip.active{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+.mobile-project-chip .chip-color{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.mobile-project-chip .chip-count{font-size:10px;opacity:.7;margin-left:2px}
+.mobile-project-chip .chip-menu-btn{width:20px;height:20px;border-radius:50%;border:none;background:rgba(0,0,0,.1);cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;margin-left:2px;transition:background var(--transition-fast)}
+.mobile-project-chip.active .chip-menu-btn{background:rgba(255,255,255,.25);color:#fff}
+.mobile-project-chip .chip-menu{display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--color-surface);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;overflow:hidden;min-width:100px}
+.mobile-project-chip .chip-menu.show{display:block}
+.mobile-project-chip .chip-menu-item{display:block;width:100%;padding:8px 14px;border:none;background:transparent;cursor:pointer;font-size:var(--font-size-xs);text-align:left;white-space:nowrap;transition:background var(--transition-fast);font-family:var(--font-family)}
+.mobile-project-chip .chip-menu-item:hover{background:var(--color-bg)}
+.mobile-project-chip .chip-menu-item.danger{color:var(--color-danger)}
+
+/* ===== SIDEBAR GROUPS ===== */
+.sidebar-group{margin-bottom:2px}
+.sidebar-group-header{display:flex;align-items:center;gap:4px;padding:6px var(--spacing-sm);border-radius:var(--radius-md);cursor:pointer;font-size:var(--font-size-xs);font-weight:600;color:var(--color-text-secondary);transition:all var(--transition-fast);position:relative}
+.sidebar-group-header:hover{background:var(--color-bg)}
+.sidebar-group-header .collapse-arrow{font-size:10px;transition:transform var(--transition-fast);flex-shrink:0;width:14px;text-align:center}
+.sidebar-group.collapsed .collapse-arrow{transform:rotate(-90deg)}
+.sidebar-group-header .group-icon{flex-shrink:0}
+.sidebar-group-header .group-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-group-header .group-count{font-size:10px;opacity:.6;background:rgba(0,0,0,.06);padding:1px 6px;border-radius:99px;white-space:nowrap}
+.sidebar-group-header .group-actions{display:flex;gap:2px;opacity:0;transition:opacity var(--transition-fast)}
+.sidebar-group-header:hover .group-actions{opacity:1}
+.sidebar-group-header .group-act-btn{width:22px;height:22px;border:none;background:rgba(0,0,0,.08);border-radius:var(--radius-sm);cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;transition:all var(--transition-fast)}
+.sidebar-group-header .group-act-btn:hover{background:rgba(0,0,0,.15)}
+.sidebar-group.collapsed .sidebar-item{display:none}
+.sidebar-group.collapsed .sidebar-item.dragging{display:flex}
+.sidebar-item.ungrouped{padding-left:var(--spacing-sm)}
+
+/* ===== DRAG & DROP ===== */
+.sidebar-item .drag-handle{cursor:grab;flex-shrink:0;font-size:14px;color:var(--color-text-muted);opacity:.3;transition:opacity var(--transition-fast);user-select:none;letter-spacing:-1px;padding:0 2px}
+.sidebar-item:hover .drag-handle,.sidebar-item.active .drag-handle{opacity:.7}
+.sidebar-item .drag-handle:active{cursor:grabbing}
+.sidebar-item.dragging{opacity:.35;background:var(--color-primary-light)!important}
+.sidebar-item.drop-target-above{border-top:2px solid var(--color-primary)}
+.sidebar-item.drop-target-below{border-bottom:2px solid var(--color-primary)}
+.sidebar-group-header.drop-target-group{background:var(--color-primary-light);border-radius:var(--radius-md);box-shadow:inset 0 0 0 2px var(--color-primary)}
+
+/* ===== MOBILE BOTTOM NAV ===== */
+.mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--color-surface);border-top:1px solid var(--color-border);z-index:200;padding:6px var(--spacing-sm) env(safe-area-inset-bottom,6px)}
+.mobile-bottom-nav .nav-items{display:flex;gap:0}
+.mobile-bottom-nav .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border:none;background:transparent;cursor:pointer;font-size:10px;color:var(--color-text-muted);font-family:var(--font-family);transition:color var(--transition-fast);border-radius:var(--radius-sm)}
+.mobile-bottom-nav .nav-item.active{color:var(--color-primary)}
+.mobile-bottom-nav .nav-item .nav-icon{font-size:1.3rem}
+
+/* ===== SWIPE ACTION (MOBILE) ===== */
+@media(max-width:800px){
+  .txn-item{position:relative;overflow:hidden}
+  .txn-item .txn-actions{opacity:1;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--color-surface);padding:2px;border-radius:var(--radius-sm);box-shadow:var(--shadow-sm)}
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:800px){
+  .sidebar{display:none}
+  .app-shell{flex-direction:column}
+  .main-area{padding:var(--spacing-sm);padding-bottom:80px}
+  .mobile-project-strip{display:flex}
+  .mobile-bottom-nav{display:block}
+  .app-header{padding:var(--spacing-sm) var(--spacing-md)}
+  .app-header .current-project-name{font-size:var(--font-size-md)}
+  .tab-btn{font-size:var(--font-size-xs);padding:8px 4px}
+  .tab-btn .tab-label-full{display:none}
+  .tab-btn .tab-label-short{display:inline}
+  .filter-bar{flex-direction:column}
+  .filter-bar .form-input,.filter-bar .form-select{width:100%}
+  .txn-actions{opacity:1}
+  .export-options{flex-direction:column}
+  .modal{width:95%;padding:var(--spacing-md);border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin-top:auto;max-height:85vh}
+  .chart-row{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .toast-container{left:10px;right:10px;top:auto;bottom:90px}
+}
+@media(min-width:801px) and (max-width:1100px){
+  .app-shell{max-width:100%}
+  .sidebar{width:25%;min-width:180px}
+  .main-area{padding:var(--spacing-sm)}
+  .chart-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar" aria-label="项目侧边栏">
+    <div class="sidebar-header"><span>💼</span> 项目支出</div>
+    <nav class="sidebar-nav" id="sidebarNav" aria-label="项目列表">
+      <div class="sidebar-item active" data-project="__all__" id="sidebarItemAll" role="button" tabindex="0" aria-label="全部项目">
+        <span>📊</span> <span class="proj-name">全部项目</span>
+        <span class="proj-counts"><span class="proj-count" id="sidebarAllCount">0</span><span class="proj-count-total" id="sidebarAllTotal">共0条</span></span>
+      </div>
+      <div class="sidebar-section-title">项目列表</div>
+      <div id="sidebarProjectList"></div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn btn-secondary btn-sm" id="btnAddGroup" aria-label="新建项目类型" style="margin-bottom:4px;">📂 + 新建项目类型</button>
+      <button class="btn btn-primary btn-sm" id="btnAddProject" aria-label="新建项目">+ 新建项目</button>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN AREA ===== -->
+  <div class="main-area">
+    <div class="mobile-project-strip" id="mobileProjectStrip" aria-label="移动端项目导航"></div>
+    <header class="app-header">
+      <div class="header-left"><span class="current-project-name" id="currentProjectLabel">📊 全部项目</span></div>
+      <div class="month-selector"><input type="month" id="globalMonth" title="选择月份" aria-label="选择月份"/></div>
+    </header>
+
+    <nav class="tab-bar" role="tablist" aria-label="主要功能">
+      <button class="tab-btn active" data-tab="dashboard" role="tab" aria-selected="true"><span>📊</span> <span class="tab-label-full">概览</span><span class="tab-label-short">概览</span></button>
+      <button class="tab-btn" data-tab="transactions" role="tab" aria-selected="false"><span>📝</span> <span class="tab-label-full">支出记录</span><span class="tab-label-short">记录</span></button>
+      <button class="tab-btn" data-tab="export" role="tab" aria-selected="false"><span>📤</span> <span class="tab-label-full">数据管理</span><span class="tab-label-short">管理</span></button>
+    </nav>
+
+    <!-- Dashboard Tab -->
+    <section class="tab-content active" id="tab-dashboard" role="tabpanel">
+      <div id="dashboardContent"></div>
+    </section>
+
+    <!-- Transactions Tab -->
+    <section class="tab-content" id="tab-transactions" role="tabpanel">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">支出记录</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button class="btn btn-accent btn-sm" id="btnManageCats">🏷️ 管理分类</button>
+            <button class="btn btn-primary" id="btnAddTransaction">+ 新增支出</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <select class="form-select" id="filterMonth" aria-label="筛选月份"><option value="all">全部月份</option></select>
+          <select class="form-select" id="filterCategory" aria-label="筛选分类"><option value="all">全部分类</option></select>
+          <select class="form-select" id="filterProject" aria-label="筛选项目"><option value="all">全部项目</option><option value="__none__">未归属</option></select>
+          <input type="text" class="form-input search-input" id="filterKeyword" placeholder="🔍 搜索备注或分类..." aria-label="搜索"/>
+          <span class="filter-result-count" id="filterResultCount"></span>
+        </div>
+        <div class="filter-active-tags" id="filterActiveTags"></div>
+        <div id="transactionList"></div>
+      </div>
+    </section>
+
+    <!-- Export Tab -->
+    <section class="tab-content" id="tab-export" role="tabpanel">
+      <div class="card">
+        <div class="card-header"><span class="card-title">数据导出</span></div>
+        <div class="export-options">
+          <div class="form-group" style="margin-bottom:0;"><label for="exportStartMonth">开始月份</label><input type="month" class="form-input" id="exportStartMonth"/></div>
+          <div class="form-group" style="margin-bottom:0;"><label for="exportEndMonth">结束月份</label><input type="month" class="form-input" id="exportEndMonth"/></div>
+          <div class="form-group" style="margin-bottom:0;"><label for="exportProject">所属项目</label><select class="form-select" id="exportProject"><option value="all">全部项目</option><option value="__none__">仅未归属</option></select></div>
+          <button class="btn btn-primary" id="btnExportCSV">📥 导出 CSV</button>
+          <button class="btn btn-secondary" id="btnExportJSON">💾 导出备份</button>
+        </div>
+        <div class="card-header"><span class="card-title">数据预览</span></div>
+        <div class="export-preview" id="exportPreview">选择时间范围后显示预览...</div>
+      </div>
+      <div class="card" style="margin-top:var(--spacing-md);">
+        <div class="card-header"><span class="card-title">⚙️ 数据管理</span></div>
+        <p style="font-size:var(--font-size-sm);color:var(--color-text-secondary);margin-bottom:var(--spacing-md);">当前 <strong id="dataCount">0</strong> 条支出，<strong id="projectCount">0</strong> 个项目，<strong id="catCount">0</strong> 个分类，<strong id="attachCount">0</strong> 个附件。</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-sm" id="btnImportJSON">📂 导入备份</button>
+          <input type="file" id="importFileInput" accept=".json" style="display:none;"/>
+          <button class="btn btn-secondary btn-sm" id="btnClearAll">🗑️ 清除所有数据</button>
+          <button class="btn btn-secondary btn-sm" id="btnResetCategories">🔄 清空分类</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ===== MOBILE BOTTOM NAV ===== -->
+<nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="移动端导航">
+  <div class="nav-items">
+    <button class="nav-item active" data-nav="dashboard" aria-label="概览"><span class="nav-icon">📊</span>概览</button>
+    <button class="nav-item" data-nav="transactions" aria-label="记录"><span class="nav-icon">📝</span>记录</button>
+    <button class="nav-item" data-nav="export" aria-label="管理"><span class="nav-icon">📤</span>管理</button>
+  </div>
+</nav>
+
+<div id="modalContainer"></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+const BudgetApp = (()=>{
+'use strict';
+
+const PROJECT_COLORS=['#4A90D9','#E17055','#00B894','#6C5CE7','#F39C12','#E74C3C','#0984E3','#D63031','#00CEC9','#FD79A8','#636E72','#FDCB6E'];
+const PROJECT_ICONS=['📁','🚀','🎯','💡','🔧','📋','🏗️','🎨','📱','🌟','🔥','💎','🎓','🛠️','📊','⚡'];
+const CAT_ICONS=['🍔','🚗','🛒','🏠','🎮','💊','📚','📱','👥','📦','🤝','✈️','🖨️','📢','🔬','📌','💻','🔧','🏗️','📋'];
+const MAX_FILE_SIZE=10*1024*1024;
+
+const Utils={
+  generateId(p){return `${p}_${Date.now()}_${Math.random().toString(36).slice(2,8)}`},
+  getCurrentMonth(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`},
+  formatCurrency(a){return `¥${Math.abs(a).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2})}`},
+  formatDate(d){const p=d.split('-');return p.length===3?`${parseInt(p[1])}月${parseInt(p[2])}日`:`${parseInt(p[0])}年${parseInt(p[1])}月`},
+  escapeCSV(v){const s=String(v);return(s.includes(',')||s.includes('"')||s.includes('\n'))?`"${s.replace(/"/g,'""')}"`:s},
+  formatFileSize(b){if(b<1024)return b+' B';if(b<1048576)return (b/1024).toFixed(1)+' KB';return (b/1048576).toFixed(1)+' MB'},
+  debounce(fn,d=300){let t;return function(...a){clearTimeout(t);t=setTimeout(()=>fn.apply(this,a),d)}},
+  $(s,p=document){return p.querySelector(s)},
+  $$(s,p=document){return Array.from(p.querySelectorAll(s))},
+  getDaysInMonth(y,m){return new Date(y,m,0).getDate()},
+  animateValue(el,start,end,dur=600){if(start===end){el.textContent=Utils.formatCurrency(end);return}const range=end-start;let st=null;function step(ts){if(!st)st=ts;const p=Math.min((ts-st)/dur,1);const v=start+range*easeOutCubic(p);el.textContent=Utils.formatCurrency(v);if(p<1)requestAnimationFrame(step);else el.textContent=Utils.formatCurrency(end)}requestAnimationFrame(step);function easeOutCubic(t){return 1-Math.pow(1-t,3)}}
+};
+
+/* ========== INDEXEDDB ATTACHMENT STORE ========== */
+const AttachDB={
+  DB_NAME:'ExpenseApp', STORE:'attachments', VERSION:1,
+  _db:null,
+  async open(){
+    if(this._db)return this._db;
+    return new Promise((resolve,reject)=>{
+      const req=indexedDB.open(this.DB_NAME,this.VERSION);
+      req.onupgradeneeded=(e)=>{const db=e.target.result;if(!db.objectStoreNames.contains(this.STORE))db.createObjectStore(this.STORE,{keyPath:'id'})};
+      req.onsuccess=(e)=>{this._db=e.target.result;resolve(this._db)};
+      req.onerror=()=>reject(req.error);
+    });
+  },
+  async save(id,file){
+    const db=await this.open();
+    return new Promise((resolve,reject)=>{
+      const reader=new FileReader();
+      reader.onload=()=>{
+        const tx=db.transaction(this.STORE,'readwrite');
+        const store=tx.objectStore(this.STORE);
+        store.put({id,fileName:file.name,fileType:file.type,fileSize:file.size,blob:reader.result});
+        tx.oncomplete=()=>resolve();
+        tx.onerror=()=>reject(tx.error);
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  },
+  async get(id){
+    const db=await this.open();
+    return new Promise((resolve,reject)=>{
+      const tx=db.transaction(this.STORE,'readonly');
+      const store=tx.objectStore(this.STORE);
+      const req=store.get(id);
+      req.onsuccess=()=>resolve(req.result||null);
+      req.onerror=()=>reject(req.error);
+    });
+  },
+  async remove(id){
+    const db=await this.open();
+    return new Promise((resolve,reject)=>{
+      const tx=db.transaction(this.STORE,'readwrite');
+      const store=tx.objectStore(this.STORE);
+      store.delete(id);
+      tx.oncomplete=()=>resolve();
+      tx.onerror=()=>reject(tx.error);
+    });
+  },
+  async count(){
+    const db=await this.open();
+    return new Promise((resolve,reject)=>{
+      const tx=db.transaction(this.STORE,'readonly');
+      const store=tx.objectStore(this.STORE);
+      const req=store.count();
+      req.onsuccess=()=>resolve(req.result);
+      req.onerror=()=>reject(req.error);
+    });
+  },
+  async clear(){
+    const db=await this.open();
+    return new Promise((resolve,reject)=>{
+      const tx=db.transaction(this.STORE,'readwrite');
+      const store=tx.objectStore(this.STORE);
+      store.clear();
+      tx.oncomplete=()=>resolve();
+      tx.onerror=()=>reject(tx.error);
+    });
+  },
+  async getAllKeys(){
+    const db=await this.open();
+    return new Promise((resolve,reject)=>{
+      const tx=db.transaction(this.STORE,'readonly');
+      const store=tx.objectStore(this.STORE);
+      const req=store.getAllKeys();
+      req.onsuccess=()=>resolve(req.result||[]);
+      req.onerror=()=>reject(req.error);
+    });
+  }
+};
+
+/* ========== STORE ========== */
+const Store={
+  KEYS:{TRANSACTIONS:'proj_v3_txns',CATEGORIES:'proj_v3_cats',ACTIVE_MONTH:'proj_active_month',PROJECTS:'proj_v3_projects',PROJECT_GROUPS:'proj_v3_groups',ACTIVE_PROJECT:'proj_active_project',COLLAPSED_GROUPS:'proj_collapsed_groups'},
+  _read(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):null}catch(e){return null}},
+  _write(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){Renderer.showToast('存储空间已满，请导出后清理。','error')}},
+
+  getAllTransactions(){return(this._read(this.KEYS.TRANSACTIONS)||[]).sort((a,b)=>b.date.localeCompare(a.date)||(b.createdAt||'').localeCompare(a.createdAt||''))},
+  addTransaction(t){const l=this.getAllTransactions();l.push(t);this._write(this.KEYS.TRANSACTIONS,l)},
+  updateTransaction(id,u){const l=this.getAllTransactions();const i=l.findIndex(t=>t.id===id);if(i===-1)return false;l[i]={...l[i],...u};this._write(this.KEYS.TRANSACTIONS,l);return true},
+  deleteTransaction(id){const l=this.getAllTransactions();const f=l.filter(t=>t.id!==id);if(f.length===l.length)return false;this._write(this.KEYS.TRANSACTIONS,f);return true},
+  /** Get a transaction by ID (for undo) */
+  getTransaction(id){return this.getAllTransactions().find(t=>t.id===id)||null},
+  /** Restore a deleted transaction */
+  restoreTransaction(t){this.addTransaction(t)},
+
+  getAllCategories(){return this._read(this.KEYS.CATEGORIES)||[]},
+  addCategory(c){const l=this.getAllCategories();l.push(c);this._write(this.KEYS.CATEGORIES,l)},
+  updateCategory(id,u){const l=this.getAllCategories();const i=l.findIndex(c=>c.id===id);if(i===-1)return false;l[i]={...l[i],...u};this._write(this.KEYS.CATEGORIES,l);return true},
+  deleteCategory(id){const l=this.getAllCategories();const f=l.filter(c=>c.id!==id);if(f.length===l.length)return false;this._write(this.KEYS.CATEGORIES,f);return true},
+  resetCategories(){this._write(this.KEYS.CATEGORIES,[])},
+
+  getAllProjects(){const l=this._read(this.KEYS.PROJECTS)||[];return l.map(p=>({groupId:null,order:0,...p})).sort((a,b)=>(a.order||0)-(b.order||0)||(a.createdAt||'').localeCompare(b.createdAt||''))},
+  addProject(p){const l=this._read(this.KEYS.PROJECTS)||[];const same=l.filter(x=>x.groupId===p.groupId);p.order=same.length>0?Math.max(...same.map(x=>x.order||0))+1:0;l.push(p);this._write(this.KEYS.PROJECTS,l)},
+  updateProject(id,u){const l=this._read(this.KEYS.PROJECTS)||[];const i=l.findIndex(p=>p.id===id);if(i===-1)return false;l[i]={...l[i],...u};this._write(this.KEYS.PROJECTS,l);return true},
+  deleteProject(id){const l=this._read(this.KEYS.PROJECTS)||[];const f=l.filter(p=>p.id!==id);if(f.length===l.length)return false;this._write(this.KEYS.PROJECTS,f);const txns=this.getAllTransactions();let ch=false;for(const t of txns){if(t.projectId===id){t.projectId=null;ch=true}}if(ch)this._write(this.KEYS.TRANSACTIONS,txns);return true},
+  /** Reorder projects after drag-drop: each item {id, groupId, order} */
+  reorderProjects(items){const l=this._read(this.KEYS.PROJECTS)||[];for(const it of items){const i=l.findIndex(p=>p.id===it.id);if(i!==-1){l[i].groupId=it.groupId;l[i].order=it.order}}this._write(this.KEYS.PROJECTS,l)},
+
+  getAllProjectGroups(){return(this._read(this.KEYS.PROJECT_GROUPS)||[]).sort((a,b)=>(a.order||0)-(b.order||0))},
+  addProjectGroup(g){const l=this.getAllProjectGroups();g.order=l.length;l.push(g);this._write(this.KEYS.PROJECT_GROUPS,l)},
+  updateProjectGroup(id,u){const l=this.getAllProjectGroups();const i=l.findIndex(g=>g.id===id);if(i===-1)return false;l[i]={...l[i],...u};this._write(this.KEYS.PROJECT_GROUPS,l);return true},
+  deleteProjectGroup(id){const l=this.getAllProjectGroups();const f=l.filter(g=>g.id!==id);if(f.length===l.length)return false;this._write(this.KEYS.PROJECT_GROUPS,f);const projs=this._read(this.KEYS.PROJECTS)||[];let ch=false;for(const p of projs){if(p.groupId===id){p.groupId=null;ch=true}}if(ch)this._write(this.KEYS.PROJECTS,projs);return true},
+
+  getCollapsedGroups(){return this._read(this.KEYS.COLLAPSED_GROUPS)||[]},
+  setCollapsedGroup(id,collapsed){const s=this.getCollapsedGroups();const i=s.indexOf(id);if(collapsed&&i===-1)s.push(id);if(!collapsed&&i!==-1)s.splice(i,1);this._write(this.KEYS.COLLAPSED_GROUPS,s)},
+
+  getActiveProject(){return this._read(this.KEYS.ACTIVE_PROJECT)||'__all__'},
+  setActiveProject(id){this._write(this.KEYS.ACTIVE_PROJECT,id)},
+  getActiveMonth(){return this._read(this.KEYS.ACTIVE_MONTH)||Utils.getCurrentMonth()},
+  setActiveMonth(m){this._write(this.KEYS.ACTIVE_MONTH,m)},
+
+  clearAll(){localStorage.removeItem(this.KEYS.TRANSACTIONS);localStorage.removeItem(this.KEYS.CATEGORIES);localStorage.removeItem(this.KEYS.PROJECTS);localStorage.removeItem(this.KEYS.PROJECT_GROUPS)},
+
+  /** Export all data as JSON */
+  exportAll(){return{version:4,transactions:this.getAllTransactions(),categories:this.getAllCategories(),projects:this.getAllProjects(),projectGroups:this.getAllProjectGroups(),exportedAt:new Date().toISOString()}},
+  /** Import JSON data */
+  importAll(data){if(!data||(data.version!==3&&data.version!==4))throw new Error('数据格式不正确，仅支持 v3/v4');this._write(this.KEYS.TRANSACTIONS,data.transactions||[]);this._write(this.KEYS.CATEGORIES,data.categories||[]);this._write(this.KEYS.PROJECTS,data.projects||[]);this._write(this.KEYS.PROJECT_GROUPS,data.projectGroups||[])}
+};
+
+/* ========== CALCULATOR ========== */
+const Calculator={
+  _filterByProject(txns,pid){if(pid==='__all__'||!pid)return txns;return txns.filter(t=>t.projectId===pid)},
+  getMonthlyExpense(txns,monthStr,pid){return this._filterByProject(txns.filter(t=>t.date.startsWith(monthStr)),pid).reduce((s,t)=>s+t.amount,0)},
+  getTotalExpense(txns,pid){return this._filterByProject(txns,pid).reduce((s,t)=>s+t.amount,0)},
+  getAvailableMonths(txns){const ms=new Set();for(const t of txns)ms.add(t.date.substring(0,7));ms.add(Utils.getCurrentMonth());return[...ms].sort()},
+  /** Get expense grouped by category for a given month/project */
+  getExpenseByCategory(txns,monthStr,pid){
+    const tx=this._filterByProject(txns.filter(t=>t.date.startsWith(monthStr)),pid);
+    const map={};for(const t of tx){map[t.categoryId]=(map[t.categoryId]||0)+t.amount}return map;
+  },
+  /** Get expense grouped by project for a given month */
+  getExpenseByProject(txns,monthStr){
+    const tx=txns.filter(t=>t.date.startsWith(monthStr));
+    const map={};for(const t of tx){const pid=t.projectId||'__none__';map[pid]=(map[pid]||0)+t.amount}return map;
+  },
+  /** Get monthly totals for last N months */
+  getMonthlyTotals(txns,months=6){
+    const cur=Utils.getCurrentMonth();const [y,m]=cur.split('-').map(Number);const result=[];
+    for(let i=months-1;i>=0;i--){let my=y,mm=m-i;while(mm<1){my--;mm+=12}const key=`${my}-${String(mm).padStart(2,'0')}`;result.push({month:key,label:`${mm}月`,total:txns.filter(t=>t.date.startsWith(key)).reduce((s,t)=>s+t.amount,0)})}
+    return result;
+  },
+  filterTransactions(txns,filters){
+    return txns.filter(tx=>{
+      if(filters.month&&!tx.date.startsWith(filters.month))return false;
+      if(filters.categoryId&&filters.categoryId!=='all'&&tx.categoryId!==filters.categoryId)return false;
+      if(filters.projectId==='__none__'){if(tx.projectId)return false}
+      else if(filters.projectId&&filters.projectId!=='all'){if(tx.projectId!==filters.projectId)return false}
+      if(filters.keyword){const kw=filters.keyword.toLowerCase();const cat=Store.getAllCategories().find(c=>c.id===tx.categoryId);if(!(tx.note||'').toLowerCase().includes(kw)&&!(cat?cat.name:'').toLowerCase().includes(kw))return false}
+      return true;
+    });
+  }
+};
+
+/* ========== CHARTS (Canvas) ========== */
+const Charts={
+  /** Draw a simple donut/pie chart for category breakdown */
+  drawPieChart(canvasId,data,colors){
+    const canvas=document.getElementById(canvasId);if(!canvas)return;
+    const ctx=canvas.getContext('2d');
+    const dpr=window.devicePixelRatio||1;
+    const w=canvas.clientWidth,h=canvas.clientHeight||260;
+    canvas.width=w*dpr;canvas.height=h*dpr;ctx.scale(dpr,dpr);
+    canvas.style.width=w+'px';canvas.style.height=h+'px';
+    ctx.clearRect(0,0,w,h);
+    const total=data.reduce((s,d)=>s+d.value,0);
+    if(total===0){ctx.fillStyle='#B2BEC3';ctx.font='14px sans-serif';ctx.textAlign='center';ctx.fillText('暂无数据',w/2,h/2);return}
+    const cx=w/2,cy=h/2,r=Math.min(w,h)/2-30,ir=r*0.55;
+    let angle=-Math.PI/2;
+    for(let i=0;i<data.length;i++){
+      const slice=data[i].value/total*Math.PI*2;
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,angle,angle+slice);ctx.closePath();ctx.fillStyle=colors[i%colors.length];ctx.fill();
+      // Label
+      const mid=angle+slice/2;const lx=cx+Math.cos(mid)*(r+18);const ly=cy+Math.sin(mid)*(r+18);
+      ctx.fillStyle='#636E72';ctx.font='11px sans-serif';ctx.textAlign=lx>cx?'left':'right';
+      const pct=Math.round(data[i].value/total*100);
+      ctx.fillText(`${data[i].label} ${pct}%`,lx,ly);
+      angle+=slice;
+    }
+    // Inner circle (donut hole)
+    ctx.beginPath();ctx.arc(cx,cy,ir,0,Math.PI*2);ctx.fillStyle='#FFFFFF';ctx.fill();
+    ctx.fillStyle='#1A1A2E';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.fillText('分类占比',cx,cy-4);
+    ctx.fillStyle='#636E72';ctx.font='12px sans-serif';ctx.fillText(`总额: ${Utils.formatCurrency(total)}`,cx,cy+16);
+  },
+
+  /** Draw a simple bar chart for monthly trends */
+  drawBarChart(canvasId,data){
+    const canvas=document.getElementById(canvasId);if(!canvas)return;
+    const ctx=canvas.getContext('2d');
+    const dpr=window.devicePixelRatio||1;
+    const w=canvas.clientWidth,h=canvas.clientHeight||240;
+    canvas.width=w*dpr;canvas.height=h*dpr;ctx.scale(dpr,dpr);
+    canvas.style.width=w+'px';canvas.style.height=h+'px';
+    ctx.clearRect(0,0,w,h);
+    const max=Math.max(...data.map(d=>d.total),1);
+    const pad={top:20,right:16,bottom:30,left:50};
+    const cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;
+    const bw=cw/data.length*0.55,gap=cw/data.length*0.45;
+    // Axes
+    ctx.strokeStyle='#E1E5EA';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.left,pad.top);ctx.lineTo(pad.left,h-pad.bottom);ctx.lineTo(w-pad.right,h-pad.bottom);ctx.stroke();
+    // Y-axis labels
+    ctx.fillStyle='#B2BEC3';ctx.font='10px sans-serif';ctx.textAlign='right';
+    for(let i=0;i<=4;i++){const v=Math.round(max*i/4);const y=h-pad.bottom-ch*i/4;ctx.fillText(Utils.formatCurrency(v),pad.left-6,y+3);
+      ctx.strokeStyle='#f0f0f0';ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(w-pad.right,y);ctx.stroke()}
+    // Bars
+    for(let i=0;i<data.length;i++){
+      const bh=data[i].total/max*ch;
+      const x=pad.left+i*(bw+gap)+gap/2,y=h-pad.bottom-bh;
+      // Gradient
+      const grad=ctx.createLinearGradient(x,y,x,h-pad.bottom);
+      grad.addColorStop(0,'#4A90D9');grad.addColorStop(1,'#6C5CE7');
+      ctx.fillStyle=grad;ctx.beginPath();this._roundRect(ctx,x,y,bw,bh,{tl:4,tr:4,bl:0,br:0});ctx.fill();
+      // Value
+      ctx.fillStyle='#1A1A2E';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillText(data[i].total>0?`¥${(data[i].total/10000).toFixed(1)}万`:'',x+bw/2,y-6);
+      // Label
+      ctx.fillStyle='#636E72';ctx.font='11px sans-serif';ctx.fillText(data[i].label,x+bw/2,h-pad.bottom+16);
+    }
+  },
+
+  _roundRect(ctx,x,y,w,r,radii){ctx.beginPath();ctx.moveTo(x+radii.tl,y);ctx.lineTo(x+w-radii.tr,y);ctx.quadraticCurveTo(x+w,y,x+w,y+radii.tr);ctx.lineTo(x+w,y+h-radii.br);ctx.quadraticCurveTo(x+w,y+h,x+w-radii.br,y+h);ctx.lineTo(x+radii.bl,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-radii.bl);ctx.lineTo(x,y+radii.tl);ctx.quadraticCurveTo(x,y,x+radii.tl,y);ctx.closePath();ctx.fill()}
+};
+
+/* ========== RENDERER ========== */
+const Renderer={
+  renderSidebar(){
+    const projects=Store.getAllProjects(),groups=Store.getAllProjectGroups(),ap=Store.getActiveProject(),month=Store.getActiveMonth(),txns=Store.getAllTransactions(),collapsed=Store.getCollapsedGroups();
+    const pm={};for(const p of projects)pm[p.id]=p;
+    const gm={};for(const g of groups)gm[g.id]=g;
+
+    // "全部项目" entry
+    const ai=Utils.$('#sidebarItemAll');if(ai){
+      ai.classList.toggle('active',ap==='__all__');
+      const mc=txns.filter(t=>t.date.startsWith(month)).length;
+      Utils.$('#sidebarAllCount').textContent=mc;
+      Utils.$('#sidebarAllTotal').textContent=`共${txns.length}条`;
+    }
+
+    const ct=Utils.$('#sidebarProjectList');
+    if(!projects.length && !groups.length){
+      ct.innerHTML='<div style="padding:12px;text-align:center;color:var(--color-text-muted);font-size:var(--font-size-xs);">暂无项目<br/>点击下方按钮创建</div>';
+    }else{
+      let h='';
+      // Build project lookup by group
+      const projectsByGroup={};
+      const ungrouped=[];
+      for(const p of projects){
+        if(p.groupId&&gm[p.groupId]){if(!projectsByGroup[p.groupId])projectsByGroup[p.groupId]=[];projectsByGroup[p.groupId].push(p)}
+        else ungrouped.push(p);
+      }
+
+      // Render groups with their projects
+      for(const g of groups){
+        const gps=projectsByGroup[g.id]||[];
+        const isCollapsed=collapsed.includes(g.id);
+        const gTotal=gps.reduce((s,p)=>s+txns.filter(t=>t.projectId===p.id).length,0);
+        h+=`<div class="sidebar-group${isCollapsed?' collapsed':''}" id="group_${g.id}" data-group="${g.id}">
+          <div class="sidebar-group-header" onclick="BudgetApp._toggleGroup('${g.id}')">
+            <span class="collapse-arrow">▼</span><span class="group-icon">${g.icon}</span>
+            <span class="group-name">${Renderer._esc(g.name)}</span>
+            <span class="group-count">${gps.length}</span>
+            <span class="group-actions">
+              <button class="group-act-btn" onclick="event.stopPropagation();BudgetApp._editGroup('${g.id}')" title="编辑分组">✏️</button>
+              <button class="group-act-btn" onclick="event.stopPropagation();BudgetApp._deleteGroup('${g.id}')" title="删除分组">🗑️</button>
+            </span>
+          </div>`;
+        if(gps.length===0){
+          h+=`<div class="sidebar-item empty-placeholder" style="opacity:.5;font-size:var(--font-size-xs);padding-left:28px;cursor:default;" data-project="__empty_${g.id}" data-group="${g.id}">（空分组 — 拖拽项目至此）</div>`;
+        }
+        for(let i=0;i<gps.length;i++){
+          const p=gps[i];
+          const monthCnt=txns.filter(t=>t.projectId===p.id&&t.date.startsWith(month)).length;
+          const totalCnt=txns.filter(t=>t.projectId===p.id).length;
+          h+=this._buildProjectItem(p,ap,monthCnt,totalCnt,i>0?gps[i-1].id:'',i<gps.length-1?gps[i+1].id:'',g.id,true);
+        }
+        h+=`</div>`;
+      }
+
+      // Ungrouped section
+      const ungroupedCollapsed=collapsed.includes('__ungrouped__');
+      h+=`<div class="sidebar-group${ungroupedCollapsed?' collapsed':''}" id="group___ungrouped__" data-group="__ungrouped__">
+        <div class="sidebar-group-header" onclick="BudgetApp._toggleGroup('__ungrouped__')">
+          <span class="collapse-arrow">▼</span><span class="group-icon">📌</span>
+          <span class="group-name">未分组</span><span class="group-count">${ungrouped.length}</span>
+        </div>`;
+      if(ungrouped.length===0){
+        h+=`<div class="sidebar-item empty-placeholder" style="opacity:.5;font-size:var(--font-size-xs);padding-left:28px;cursor:default;" data-project="__empty_ungrouped" data-group="__ungrouped__">（拖拽项目至此以取消分组）</div>`;
+      }
+      for(let i=0;i<ungrouped.length;i++){
+        const p=ungrouped[i];
+        const monthCnt=txns.filter(t=>t.projectId===p.id&&t.date.startsWith(month)).length;
+        const totalCnt=txns.filter(t=>t.projectId===p.id).length;
+        h+=this._buildProjectItem(p,ap,monthCnt,totalCnt,i>0?ungrouped[i-1].id:'',i<ungrouped.length-1?ungrouped[i+1].id:'',null,false);
+      }
+      h+=`</div>`;
+      ct.innerHTML=h;
+    }
+    this._renderMobileStrip(projects,Store.getAllProjectGroups(),ap,month,txns);
+  },
+
+  /** Build a single sidebar project item HTML */
+  _buildProjectItem(p,ap,monthCnt,totalCnt,prevId,nextId,groupId,isGrouped){
+    return `<div class="sidebar-item ${ap===p.id?'active':''} ${isGrouped?'':'ungrouped'}" data-project="${p.id}" data-group="${groupId||'__ungrouped__'}" data-prev="${prevId}" data-next="${nextId}" draggable="true" onclick="BudgetApp._selectProject('${p.id}')">
+      <span class="drag-handle" title="拖拽排序">⋮⋮</span>
+      <span class="proj-color" style="background:${p.color};"></span><span>${p.icon}</span>
+      <span class="proj-name">${Renderer._esc(p.name)}</span>
+      <span class="proj-counts"><span class="proj-count">${monthCnt}</span><span class="proj-count-total">共${totalCnt}</span></span>
+      <span class="proj-actions">
+        <button class="proj-act-btn" onclick="event.stopPropagation();BudgetApp._editProject('${p.id}')" title="编辑项目">✏️</button>
+        <button class="proj-act-btn" onclick="event.stopPropagation();BudgetApp._deleteProject('${p.id}')" title="删除项目">🗑️</button>
+      </span></div>`;
+  },
+
+  _renderMobileStrip(projects,groups,ap,month,txns){
+    const st=Utils.$('#mobileProjectStrip'),gm={};
+    for(const g of groups)gm[g.id]=g;
+    let h=`<div class="mobile-project-chip ${ap==='__all__'?'active':''}" onclick="BudgetApp._selectProject('__all__')" aria-label="全部项目"><span>📊</span>全部<span class="chip-count">${txns.filter(t=>t.date.startsWith(month)).length}</span></div>`;
+    // Show groups as chips, then projects
+    for(const g of groups){
+      const gps=projects.filter(p=>p.groupId===g.id);
+      h+=`<div class="mobile-project-chip" style="background:${g.color}15;border-color:${g.color}40;" onclick="BudgetApp._selectProject('__all__')" aria-label="${Renderer._esc(g.name)}"><span>${g.icon}</span>${Renderer._esc(g.name)}<span class="chip-count">${gps.length}</span></div>`;
+    }
+    for(const p of projects){
+      const cnt=txns.filter(t=>t.projectId===p.id&&t.date.startsWith(month)).length;
+      h+=`<div class="mobile-project-chip ${ap===p.id?'active':''}" onclick="BudgetApp._selectProject('${p.id}')" aria-label="${Renderer._esc(p.name)}">
+        <span class="chip-color" style="background:${p.color};"></span><span>${p.icon}</span>${Renderer._esc(p.name)}<span class="chip-count">${cnt}</span>
+        <button class="chip-menu-btn" onclick="event.stopPropagation();BudgetApp._toggleChipMenu(event,'${p.id}')" aria-label="更多操作">⋯</button>
+        <div class="chip-menu" id="chipMenu_${p.id}">
+          <button class="chip-menu-item" onclick="event.stopPropagation();BudgetApp._editProject('${p.id}');BudgetApp._closeAllChipMenus()">✏️ 编辑</button>
+          <button class="chip-menu-item danger" onclick="event.stopPropagation();BudgetApp._deleteProject('${p.id}');BudgetApp._closeAllChipMenus()">🗑️ 删除</button>
+        </div></div>`;
+    }
+    h+=`<div class="mobile-project-chip" onclick="BudgetApp._showProjectModal(null)" style="border-style:dashed;" aria-label="新建项目">+ 新建</div>`;
+    st.innerHTML=h;
+  },
+
+  /** Render the Dashboard tab */
+  renderDashboard(){
+    const txns=Store.getAllTransactions(),cats=Store.getAllCategories(),projects=Store.getAllProjects(),ap=Store.getActiveProject();
+    const cm={};for(const c of cats)cm[c.id]=c;
+    const pm={};for(const p of projects)pm[p.id]=p;
+
+    // Dashboard filters by active project (shows all when '__all__' is selected) — independent of sidebar project selection
+    const allTxns=Calculator._filterByProject(txns,ap);
+    const allTotal=allTxns.reduce((s,t)=>s+t.amount,0);
+    const allCount=allTxns.length;
+    const months=Calculator.getAvailableMonths(allTxns);
+    const monthCount=months.length;
+
+    // Project ranking (all-time)
+    const projExp=Calculator.getExpenseByProject(txns,Utils.getCurrentMonth());
+    // Also compute all-time project ranking
+    const projExpAll={};for(const t of txns){const pid=t.projectId||'__none__';projExpAll[pid]=(projExpAll[pid]||0)+t.amount}
+    const projRank=Object.entries(projExpAll).filter(([pid])=>pid!=='__none__').map(([pid,v])=>({id:pid,name:(pm[pid]||{name:'已删除项目'}).name,icon:(pm[pid]||{icon:'❓'}).icon,color:(pm[pid]||{color:'#B2BEC3'}).color,value:v})).sort((a,b)=>b.value-a.value);
+    const unassignedExp=projExpAll['__none__']||0;
+
+    // Recent transactions (all-time, most recent 5)
+    const recent=allTxns.slice(0,5);
+
+    // Budget status (current month budget for selected project)
+    const curMonth=Utils.getCurrentMonth();
+    const monthTotal=Calculator._filterByProject(txns.filter(t=>t.date.startsWith(curMonth)),ap).reduce((s,t)=>s+t.amount,0);
+    let budgetHTML='';
+    if(ap!=='__all__'&&ap){
+      const proj=pm[ap];
+      if(proj&&proj.budget&&proj.budget>0){
+        const pct=Math.round(monthTotal/proj.budget*100);
+        const barClass=pct<70?'safe':(pct<100?'warn':'over');
+        const statusIcon=pct>=100?'🔴':(pct>=70?'🟡':'🟢');
+        budgetHTML=`<div class="card" style="margin-bottom:var(--spacing-md);">
+          <div class="card-header"><span class="card-title">💰 ${Renderer._esc(proj.name)} - 本月预算</span><span>${statusIcon} ${pct}%</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:var(--font-size-sm);margin-bottom:4px;"><span>已用 ${Utils.formatCurrency(monthTotal)}</span><span>预算 ${Utils.formatCurrency(proj.budget)}</span></div>
+          <div class="budget-bar-wrap"><div class="budget-bar ${barClass}" style="width:${Math.min(pct,100)}%"></div></div>
+          ${pct>=100?`<div style="margin-top:8px;padding:8px 12px;background:var(--color-expense-bg);border-radius:var(--radius-sm);font-size:var(--font-size-xs);color:var(--color-danger);">⚠️ 已超出预算 ${Utils.formatCurrency(monthTotal-proj.budget)}</div>`:''}
+        </div>`;
+      }
+    }
+
+    // Build HTML
+    let h='';
+    // All-time summary bar
+    h+=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--spacing-md);padding:10px 16px;background:var(--color-primary-light);border-radius:var(--radius-md);font-size:var(--font-size-sm);">
+      <span>📊 <strong>全部概览</strong>${ap!=='__all__'?` — 项目：${(pm[ap]||{}).icon||''} ${(pm[ap]||{}).name||''}`:''}</span>
+      <span>📋 累计：<strong>${Utils.formatCurrency(allTotal)}</strong> / <strong>${allCount}笔</strong> / <strong>${monthCount}个月</strong></span>
+    </div>`;
+    // Stats cards (all-time)
+    h+=`<div class="stats-grid">
+      <div class="stat-card"><div class="stat-value expense">${Utils.formatCurrency(allTotal)}</div><div class="stat-label">累计支出</div><div class="stat-sub">全部时间</div></div>
+      <div class="stat-card"><div class="stat-value">${allCount}</div><div class="stat-label">支出笔数</div>${allCount>0?`<div class="stat-sub">平均 ${Utils.formatCurrency(allCount>0?allTotal/allCount:0)}/笔</div>`:''}</div>
+      <div class="stat-card"><div class="stat-value">${projects.length}</div><div class="stat-label">活跃项目</div>${unassignedExp>0?`<div class="stat-sub">未归属 ${Utils.formatCurrency(unassignedExp)}</div>`:''}</div>
+    </div>`;
+
+    // Budget
+    h+=budgetHTML;
+
+    // Project ranking + Recent transactions row
+    h+=`<div class="chart-row">
+      <div class="chart-container"><div class="chart-title">🏆 项目支出排行（累计）</div>`;
+    if(projRank.length===0){
+      h+=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">暂无项目支出</div></div>`;
+    }else{
+      h+=`<ul class="rank-list">`;
+      for(let i=0;i<Math.min(projRank.length,5);i++){
+        const rank=i+1;const p=projRank[i];
+        const rc=rank===1?'gold':(rank===2?'silver':(rank===3?'bronze':''));
+        const maxVal=projRank[0].value;
+        h+=`<li class="rank-item" onclick="BudgetApp._selectProject('${p.id}')" style="cursor:pointer;">
+          <span class="rank-num${rc?' '+rc:''}" style="${!rc?'background:#DFE6E9;color:#636E72':''}">${rank}</span>
+          <div class="rank-info"><div class="rank-name">${p.icon} ${Renderer._esc(p.name)}</div><div class="rank-bar-wrap"><div class="rank-bar" style="width:${maxVal>0?p.value/maxVal*100:0}%;background:${p.color};"></div></div></div>
+          <span class="rank-amount">${Utils.formatCurrency(p.value)}</span></li>`;
+      }
+      h+=`</ul>`;
+    }
+    h+=`</div>`;
+
+    // Recent transactions
+    h+=`<div class="chart-container"><div class="chart-title">🕐 最近支出</div>`;
+    if(recent.length===0){
+      h+=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">暂无记录</div></div>`;
+    }else{
+      h+=`<ul class="recent-list">`;
+      for(const t of recent){
+        const cat=cm[t.categoryId]||{name:'未分类',icon:'📌'};
+        const proj=pm[t.projectId];
+        h+=`<li class="recent-item" onclick="BudgetApp._editTransaction('${t.id}')">
+          <span class="recent-icon">${cat.icon}</span><div class="recent-info"><div class="recent-name">${cat.name}</div><div class="recent-date">${t.date}${proj?` · ${proj.icon} ${Renderer._esc(proj.name)}`:''}</div></div>
+          <span class="recent-amount">${Utils.formatCurrency(t.amount)}</span></li>`;
+      }
+      h+=`</ul>`;
+    }
+    h+=`</div></div>`;
+
+    Utils.$('#dashboardContent').innerHTML=h;
+  },
+
+  _prevMonth(ym){const[y,m]=ym.split('-').map(Number);let py=y,pm=m-1;if(pm<1){py--;pm=12}return `${py}-${String(pm).padStart(2,'0')}`},
+
+  /** Build filter dropdowns once. Called at init + when projects/cats change. */
+  initFilters(){
+    const txns=Store.getAllTransactions(),cats=Store.getAllCategories(),projects=Store.getAllProjects();
+    const months=Calculator.getAvailableMonths(txns);
+    Utils.$('#filterMonth').innerHTML='<option value="all">全部月份（'+txns.length+'条）</option>'+months.map(m=>`<option value="${m}">${m}</option>`).join('');
+    Utils.$('#filterCategory').innerHTML='<option value="all">全部分类</option>'+cats.map(c=>`<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+    Utils.$('#filterProject').innerHTML='<option value="all">全部项目</option><option value="__none__">仅未归属</option>'+projects.map(p=>`<option value="${p.id}">${p.icon} ${Renderer._esc(p.name)}</option>`).join('');
+    // Ensure all default to 'all'
+    Utils.$('#filterMonth').value='all';
+    Utils.$('#filterCategory').value='all';
+    Utils.$('#filterProject').value='all';
+  },
+
+  /** Lightweight: update filter dropdown options when data changes, preserving selected value */
+  syncFilters(){
+    const txns=Store.getAllTransactions(),cats=Store.getAllCategories(),projects=Store.getAllProjects();
+    const months=Calculator.getAvailableMonths(txns);
+    const fm=Utils.$('#filterMonth').value,fc=Utils.$('#filterCategory').value,fp=Utils.$('#filterProject').value;
+    let mo='<option value="all"'+(fm==='all'?' selected':'')+'>全部月份（'+txns.length+'条）</option>';for(const m of months)mo+=`<option value="${m}" ${fm===m?'selected':''}>${m}</option>`;
+    Utils.$('#filterMonth').innerHTML=mo;
+    Utils.$('#filterCategory').innerHTML='<option value="all"'+(fc==='all'?' selected':'')+'>全部分类</option>'+cats.map(c=>`<option value="${c.id}" ${fc===c.id?'selected':''}>${c.icon} ${c.name}</option>`).join('');
+    Utils.$('#filterProject').innerHTML='<option value="all"'+(fp==='all'?' selected':'')+'>全部项目</option><option value="__none__"'+('__none__'===fp?' selected':'')+'>仅未归属</option>'+projects.map(p=>`<option value="${p.id}" ${fp===p.id?'selected':''}>${p.icon} ${Renderer._esc(p.name)}</option>`).join('');
+  },
+
+  renderTransactions(){
+    const txns=Store.getAllTransactions(),cats=Store.getAllCategories(),projects=Store.getAllProjects();
+    const cm={};for(const c of cats)cm[c.id]=c;
+    const pm={};for(const p of projects)pm[p.id]=p;
+
+    // Sync filter options (preserves selected values)
+    this.syncFilters();
+
+    // Read current filter values AFTER sync
+    const fm=Utils.$('#filterMonth').value,fc=Utils.$('#filterCategory').value,fp=Utils.$('#filterProject').value,fk=Utils.$('#filterKeyword').value.trim();
+    window.__DEBUG_FILTERS={txns:txns.length,fm,fc,fp,fk};
+    console.log('📋 renderTransactions DEBUG:',JSON.stringify(window.__DEBUG_FILTERS),'| Records:',txns.map(t=>t.id.slice(-6)+' date='+t.date+' cat='+(t.categoryId||'none')+' proj='+(t.projectId||'none')));
+
+    const filters={month:fm!=='all'?fm:null,categoryId:fc,projectId:fp,keyword:fk};
+    const filtered=Calculator.filterTransactions(txns,filters);
+    console.log('🔍 Filtered:',filtered.length,'/',txns.length);
+
+    Utils.$('#filterResultCount').textContent=txns.length!==filtered.length?`筛选 ${filtered.length} / 共 ${txns.length} 条`:`共 ${txns.length} 条`;
+
+    // Active filter tags
+    let tags='';
+    if(fm!=='all')tags+=`<span class="filter-tag" onclick="BudgetApp._clearFilter('month')">📅 ${fm} <span class="filter-tag-x">×</span></span>`;
+    if(fc!=='all'){const cat=cm[fc];if(cat)tags+=`<span class="filter-tag" onclick="BudgetApp._clearFilter('category')">${cat.icon} ${cat.name} <span class="filter-tag-x">×</span></span>`}
+    if(fp!=='all'){
+      if(fp==='__none__')tags+=`<span class="filter-tag" onclick="BudgetApp._clearFilter('project')">📭 未归属 <span class="filter-tag-x">×</span></span>`;
+      else{const proj=pm[fp];if(proj)tags+=`<span class="filter-tag" onclick="BudgetApp._clearFilter('project')">${proj.icon} ${proj.name} <span class="filter-tag-x">×</span></span>`}
+    }
+    if(fk)tags+=`<span class="filter-tag" onclick="BudgetApp._clearFilter('keyword')">🔍 "${fk}" <span class="filter-tag-x">×</span></span>`;
+    if(fm!=='all'||fc!=='all'||fp!=='all'||fk)tags+=`<span class="filter-tag" onclick="BudgetApp._clearAllFilters()" style="background:var(--color-expense-bg);color:var(--color-danger);">清除全部</span>`;
+    Utils.$('#filterActiveTags').innerHTML=tags;
+
+    const ct=Utils.$('#transactionList');
+    if(!cats.length&&!filtered.length){
+      ct.innerHTML=`<div class="empty-state"><div class="empty-icon">🏷️</div><div class="empty-text">尚未创建支出分类</div><button class="btn btn-accent btn-sm" onclick="BudgetApp._openSetupWizard()">🎯 快速设置分类</button></div>`;return;
+    }
+    if(!filtered.length){
+      ct.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">${fk||fc!=='all'||fp!=='all'||fm!=='all'?'没有符合条件的支出记录':'暂无支出记录'}</div>${(!fk&&fc==='all'&&fp==='all'&&fm==='all')?`<button class="btn btn-primary btn-sm" onclick="BudgetApp._addTransaction()">+ 新增第一笔支出</button>`:''}</div>`;return;
+    }
+
+    const groups={};
+    for(const t of filtered){const m=t.date.substring(0,7);if(!groups[m])groups[m]=[];groups[m].push(t)}
+
+    let html='';
+    for(const monthKey of Object.keys(groups).sort().reverse()){
+      const monthTotal=groups[monthKey].reduce((s,t)=>s+t.amount,0);
+      const [y,m]=monthKey.split('-');
+      html+=`<div class="txn-date-group"><div class="txn-date-header">${parseInt(y)}年${parseInt(m)}月 <span class="date-total">${Utils.formatCurrency(monthTotal)}</span></div><ul class="txn-list">`;
+      for(const t of groups[monthKey]){
+        const cat=cm[t.categoryId]||{name:'未分类',icon:'📌'};
+        const proj=pm[t.projectId];
+        const projBadge=proj?`<span class="proj-badge" style="background:${proj.color}20;color:${proj.color};" onclick="event.stopPropagation();BudgetApp._selectProject('${proj.id}')" title="查看项目：${Renderer._esc(proj.name)}">${proj.icon} ${Renderer._esc(proj.name)}</span>`:(t.projectId?'':'');
+        const catBadge=cat?`<span class="cat-badge" style="background:var(--color-bg);" onclick="event.stopPropagation();BudgetApp._filterByCategory('${t.categoryId||''}')" title="按此分类筛选">${cat.icon} ${cat.name}</span>`:'';
+        const hasAttach=t.attachment&&t.attachment.name;
+        html+=`<li class="txn-item">
+          <span class="txn-icon">${cat.icon}</span>
+          <div class="txn-info"><div class="txn-category">${cat.name}</div><div class="txn-meta">${projBadge}${catBadge}${t.note?`<span class="txn-note">${Renderer._esc(t.note)}</span>`:''}</div></div>
+          ${hasAttach?`<span class="txn-attach" onclick="BudgetApp._viewAttachment('${t.id}')" title="查看账单附件：${Renderer._esc(t.attachment.name)}">🧾</span>`:''}
+          <span class="txn-amount">${Utils.formatCurrency(t.amount)}</span>
+          <div class="txn-actions"><button class="btn-icon" onclick="BudgetApp._editTransaction('${t.id}')" title="编辑" aria-label="编辑支出">✏️</button><button class="btn-icon danger" onclick="BudgetApp._deleteTransaction('${t.id}')" title="删除" aria-label="删除支出">🗑️</button></div></li>`;
+      }
+      html+=`</ul></div>`;
+    }
+    ct.innerHTML=html;
+  },
+
+  renderExport(){
+    const txns=Store.getAllTransactions(),projects=Store.getAllProjects(),cats=Store.getAllCategories(),months=Calculator.getAvailableMonths(txns),cur=Utils.getCurrentMonth();
+    if(months.length){Utils.$('#exportStartMonth').value=months[0];Utils.$('#exportEndMonth').value=months[months.length-1]}
+    else{Utils.$('#exportStartMonth').value=cur;Utils.$('#exportEndMonth').value=cur}
+    let po='<option value="all">全部项目</option><option value="__none__">仅未归属</option>';
+    for(const p of projects)po+=`<option value="${p.id}">${p.icon} ${Renderer._esc(p.name)}</option>`;
+    Utils.$('#exportProject').innerHTML=po;
+    Utils.$('#dataCount').textContent=txns.length;
+    Utils.$('#projectCount').textContent=projects.length;
+    Utils.$('#catCount').textContent=cats.length;
+    AttachDB.count().then(c=>{Utils.$('#attachCount').textContent=c}).catch(()=>{});
+    this._updateExportPreview();
+  },
+
+  _updateExportPreview(){
+    const sm=Utils.$('#exportStartMonth').value,em=Utils.$('#exportEndMonth').value,ep=Utils.$('#exportProject').value;
+    const projects=Store.getAllProjects();const pm={};for(const p of projects)pm[p.id]=p;
+    const cats=Store.getAllCategories();const cm={};for(const c of cats)cm[c.id]=c;
+    let txns=Store.getAllTransactions().filter(t=>{const m=t.date.substring(0,7);if(m<sm||m>em)return false;if(ep==='__none__'&&t.projectId)return false;if(ep&&ep!=='all'&&ep!=='__none__'&&t.projectId!==ep)return false;return true});
+    let csv='﻿日期,分类,项目,金额,备注,附件\n';
+    const prev=txns.slice(0,10);
+    for(const t of prev){
+      const cat=cm[t.categoryId];const cn=cat?cat.name:'未分类';
+      const proj=pm[t.projectId];const pn=proj?proj.name:(t.projectId?'':'未归属');
+      const an=t.attachment?t.attachment.name:'';
+      csv+=[t.date,cn,pn,(-t.amount).toFixed(2),Utils.escapeCSV(t.note||''),Utils.escapeCSV(an)].join(',')+'\n';
+    }
+    if(txns.length>10)csv+=`... 共 ${txns.length} 条记录`;
+    else if(!txns.length)csv+='(暂无数据)';
+    Utils.$('#exportPreview').textContent=csv;
+  },
+
+  showSetupWizard(){
+    const ch=`<p style="font-size:var(--font-size-sm);color:var(--color-text-secondary);margin-bottom:var(--spacing-md);">输入支出分类名称，用逗号或换行分隔。</p><div class="form-group"><label>📤 支出分类</label><textarea class="form-textarea" id="wizardCategories" rows="5" placeholder="例如：人力成本、物料采购、差旅费、办公费用、营销推广、外包服务、研发支出、其他支出"></textarea></div>`;
+    this.showModal('🎯 快速设置分类',ch,(ov)=>{const text=ov.querySelector('#wizardCategories').value.trim();if(!text){Renderer.showToast('请输入分类名称','warning');return false}const names=text.split(/[,，\n]/).map(s=>s.trim()).filter(s=>s.length>0);let cnt=0;for(let i=0;i<names.length;i++){Store.addCategory({id:Utils.generateId('cat'),name:names[i],icon:CAT_ICONS[i%CAT_ICONS.length],color:'#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'),createdAt:new Date().toISOString()});cnt++}Renderer.showToast(`已创建 ${cnt} 个分类`);Events._refreshCurrentTab()});
+  },
+
+  showGroupModal(group){
+    const isEdit=!!group,sc=group?group.color:'#6C5CE7',si=group?group.icon:'📂';
+    const co=PROJECT_COLORS.map(c=>`<span class="color-option ${c===sc?'selected':''}" style="background:${c};color:${c};" data-color="${c}"></span>`).join('');
+    const io=PROJECT_ICONS.map(i=>`<span class="icon-option ${i===si?'selected':''}" data-icon="${i}">${i}</span>`).join('');
+    const ch=`<input type="hidden" id="grpColor" value="${sc}"/><input type="hidden" id="grpIcon" value="${si}"/>
+      <div class="form-group"><label for="grpName">分组名称</label><input type="text" class="form-input" id="grpName" placeholder="例如：客户项目、内部研发" value="${isEdit?Renderer._esc(group.name):''}" autofocus/></div>
+      <div class="form-group"><label>图标</label><div class="icon-options">${io}</div></div>
+      <div class="form-group"><label>颜色</label><div class="color-options">${co}</div></div>`;
+    this.showModal(isEdit?'编辑分组':'新建项目类型',ch,(ov)=>{
+      const nm=ov.querySelector('#grpName').value.trim();if(!nm){Renderer.showToast('请输入分组名称','warning');return false}
+      const cl=ov.querySelector('#grpColor').value,ic=ov.querySelector('#grpIcon').value;
+      if(isEdit){Store.updateProjectGroup(group.id,{name:nm,icon:ic,color:cl});Renderer.showToast('分组已更新')}
+      else{Store.addProjectGroup({id:Utils.generateId('grp'),name:nm,icon:ic,color:cl,createdAt:new Date().toISOString()});Renderer.showToast('分组已创建')}
+      Renderer.renderSidebar();Events._refreshCurrentTab();
+    });
+    setTimeout(()=>{
+      document.querySelectorAll('.color-option').forEach(el=>el.addEventListener('click',function(){document.querySelectorAll('.color-option').forEach(e=>e.classList.remove('selected'));this.classList.add('selected');document.querySelector('#grpColor').value=this.dataset.color}));
+      document.querySelectorAll('.icon-option').forEach(el=>el.addEventListener('click',function(){document.querySelectorAll('.icon-option').forEach(e=>e.classList.remove('selected'));this.classList.add('selected');document.querySelector('#grpIcon').value=this.dataset.icon}));
+    },50);
+  },
+
+  showProjectModal(project){
+    const isEdit=!!project,sc=project?project.color:PROJECT_COLORS[0],si=project?project.icon:PROJECT_ICONS[0];
+    const budget=project?project.budget||'':'';
+    const co=PROJECT_COLORS.map(c=>`<span class="color-option ${c===sc?'selected':''}" style="background:${c};color:${c};" data-color="${c}"></span>`).join('');
+    const io=PROJECT_ICONS.map(i=>`<span class="icon-option ${i===si?'selected':''}" data-icon="${i}">${i}</span>`).join('');
+    const ch=`<input type="hidden" id="projColor" value="${sc}"/><input type="hidden" id="projIcon" value="${si}"/>
+      <div class="form-group"><label for="projName">项目名称</label><input type="text" class="form-input" id="projName" placeholder="输入项目名称" value="${isEdit?Renderer._esc(project.name):''}" autofocus/></div>
+      <div class="form-row">
+        <div class="form-group"><label for="projContact">联系人</label><input type="text" class="form-input" id="projContact" placeholder="姓名、电话等（选填）" value="${isEdit?Renderer._esc(project.contact||''):''}"/></div>
+        <div class="form-group"><label for="projBudget">月度预算（选填）</label><input type="number" class="form-input" id="projBudget" placeholder="0.00" min="0" step="0.01" value="${budget}"/></div>
+      </div>
+      <div class="form-group"><label for="projGroup">所属项目类型（可选）</label><select class="form-select" id="projGroup"><option value="">不归属分组</option>${Store.getAllProjectGroups().map(g=>`<option value="${g.id}" ${(project&&project.groupId===g.id)?'selected':''}>${g.icon} ${Renderer._esc(g.name)}</option>`).join('')}</select></div>
+      <div class="form-group"><label for="projDesc">项目描述（选填）</label><input type="text" class="form-input" id="projDesc" placeholder="简要描述" value="${isEdit?Renderer._esc(project.description||''):''}"/></div>
+      <div class="form-group"><label>图标</label><div class="icon-options">${io}</div></div>
+      <div class="form-group"><label>颜色</label><div class="color-options">${co}</div></div>`;
+    this.showModal(isEdit?'编辑项目':'新建项目',ch,(ov)=>{
+      const nm=ov.querySelector('#projName').value.trim();if(!nm){Renderer.showToast('请输入项目名称','warning');return false}
+      const contact=ov.querySelector('#projContact').value.trim(),desc=ov.querySelector('#projDesc').value.trim();
+      const cl=ov.querySelector('#projColor').value,ic=ov.querySelector('#projIcon').value;
+      const budgetVal=parseFloat(ov.querySelector('#projBudget').value)||0;
+      const groupEl=ov.querySelector('#projGroup');const groupId=groupEl?groupEl.value||null:null;
+      if(isEdit){Store.updateProject(project.id,{name:nm,contact,description:desc,color:cl,icon:ic,budget:budgetVal,groupId});Renderer.showToast('项目已更新')}
+      else{Store.addProject({id:Utils.generateId('proj'),name:nm,contact,description:desc,color:cl,icon:ic,budget:budgetVal,groupId,status:'active',createdAt:new Date().toISOString()});Renderer.showToast('项目已创建')}
+      Renderer.renderSidebar();Events._refreshCurrentTab();
+    });
+    setTimeout(()=>{
+      document.querySelectorAll('.color-option').forEach(el=>el.addEventListener('click',function(){document.querySelectorAll('.color-option').forEach(e=>e.classList.remove('selected'));this.classList.add('selected');const inp=document.querySelector('#projColor');if(inp)inp.value=this.dataset.color}));
+      document.querySelectorAll('.icon-option').forEach(el=>el.addEventListener('click',function(){document.querySelectorAll('.icon-option').forEach(e=>e.classList.remove('selected'));this.classList.add('selected');const inp=document.querySelector('#projIcon');if(inp)inp.value=this.dataset.icon}));
+    },50);
+  },
+
+  showModal(title,contentHTML,onSave){
+    const ov=document.createElement('div');ov.className='modal-overlay';ov.setAttribute('role','dialog');ov.setAttribute('aria-label',title);
+    ov.innerHTML=`<div class="modal"><div class="modal-header"><span class="modal-title">${title}</span><button class="modal-close" aria-label="关闭">&times;</button></div><div class="modal-body">${contentHTML}</div><div class="modal-footer"><button class="btn btn-secondary cancel-btn">取消</button><button class="btn btn-primary save-btn">保存</button></div></div>`;
+    document.body.appendChild(ov);
+    const close=()=>ov.remove();
+    ov.querySelector('.modal-close').onclick=close;ov.querySelector('.cancel-btn').onclick=close;
+    ov.querySelector('.save-btn').onclick=()=>{const r=onSave(ov);if(r!==false)close()};
+    ov.addEventListener('click',(e)=>{if(e.target===ov)close()});
+    const onKey=function(e){if(e.key==='Escape'){close();document.removeEventListener('keydown',onKey)}};document.addEventListener('keydown',onKey);
+    // Focus first input
+    setTimeout(()=>{const fi=ov.querySelector('input[autofocus]');if(fi)fi.focus();else{const first=ov.querySelector('input,select,textarea');if(first)first.focus()}},60);
+  },
+
+  async viewAttachment(txnId){
+    try{const a=await AttachDB.get(txnId);if(!a){Renderer.showToast('附件不存在','warning');return}
+      const blob=new Blob([a.blob],{type:a.fileType});
+      const url=URL.createObjectURL(blob);
+      if(a.fileType.startsWith('image/')){const win=window.open('','_blank','width=800,height=600');if(win){win.document.write(`<!DOCTYPE html><html><head><title>${a.fileName}</title><style>body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#1a1a1a}img{max-width:100%;max-height:100vh;object-fit:contain}</style></head><body><img src="${url}" alt="${a.fileName}"/></body></html>`)}}
+      else{const aEl=document.createElement('a');aEl.href=url;aEl.download=a.fileName;aEl.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+    }catch(e){Renderer.showToast('读取附件失败','error')}
+  },
+
+  showToast(msg,type='success',dur=2500,undoCallback=null){
+    const ct=Utils.$('#toastContainer'),t=document.createElement('div');t.className=`toast ${type}`;
+    const ic={success:'✅',error:'❌',warning:'⚠️'};t.innerHTML=`<span>${ic[type]||'ℹ️'}</span> <span>${msg}</span>`;
+    if(undoCallback){const ub=document.createElement('button');ub.className='toast-undo';ub.textContent='撤销';ub.addEventListener('click',()=>{undoCallback();t.remove()});t.appendChild(ub)}
+    ct.appendChild(t);
+    setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(100%)';t.style.transition='all 300ms ease';setTimeout(()=>t.remove(),300)},dur);
+  },
+
+  _esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML},
+  _getDow(ds){const d=new Date(ds+'T00:00:00');return['周日','周一','周二','周三','周四','周五','周六'][d.getDay()]||''}
+};
+
+/* ========== EVENTS ========== */
+const Events={
+  init(){this._bindTabs();this._bindMonthSelector();this._bindTransactions();this._bindExport();this._bindCategoryManagement();this._bindKeyboardShortcuts();this._bindDataManagement();this._bindProjectButtons();this._bindGroupButtons();this._bindDragDrop();this._bindBottomNav();this._bindClickOutside()},
+
+  _bindTabs(){
+    Utils.$$('.tab-btn').forEach(b=>b.addEventListener('click',()=>{
+      Utils.$$('.tab-btn').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-selected','false')});
+      b.classList.add('active');b.setAttribute('aria-selected','true');
+      Utils.$$('.tab-content').forEach(x=>x.classList.remove('active'));
+      Utils.$('#tab-'+b.dataset.tab).classList.add('active');
+      window._currentTab=b.dataset.tab;
+      this._syncBottomNav(b.dataset.tab);
+      this._refreshCurrentTab();
+    }));
+  },
+  _bindMonthSelector(){const inp=Utils.$('#globalMonth');inp.value=Store.getActiveMonth();inp.addEventListener('change',()=>{Store.setActiveMonth(inp.value);Renderer.renderSidebar();this._refreshCurrentTab()})},
+
+  _bindTransactions(){
+    Utils.$('#btnAddTransaction').addEventListener('click',()=>this._openTxnModal(null));
+    Utils.$('#filterMonth').addEventListener('change',()=>Renderer.renderTransactions());
+    Utils.$('#filterCategory').addEventListener('change',()=>Renderer.renderTransactions());
+    Utils.$('#filterProject').addEventListener('change',()=>Renderer.renderTransactions());
+    Utils.$('#filterKeyword').addEventListener('input',Utils.debounce(()=>Renderer.renderTransactions(),300));
+  },
+
+  _openTxnModal(txn){
+    const isEdit=!!txn,cats=Store.getAllCategories(),projects=Store.getAllProjects(),ap=Store.getActiveProject();
+    let pendingFile=null;
+
+    const buildCatOpts=()=>{
+      let o='<option value="">📌 未分类</option>';
+      for(const c of cats)o+=`<option value="${c.id}" ${txn&&txn.categoryId===c.id?'selected':''}>${c.icon} ${c.name}</option>`;
+      return o;
+    };
+    const buildProjOpts=()=>{
+      let o='<option value="">不归属项目</option>';
+      for(const p of projects){const sel=(txn&&txn.projectId===p.id)||(!txn&&ap!=='__all__'&&ap===p.id);o+=`<option value="${p.id}" ${sel?'selected':''}>${p.icon} ${p.name}</option>`}
+      return o;
+    };
+
+    const defDate=txn?txn.date:Utils.getCurrentMonth();
+    const hasExisting=txn&&txn.attachment&&txn.attachment.name;
+
+    let ch=`<div class="form-group"><label for="modalDate">月份</label><input type="month" class="form-input" id="modalDate" value="${defDate}"/></div>
+      <div class="form-row">
+        <div class="form-group"><label for="modalAmount">金额</label><input type="number" class="form-input" id="modalAmount" placeholder="0.00" min="0.01" step="0.01" value="${txn?txn.amount:''}" autofocus/></div>
+        <div class="form-group"><label for="modalCategory">分类（可选）</label><select class="form-select" id="modalCategory">${buildCatOpts()}</select>
+          <div class="quick-cat-create" id="quickCatCreate" style="display:none;"><input type="text" class="form-input" id="quickCatName" placeholder="新分类名称" style="flex:1;"/><input type="text" class="form-input" id="quickCatIcon" placeholder="图标" style="width:50px;text-align:center;" maxlength="2"/><button type="button" class="btn btn-sm btn-primary" id="btnQuickCat">添加</button></div>
+          <div style="font-size:var(--font-size-xs);color:var(--color-text-muted);margin-top:4px;"><a href="#" onclick="event.preventDefault();document.getElementById('quickCatCreate').style.display='flex';this.style.display='none';" id="linkQuickCat">+ 快速添加新分类</a></div></div>
+      </div>
+      <div class="form-group"><label for="modalProject">所属项目</label><select class="form-select" id="modalProject">${buildProjOpts()}</select></div>
+      <div class="form-group"><label for="modalNote">备注</label><input type="text" class="form-input" id="modalNote" placeholder="选填" value="${txn?(txn.note||''):''}"/></div>`;
+
+    // Attachment zone
+    ch+=`<div class="form-group"><label>账单附件</label>
+      <div class="attach-zone${hasExisting?' has-file':''}" id="attachZone">
+        ${hasExisting?`<div class="attach-preview" id="attachPreview"><span style="font-size:1.5rem;">📄</span><div class="attach-info"><div class="attach-name">${Renderer._esc(txn.attachment.name)}</div><div class="attach-size">${Utils.formatFileSize(txn.attachment.size)}</div></div><button type="button" class="btn btn-sm btn-danger" id="btnRemoveAttach">✕ 移除</button></div>`
+        :`<div class="attach-icon">📎</div><div class="attach-text">点击或拖拽上传账单（支持图片/PDF，最大10MB）</div>`}
+      </div>
+      <input type="file" id="fileInput" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;"/>
+    </div>`;
+
+    Renderer.showModal(isEdit?'编辑支出':'新增支出',ch,async(ov)=>{
+      const date=ov.querySelector('#modalDate').value;
+      const amount=parseFloat(ov.querySelector('#modalAmount').value);
+      const catSel=ov.querySelector('#modalCategory');const catId=catSel?catSel.value:'';
+      const projEl=ov.querySelector('#modalProject');const projId=projEl?(projEl.value||null):null;
+      const note=ov.querySelector('#modalNote').value.trim();
+      if(!date){Renderer.showToast('请选择月份','warning');return false}
+      if(isNaN(amount)||amount<=0){Renderer.showToast('请输入有效金额','warning');return false}
+      // Category is now optional — catId can be empty string (未分类)
+
+      let attachmentMeta=null;
+      const removeBtn=ov.querySelector('#btnRemoveAttach');
+      const wasRemoved=removeBtn&&removeBtn.dataset.removed==='1';
+      if(!wasRemoved){
+        if(pendingFile){attachmentMeta={name:pendingFile.name,type:pendingFile.type,size:pendingFile.size}}
+        else if(hasExisting){attachmentMeta=txn.attachment}
+      }
+
+      const txnData={date,amount,categoryId:catId||null,projectId:projId,note,attachment:attachmentMeta};
+
+      if(isEdit){
+        Store.updateTransaction(txn.id,txnData);
+        if(wasRemoved&&txn.attachment)await AttachDB.remove(txn.id).catch(()=>{});
+        if(pendingFile)await AttachDB.save(txn.id,pendingFile).catch(()=>{Renderer.showToast('附件保存失败','warning')});
+        Renderer.showToast('支出已更新');
+      }else{
+        const newId=Utils.generateId('txn');
+        Store.addTransaction({id:newId,...txnData,createdAt:new Date().toISOString()});
+        if(pendingFile)await AttachDB.save(newId,pendingFile).catch(()=>{Renderer.showToast('附件保存失败','warning')});
+        Renderer.showToast('支出已保存');
+      }
+      Renderer.renderSidebar();this._refreshCurrentTab();
+    });
+
+    // Setup file upload + quick category after render
+    setTimeout(()=>{
+      const az=document.querySelector('#attachZone'),fi=document.querySelector('#fileInput');
+      const showPreview=(file)=>{
+        az.classList.add('has-file');pendingFile=file;
+        const isImg=file.type.startsWith('image/');
+        az.innerHTML=`<div class="attach-preview" id="attachPreview">${isImg?`<img src="${URL.createObjectURL(file)}" alt="预览"/>`:'<span style="font-size:1.5rem;">📄</span>'}<div class="attach-info"><div class="attach-name">${Renderer._esc(file.name)}</div><div class="attach-size">${Utils.formatFileSize(file.size)}</div></div><button type="button" class="btn btn-sm btn-danger" id="btnRemoveAttach">✕ 移除</button></div>`;
+        bindRemoveBtn();
+      };
+      const bindRemoveBtn=()=>{
+        const rb=document.querySelector('#btnRemoveAttach');if(rb)rb.addEventListener('click',()=>{az.classList.remove('has-file');az.innerHTML=`<div class="attach-icon">📎</div><div class="attach-text">点击或拖拽上传账单（支持图片/PDF，最大10MB）</div>`;pendingFile=null;if(txn&&txn.attachment)rb.dataset.removed='1'});
+      };
+      bindRemoveBtn();
+
+      if(az&&!hasExisting){az.addEventListener('click',()=>fi.click());az.addEventListener('dragover',(e)=>{e.preventDefault();az.style.borderColor='var(--color-primary)'});az.addEventListener('dragleave',()=>{az.style.borderColor=''});
+        az.addEventListener('drop',(e)=>{e.preventDefault();az.style.borderColor='';const f=e.dataTransfer.files[0];if(f){if(f.size>MAX_FILE_SIZE){Renderer.showToast('文件超过10MB限制','warning');return}showPreview(f)}});
+      }
+      if(fi)fi.addEventListener('change',()=>{const f=fi.files[0];if(f){if(f.size>MAX_FILE_SIZE){Renderer.showToast('文件超过10MB限制','warning');return}showPreview(f)}});
+
+      const bqc=document.querySelector('#btnQuickCat');if(bqc)bqc.addEventListener('click',()=>{const ni=document.querySelector('#quickCatName'),ii=document.querySelector('#quickCatIcon');const nm=ni?ni.value.trim():'';if(!nm){Renderer.showToast('请输入分类名称','warning');return}Store.addCategory({id:Utils.generateId('cat'),name:nm,icon:(ii?ii.value.trim():'')||'📌',color:'#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'),createdAt:new Date().toISOString()});const cs=document.querySelector('#modalCategory');if(cs)cs.innerHTML=(()=>{let o='<option value="">📌 未分类</option>';for(const c of Store.getAllCategories())o+=`<option value="${c.id}" selected>${c.icon} ${c.name}</option>`;return o})();document.querySelector('#quickCatCreate').style.display='none';if(ni)ni.value='';if(ii)ii.value='';Renderer.showToast(`分类"${nm}"已添加`)});
+    },50);
+  },
+
+  _bindExport(){
+    Utils.$('#exportStartMonth').addEventListener('change',()=>Renderer._updateExportPreview());
+    Utils.$('#exportEndMonth').addEventListener('change',()=>Renderer._updateExportPreview());
+    Utils.$('#exportProject').addEventListener('change',()=>Renderer._updateExportPreview());
+    Utils.$('#btnExportCSV').addEventListener('click',()=>{
+      const sm=Utils.$('#exportStartMonth').value,em=Utils.$('#exportEndMonth').value,ep=Utils.$('#exportProject').value;
+      if(!sm||!em){Renderer.showToast('请选择时间范围','warning');return}
+      if(sm>em){Renderer.showToast('开始月份不能晚于结束月份','warning');return}
+      const projects=Store.getAllProjects();const pm={};for(const p of projects)pm[p.id]=p;
+      const cats=Store.getAllCategories();const cm={};for(const c of cats)cm[c.id]=c;
+      let txns=Store.getAllTransactions().filter(t=>{const m=t.date.substring(0,7);if(m<sm||m>em)return false;if(ep==='__none__'&&t.projectId)return false;if(ep&&ep!=='all'&&ep!=='__none__'&&t.projectId!==ep)return false;return true});
+      if(!txns.length){Renderer.showToast('所选范围内没有支出记录','warning');return}
+      let csv='﻿日期,分类,项目,金额,备注,附件\n';
+      for(const t of txns){const cat=cm[t.categoryId];const cn=cat?cat.name:'未分类';const proj=pm[t.projectId];const pn=proj?proj.name:(t.projectId?'':'未归属');const an=t.attachment?t.attachment.name:'';csv+=[t.date,cn,pn,(-t.amount).toFixed(2),Utils.escapeCSV(t.note||''),Utils.escapeCSV(an)].join(',')+'\n'}
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`项目支出记录_${sm}_${em}.csv`;a.click();URL.revokeObjectURL(url);Renderer.showToast(`已导出 ${txns.length} 条记录`);
+    });
+    // JSON Export
+    Utils.$('#btnExportJSON').addEventListener('click',()=>{
+      const data=Store.exportAll();
+      const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(blob);const a=document.createElement('a');
+      a.href=url;a.download=`项目支出备份_${Utils.getCurrentMonth()}.json`;a.click();
+      URL.revokeObjectURL(url);Renderer.showToast(`已导出备份（${data.transactions.length}条记录，${data.projects.length}个项目）`);
+    });
+    // JSON Import
+    Utils.$('#btnImportJSON').addEventListener('click',()=>Utils.$('#importFileInput').click());
+    Utils.$('#importFileInput').addEventListener('change',async(e)=>{
+      const file=e.target.files[0];if(!file)return;
+      try{
+        const text=await file.text();const data=JSON.parse(text);
+        if(!data.version){Renderer.showToast('备份文件格式不正确','error');return}
+        const overwrite=confirm(`即将导入：${(data.transactions||[]).length}条支出，${(data.projects||[]).length}个项目，${(data.categories||[]).length}个分类。\n\n⚠️ 这将覆盖当前所有数据，确定继续？`);
+        if(!overwrite)return;
+        Store.importAll(data);
+        Renderer.showToast('数据导入成功！');Renderer.renderSidebar();this._refreshCurrentTab();
+      }catch(err){Renderer.showToast('导入失败：'+err.message,'error')}
+      e.target.value='';
+    });
+  },
+
+  _bindCategoryManagement(){Utils.$('#btnManageCats').addEventListener('click',()=>this._openCatModal())},
+
+  _openCatModal(){
+    const cats=Store.getAllCategories();let lh='';if(!cats.length)lh='<div class="empty-state"><div class="empty-icon">🏷️</div><div class="empty-text">暂无分类，请在下方添加</div></div>';else{lh='<ul class="cat-manage-list">';for(const c of cats)lh+=`<li class="cat-manage-item"><span style="font-size:1.2rem;">${c.icon}</span><span style="font-size:var(--font-size-sm);font-weight:500;">${c.name}</span><button class="btn-icon" data-edit-cat="${c.id}" title="编辑">✏️</button><button class="btn-icon danger" data-delete-cat="${c.id}" title="删除">🗑️</button></li>`;lh+='</ul>'}
+    const ch=`<div class="form-group"><label>添加新分类</label><div style="display:flex;gap:8px;"><input type="text" class="form-input" id="newCatName" placeholder="分类名称" style="flex:1;"/><input type="text" class="form-input" id="newCatIcon" placeholder="图标" style="width:60px;text-align:center;" value="🏷️" maxlength="2"/></div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--spacing-sm);"><label style="font-weight:500;">全部分类（${cats.length}个）</label>${cats.length?'<button class="btn btn-secondary btn-sm" id="btnBatchSetup">🎯 批量重新设置</button>':'<button class="btn btn-accent btn-sm" id="btnBatchSetup">🎯 批量设置分类</button>'}</div><div id="customCatList">${lh}</div><p style="font-size:var(--font-size-xs);color:var(--color-text-muted);margin-top:var(--spacing-sm);">提示：删除分类后，关联的支出记录将显示为"未分类"。</p>`;
+    Renderer.showModal('管理分类',ch,(ov)=>{const ni=ov.querySelector('#newCatName'),ii=ov.querySelector('#newCatIcon');if(ni&&ni.value.trim()){Store.addCategory({id:Utils.generateId('cat'),name:ni.value.trim(),icon:ii.value.trim()||'🏷️',color:'#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'),createdAt:new Date().toISOString()});Renderer.showToast('分类已添加');this._openCatModal();return false}});
+    setTimeout(()=>{document.querySelectorAll('[data-delete-cat]').forEach(b=>b.addEventListener('click',()=>{const cid=b.dataset.deleteCat,cat=Store.getAllCategories().find(c=>c.id===cid);if(confirm(`确定删除"${cat?cat.name:''}"？`)){Store.deleteCategory(cid);Renderer.showToast('分类已删除');document.querySelector('.modal-overlay')?.remove();this._openCatModal()}}));document.querySelectorAll('[data-edit-cat]').forEach(b=>b.addEventListener('click',()=>{const cid=b.dataset.editCat,cat=Store.getAllCategories().find(c=>c.id===cid);if(!cat)return;const nm=prompt('修改分类名称：',cat.name);if(nm&&nm.trim()){const ic=prompt('修改图标（可选）：',cat.icon);Store.updateCategory(cid,{name:nm.trim(),icon:ic||cat.icon});Renderer.showToast('分类已更新');document.querySelector('.modal-overlay')?.remove();this._openCatModal()}}));const bb=document.querySelector('#btnBatchSetup');if(bb)bb.addEventListener('click',()=>{document.querySelector('.modal-overlay')?.remove();Renderer.showSetupWizard()})},100);
+  },
+
+  _bindKeyboardShortcuts(){document.addEventListener('keydown',(e)=>{if(/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName))return;if(e.ctrlKey||e.metaKey){switch(e.key){case '1':e.preventDefault();this._switchTab('dashboard');break;case '2':e.preventDefault();this._switchTab('transactions');break;case '3':e.preventDefault();this._switchTab('export');break;case 'n':case 'N':e.preventDefault();this._openTxnModal(null);break}}})},
+
+  _bindDataManagement(){
+    Utils.$('#btnClearAll').addEventListener('click',()=>{if(confirm('确定清除所有数据？包括所有支出记录、项目、分类和附件。')){if(confirm('再次确认：此操作不可恢复！')){Store.clearAll();AttachDB.clear().catch(()=>{});Renderer.showToast('所有数据已清除');Renderer.renderSidebar();this._refreshCurrentTab()}}});
+    Utils.$('#btnResetCategories').addEventListener('click',()=>{if(confirm('确定清空所有分类？')){Store.resetCategories();Renderer.showToast('分类已清空');this._refreshCurrentTab()}});
+  },
+
+  _bindProjectButtons(){Utils.$('#btnAddProject').addEventListener('click',()=>Renderer.showProjectModal(null))},
+
+  _bindGroupButtons(){Utils.$('#btnAddGroup').addEventListener('click',()=>Renderer.showGroupModal(null))},
+
+  _bindDragDrop(){
+    let dragSrcId=null,dragSrcGroup=null,lastDropTarget=null;
+
+    /** Get the effective group ID for a drop target element */
+    const resolveGroupId=(el)=>{
+      // First try the element's own data-group
+      if(el.dataset.group)return el.dataset.group==='__ungrouped__'?null:el.dataset.group;
+      // Fallback: get from parent .sidebar-group
+      const sg=el.closest('.sidebar-group');
+      if(sg&&sg.dataset.group&&sg.dataset.group!=='__ungrouped__')return sg.dataset.group;
+      return null;
+    };
+
+    /** Clear all drop indicators */
+    const clearIndicators=()=>{
+      document.querySelectorAll('.drop-target-above,.drop-target-below,.drop-target-group').forEach(el=>el.classList.remove('drop-target-above','drop-target-below','drop-target-group'));
+    };
+
+    document.addEventListener('dragstart',(e)=>{
+      const item=e.target.closest('.sidebar-item[draggable]');
+      if(!item||!item.dataset.project||item.dataset.project.startsWith('__empty')){e.preventDefault();return}
+      dragSrcId=item.dataset.project;dragSrcGroup=resolveGroupId(item);
+      item.classList.add('dragging');
+      e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragSrcId);
+      setTimeout(()=>{if(item.classList.contains('dragging'))item.style.opacity='0.35'},0);
+    });
+
+    document.addEventListener('dragend',()=>{
+      const item=document.querySelector('.sidebar-item.dragging');
+      if(item){item.classList.remove('dragging');item.style.opacity=''}
+      clearIndicators();dragSrcId=null;dragSrcGroup=null;lastDropTarget=null;
+    });
+
+    document.addEventListener('dragover',(e)=>{
+      e.preventDefault();if(!dragSrcId)return;
+
+      // Determine current target to avoid redundant updates
+      const gh=e.target.closest('.sidebar-group-header');
+      const item=e.target.closest('.sidebar-item');
+      let currentKey=null;
+
+      if(gh){
+        const sg=gh.closest('.sidebar-group');
+        currentKey='gh_'+sg?.dataset.group;
+        if(currentKey!==lastDropTarget){
+          clearIndicators();
+          if(sg)sg.classList.add('drop-target-group');
+          lastDropTarget=currentKey;
+        }
+        return;
+      }
+
+      if(item&&item.dataset.project&&item.dataset.project!==dragSrcId){
+        const rect=item.getBoundingClientRect();
+        const above=e.clientY<rect.top+rect.height/2;
+        currentKey='it_'+(above?'a':'b')+'_'+item.dataset.project;
+        if(currentKey!==lastDropTarget){
+          clearIndicators();
+          if(above)item.classList.add('drop-target-above');
+          else item.classList.add('drop-target-below');
+          lastDropTarget=currentKey;
+        }
+        return;
+      }
+
+      // Not over any valid target
+      if(lastDropTarget!==null){clearIndicators();lastDropTarget=null}
+    });
+
+    document.addEventListener('drop',(e)=>{
+      e.preventDefault();if(!dragSrcId)return;
+      clearIndicators();
+      const src=document.querySelector('.sidebar-item.dragging');if(src){src.classList.remove('dragging');src.style.opacity=''}
+
+      // 1) Dropped on a group header → move into that group
+      const gh=e.target.closest('.sidebar-group-header');
+      if(gh){
+        const sg=gh.closest('.sidebar-group');
+        const targetGid=sg&&sg.dataset.group?resolveGroupId(sg):null;
+        if(targetGid!==dragSrcGroup){
+          BudgetApp._moveProjectToGroup(dragSrcId,targetGid);
+        }
+        dragSrcId=null;dragSrcGroup=null;lastDropTarget=null;return;
+      }
+
+      // 2) Dropped on a sidebar item
+      const item=e.target.closest('.sidebar-item');
+      if(item&&item.dataset.project&&item.dataset.project!==dragSrcId){
+        const rect=item.getBoundingClientRect();
+        const above=e.clientY<rect.top+rect.height/2;
+        const targetGid=resolveGroupId(item);
+        BudgetApp._moveProject(dragSrcId,item.dataset.project,above,targetGid);
+        dragSrcId=null;dragSrcGroup=null;lastDropTarget=null;return;
+      }
+
+      // 3) Dropped on empty space inside a group (not on any item or header)
+      const sgFallback=e.target.closest('.sidebar-group');
+      if(sgFallback&&sgFallback.dataset.group){
+        const targetGid=resolveGroupId(sgFallback);
+        if(targetGid!==dragSrcGroup){
+          BudgetApp._moveProjectToGroup(dragSrcId,targetGid);
+        }
+      }
+      dragSrcId=null;dragSrcGroup=null;lastDropTarget=null;
+    });
+  },
+
+  _bindBottomNav(){
+    Utils.$$('.nav-item').forEach(b=>b.addEventListener('click',()=>{this._switchTab(b.dataset.nav)}));
+  },
+
+  _bindClickOutside(){
+    document.addEventListener('click',(e)=>{if(!e.target.closest('.chip-menu-btn')&&!e.target.closest('.chip-menu')){document.querySelectorAll('.chip-menu.show').forEach(m=>m.classList.remove('show'))}});
+  },
+
+  _syncBottomNav(tab){Utils.$$('.nav-item').forEach(b=>{b.classList.toggle('active',b.dataset.nav===tab)})},
+
+  _switchTab(tn){
+    Utils.$$('.tab-btn').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});
+    const tb=Utils.$(`.tab-btn[data-tab="${tn}"]`);if(tb){tb.classList.add('active');tb.setAttribute('aria-selected','true')}
+    Utils.$$('.tab-content').forEach(c=>c.classList.remove('active'));
+    Utils.$('#tab-'+tn).classList.add('active');
+    window._currentTab=tn;this._syncBottomNav(tn);this._refreshCurrentTab();
+  },
+
+  _refreshCurrentTab(){
+    const tab=window._currentTab||'dashboard';
+    const ap=Store.getActiveProject(),proj=Store.getAllProjects().find(p=>p.id===ap);
+    Utils.$('#currentProjectLabel').textContent=proj?`${proj.icon} ${proj.name}`:'📊 全部项目';
+    switch(tab){
+      case'dashboard':Renderer.renderDashboard();break;
+      case'transactions':Renderer.renderTransactions();break;
+      case'export':Renderer.renderExport();break;
+      default:Renderer.renderDashboard();
+    }
+  }
+};
+
+/* ========== INIT & PUBLIC API ========== */
+function init(){
+  Utils.$('#globalMonth').value=Store.getActiveMonth();
+  window._currentTab='dashboard';
+
+  // IMPORTANT: Assign all public methods to the BudgetApp const BEFORE first render.
+  // `const BudgetApp` is NOT a window property, so use BudgetApp.X directly (closure scope).
+  BudgetApp._switchTab=(t)=>Events._switchTab(t);
+  BudgetApp._selectProject=(pid)=>{Store.setActiveProject(pid);Renderer.renderSidebar();Events._refreshCurrentTab()};
+  BudgetApp._showProjectModal=(p)=>Renderer.showProjectModal(p);
+  BudgetApp._editProject=(pid)=>{const p=Store.getAllProjects().find(x=>x.id===pid);if(p){Renderer.showProjectModal(p)}else{Renderer.showToast('项目不存在，请刷新页面','error')}};
+  BudgetApp._deleteProject=(pid)=>{const p=Store.getAllProjects().find(x=>x.id===pid);if(!p)return;const name=p.name;if(confirm(`确定删除项目"${name}"？关联支出将变为"未归属"。`)){Store.deleteProject(pid);if(Store.getActiveProject()===pid)Store.setActiveProject('__all__');Renderer.renderSidebar();Events._refreshCurrentTab();Renderer.showToast(`项目"${name}"已删除`)}};
+  BudgetApp._toggleChipMenu=(ev,pid)=>{ev.stopPropagation();document.querySelectorAll('.chip-menu.show').forEach(m=>{if(m.id!=='chipMenu_'+pid)m.classList.remove('show')});const m=document.getElementById('chipMenu_'+pid);if(m)m.classList.toggle('show')};
+  BudgetApp._closeAllChipMenus=()=>{document.querySelectorAll('.chip-menu.show').forEach(m=>m.classList.remove('show'))};
+  BudgetApp._editTransaction=(id)=>{const t=Store.getAllTransactions().find(x=>x.id===id);if(t)Events._openTxnModal(t)};
+  BudgetApp._deleteTransaction=(id)=>{
+    const txn=Store.getTransaction(id);if(!txn)return;
+    if(confirm('确定删除这条支出记录？')){
+      Store.deleteTransaction(id);
+      AttachDB.remove(id).catch(()=>{});
+      const cat=Store.getAllCategories().find(c=>c.id===txn.categoryId);
+      Renderer.showToast(`支出"${cat?cat.name:'未分类'} ${Utils.formatCurrency(txn.amount)}"已删除`, 'success', 5000, ()=>{
+        Store.restoreTransaction(txn);
+        Renderer.renderSidebar();Events._refreshCurrentTab();
+        Renderer.showToast('已撤销删除');
+      });
+      Renderer.renderSidebar();Events._refreshCurrentTab();
+    }
+  };
+  BudgetApp._filterByCategory=(cid)=>{Events._switchTab('transactions');Utils.$('#filterCategory').value=cid||'all';Renderer.renderTransactions()};
+  BudgetApp._viewAttachment=(txnId)=>Renderer.viewAttachment(txnId);
+  BudgetApp._openSetupWizard=()=>Renderer.showSetupWizard();
+  BudgetApp._addTransaction=()=>Events._openTxnModal(null);
+  BudgetApp._clearFilter=(type)=>{
+    switch(type){
+      case'month':Utils.$('#filterMonth').value='all';break;
+      case'category':Utils.$('#filterCategory').value='all';break;
+      case'project':Utils.$('#filterProject').value='all';break;
+      case'keyword':Utils.$('#filterKeyword').value='';break;
+    }
+    Renderer.renderTransactions();
+  };
+  BudgetApp._clearAllFilters=()=>{
+    Utils.$('#filterMonth').value='all';
+    Utils.$('#filterCategory').value='all';
+    Utils.$('#filterProject').value='all';
+    Utils.$('#filterKeyword').value='';
+    Renderer.renderTransactions();
+  };
+
+  // Group operations
+  BudgetApp._toggleGroup=(gid)=>{const c=Store.getCollapsedGroups();const isC=c.includes(gid);Store.setCollapsedGroup(gid,!isC);Renderer.renderSidebar()};
+  BudgetApp._editGroup=(gid)=>{const g=Store.getAllProjectGroups().find(x=>x.id===gid);if(g)Renderer.showGroupModal(g);else Renderer.showToast('分组不存在','error')};
+  BudgetApp._deleteGroup=(gid)=>{const g=Store.getAllProjectGroups().find(x=>x.id===gid);if(!g)return;const cnt=Store.getAllProjects().filter(p=>p.groupId===gid).length;if(confirm(`确定删除分组"${g.name}"？${cnt>0?`该分组下的 ${cnt} 个项目将变为"未分组"。`:'此分组当前为空。'}`)){Store.deleteProjectGroup(gid);Renderer.showToast(`分组"${g.name}"已删除`);Renderer.renderSidebar();Events._refreshCurrentTab()}};
+
+  // Drag & drop operations
+  BudgetApp._moveProjectToGroup=(srcId,targetGroupId)=>{
+    const projects=Store.getAllProjects(),targetGroup=targetGroupId;
+    const tgt=projects.filter(p=>p.groupId===targetGroup);
+    const nextOrder=tgt.length>0?Math.max(...tgt.map(p=>p.order||0))+1:0;
+    Store.updateProject(srcId,{groupId:targetGroup,order:nextOrder});
+    Renderer.renderSidebar();
+  };
+  BudgetApp._moveProject=(srcId,targetId,above,targetGroupId)=>{
+    const projects=Store.getAllProjects();
+    const srcP=projects.find(p=>p.id===srcId);if(!srcP)return;
+    // Get all projects in the target group, ordered
+    let groupProjects=projects.filter(p=>(p.groupId||null)===(targetGroupId||null)&&p.id!==srcId);
+    const targetIdx=groupProjects.findIndex(p=>p.id===targetId);
+    if(targetIdx===-1){groupProjects.push(srcP)}else{
+      if(above)groupProjects.splice(targetIdx,0,srcP);
+      else groupProjects.splice(targetIdx+1,0,srcP);
+    }
+    // Update order for all items in the group
+    const updates=groupProjects.map((p,i)=>({id:p.id,groupId:targetGroupId,order:i}));
+    Store.reorderProjects(updates);
+    Renderer.renderSidebar();
+  };
+
+  // Now render after all public methods are available
+  Renderer.initFilters();
+  Renderer.renderSidebar();Events.init();Events._refreshCurrentTab();
+}
+
+return{init};
+})();
+document.addEventListener('DOMContentLoaded',BudgetApp.init);
+</script>
+</body>
+</html>

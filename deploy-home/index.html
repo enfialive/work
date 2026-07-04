@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sirenzzz.com</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans SC",sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .container{max-width:900px;width:100%}
+  h1{text-align:center;color:#e2e8f0;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;margin-bottom:8px;letter-spacing:-0.02em}
+  .subtitle{text-align:center;color:#94a3b8;font-size:1rem;margin-bottom:48px}
+  .tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+  .card{display:block;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:32px 28px;text-decoration:none;transition:all 0.25s ease;backdrop-filter:blur(8px);position:relative;overflow:hidden}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)}
+  .card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,0.2);box-shadow:0 12px 40px rgba(0,0,0,0.3)}
+  .card:hover::before{background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent)}
+  .card-icon{font-size:2.4rem;margin-bottom:16px;display:block}
+  .card-title{color:#f1f5f9;font-size:1.2rem;font-weight:700;margin-bottom:8px}
+  .card-desc{color:#94a3b8;font-size:0.9rem;line-height:1.6}
+  .card-domain{display:inline-block;margin-top:16px;padding:4px 12px;background:rgba(255,255,255,0.06);border-radius:20px;color:#64748b;font-size:0.78rem;font-family:monospace}
+  footer{text-align:center;color:#475569;font-size:0.8rem;margin-top:56px}
+  @media(max-width:600px){.tools{grid-template-columns:1fr}.card{padding:24px 20px}}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🛠️ sirenzzz.com</h1>
+  <p class="subtitle">个人工作空间 — 点击卡片进入工具</p>
+
+  <div class="tools">
+    <a href="https://hmc-pe.sirenzzz.com" class="card">
+      <span class="card-icon">💳</span>
+      <div class="card-title">项目支出管理</div>
+      <div class="card-desc">多项目管理、按月份记录支出、分类统计、CSV/JSON 导入导出。</div>
+      <span class="card-domain">hmc-pe.sirenzzz.com</span>
+    </a>
+
+    <a href="https://worktodo.sirenzzz.com" class="card">
+      <span class="card-icon">📅</span>
+      <div class="card-title">日历待办</div>
+      <div class="card-desc">日历视图管理待办事项，支持周视图切换，本地存储持久化。</div>
+      <span class="card-domain">worktodo.sirenzzz.com</span>
+    </a>
+
+    <a href="https://cdr-tool.sirenzzz.com" class="card">
+      <span class="card-icon">🧬</span>
+      <div class="card-title">CDR 标注工具</div>
+      <div class="card-desc">抗体可变区 CDR 标注，支持 IMGT / Kabat / Chothia / Martin 编号系统。</div>
+      <span class="card-domain">cdr-tool.sirenzzz.com</span>
+    </a>
+  </div>
+
+  <footer>© 2026 sirenz</footer>
+</div>
+</body>
+</html>

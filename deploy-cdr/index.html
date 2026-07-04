@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>抗体可变区CDR标注 - 本地工具</title>
+<style>
+:root{--primary:#104c82;--primary-light:#1a6db5;--warning:#ffc107;--danger:#dc3545;--bg:#f7fafc;--card-bg:#fff;--text:#314659;--text-light:#636E72;--border:#e5e7eb;--shadow:0 0 .275rem rgba(49,146,216,0.12);--shadow-lg:0 4px 24px rgba(0,0,0,0.08);--radius:8px;--max-width:960px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;font-size:14px;color:var(--text);background:var(--bg);line-height:1.6;min-height:100vh}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:var(--max-width);margin:0 auto;padding:20px 16px}
+.app-header{background:white;border-bottom:3px solid var(--primary);box-shadow:0 2px 8px rgba(0,21,41,0.06);padding:16px 0;margin-bottom:24px}
+.app-header .container{padding-top:0;padding-bottom:0}
+.app-header h1{font-size:1.45rem;color:var(--primary);font-weight:700;display:flex;align-items:center;gap:10px}
+.app-header h1::before{content:"";display:inline-block;width:6px;height:28px;background:var(--primary);border-radius:3px}
+.app-header .subtitle{font-size:.85rem;color:var(--text-light);margin-top:4px;margin-left:16px}
+.card{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:24px;overflow:hidden}
+.card-header{padding:14px 24px;border-bottom:1px solid var(--border);background:#fafbfc}
+.card-header h2{font-size:1.1rem;color:#333;font-weight:600}
+.card-body{padding:20px 24px}
+.form-group{margin-bottom:18px}
+.form-group>label{display:block;font-weight:600;margin-bottom:6px;color:#333}
+textarea#input-sequence{display:block;width:100%;max-width:100%;min-height:160px;padding:12px;font-family:"Consolas","Monaco","Courier New",monospace;font-size:13px;line-height:1.6;color:var(--text);background:#fafafa;border:1px solid #d0d5dd;border-radius:6px;resize:vertical;transition:border-color .2s,box-shadow .2s}
+textarea#input-sequence:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(16,76,130,0.1)}
+.seq-len-badge{display:inline-block;background:var(--primary);color:white;padding:2px 10px;border-radius:12px;font-size:.85rem;font-weight:600}
+.radio-group{display:flex;flex-wrap:wrap;gap:12px}
+.radio-group label{display:flex;align-items:center;gap:6px;padding:8px 16px;background:#f5f7fa;border:1px solid #d0d5dd;border-radius:6px;cursor:pointer;font-weight:500;transition:all .2s;user-select:none}
+.radio-group label:hover{background:#e8f0fe;border-color:var(--primary-light)}
+.radio-group input[type="radio"]{accent-color:var(--primary)}
+.radio-group label:has(input:checked){background:#e0ecf8;border-color:var(--primary);color:var(--primary);font-weight:600}
+.btn-row{display:flex;gap:12px;margin-top:20px}
+.btn{display:inline-block;padding:10px 28px;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-primary{background:var(--primary);color:white}.btn-primary:hover{background:var(--primary-light);transform:translateY(-1px);box-shadow:0 2px 8px rgba(16,76,130,0.25)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-secondary{background:#f0f2f5;color:#555;border:1px solid #d0d5dd}.btn-secondary:hover{background:#e4e7eb}
+#output-area{display:none;margin-top:24px}#output-area.show{display:block}
+.result-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+.result-table thead th{background:#324960;color:white;padding:10px 16px;text-align:left;font-weight:600}
+.result-table thead th:first-child{background:#4fc3a1}
+.result-table td{padding:10px 16px;border-bottom:1px solid #eee;font-family:"Consolas","Monaco","Courier New",monospace;font-size:12px;letter-spacing:.5px}
+.result-table td:first-child{font-family:inherit;font-weight:600;font-size:13px;white-space:nowrap;color:var(--primary)}
+.result-table td.seq-col{font-family:"Consolas","Monaco","Courier New",monospace;word-break:break-all}
+.result-table tr:nth-child(even){background:#fafbfc}.result-table tr:hover{background:#f0f4f8}
+.result-table tr.cdr-row{background:#fffde7}.result-table tr.cdr-row:hover{background:#fff9c4}
+.result-table td.hydrophobic,.result-table td.basic-aa{color:var(--primary);font-weight:700}
+.warning-box{background:#fff8e1;border:1px solid #ffc107;border-left:4px solid #ff9800;color:#7b5e00;padding:14px 18px;border-radius:6px;font-weight:500}
+.error-box{background:#ffeaea;border:1px solid #ffcdd2;border-left:4px solid #e53935;color:#7b1f1f;padding:14px 18px;border-radius:6px;font-weight:500}
+.info-badge{display:inline-block;background:#e8f0fe;color:var(--primary);padding:3px 10px;border-radius:10px;font-size:.8rem;font-weight:600;margin-bottom:12px}
+.summary-box{background:#f5f9ff;border:1px solid #d0e2f5;border-radius:6px;padding:12px 16px;margin-bottom:16px;font-size:13px}
+.summary-box strong{color:var(--primary)}
+.ref-section h3{font-size:1rem;color:#333;margin:20px 0 12px;padding-bottom:8px;border-bottom:2px solid #eee}
+.ref-section p{line-height:1.8;margin-bottom:10px;color:#555}
+.ref-table-wrapper{overflow-x:auto;margin:16px 0}
+.ref-table{width:100%;border-collapse:collapse;font-size:12px;min-width:620px}
+.ref-table thead th{background:#4fc3a1;color:white;padding:8px 10px;font-weight:600}
+.ref-table thead th:nth-child(odd){background:#324960}
+.ref-table td{padding:8px 10px;text-align:center;border:1px solid #e8e8e8;font-size:12px}
+.ref-table tr:nth-child(even){background:#f8f8f8}
+.ref-table td:first-child{font-weight:600;text-align:left}
+.app-footer{text-align:center;padding:24px 0;color:var(--text-light);font-size:.8rem;border-top:1px solid #eee;margin-top:40px}
+.spinner-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.7);z-index:999;justify-content:center;align-items:center}
+.spinner-overlay.show{display:flex}
+.spinner{background:white;padding:30px 40px;border-radius:var(--radius);box-shadow:var(--shadow-lg);text-align:center}
+.spinner .loader{width:40px;height:40px;border:3px solid #e0e0e0;border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:768px){.container{padding:12px}.radio-group{flex-direction:column;gap:8px}.btn-row{flex-direction:column}.btn{width:100%;text-align:center}textarea#input-sequence{min-height:120px;font-size:12px}}
+</style>
+</head>
+<body>
+<div class="app-header"><div class="container"><h1>抗体可变区CDR标注</h1><div class="subtitle">对抗体可变区进行CDR和FR区域的标注 — 支持IMGT、Kabat、Chothia、Martin编号方案</div></div></div>
+
+<div class="container">
+<div class="card">
+<div class="card-header"><h2>🔬 CDR 标注工具</h2></div>
+<div class="card-body">
+<p style="margin-bottom:16px;color:#555;line-height:1.7;">对抗体可变区进行CDR和FR区域的标注；选择<strong>编号系统</strong>（IMGT, Chothia, Kabat, Martin）和<strong>标注方案</strong>（Chothia, Kabat, IMGT及Contact）。注意：<span style="color:var(--danger)">Kabat编号方案与Contact定义方案不兼容</span>。</p>
+
+<form id="main_form" onsubmit="return false;">
+<div class="form-group">
+<label>1. 输入单条蛋白序列（非FASTA格式）:</label>
+<textarea id="input-sequence" placeholder="请输入氨基酸序列，除20种氨基酸之外，其他字符都会被过滤。&#10;例：QVQLVESGGGLVQPGGSLRLSCAASGFTFSSYAMSWVRQAPGKGLEWVSAISGSGGSTYYADSVKGRFTISRDNSKNTLYLQMNSLRAEDTAVYYCAK"></textarea>
+<div style="margin-top:6px;">序列长度: <span class="seq-len-badge" id="fl-len">0</span> aa <span id="chain-hint" style="font-size:12px;color:#888;margin-left:8px;"></span></div>
+</div>
+
+<div class="form-group">
+<label>2. 选择编号方案 (Numbering Scheme):</label>
+<div class="radio-group" id="numscheme-group">
+<label><input type="radio" name="numscheme" value="IMGT"> IMGT</label>
+<label><input type="radio" name="numscheme" value="Kabat" checked> Kabat</label>
+<label><input type="radio" name="numscheme" value="Chothia"> Chothia</label>
+<label><input type="radio" name="numscheme" value="Martin"> Martin (扩展版Chothia)</label>
+</div>
+</div>
+
+<div class="form-group">
+<label>3. 选择定义方案 (Definition Scheme):</label>
+<div class="radio-group" id="defscheme-group">
+<label><input type="radio" name="defscheme" value="IMGT"> IMGT</label>
+<label><input type="radio" name="defscheme" value="Kabat" checked> Kabat</label>
+<label><input type="radio" name="defscheme" value="Chothia"> Chothia</label>
+<label><input type="radio" name="defscheme" value="Contact"> Contact</label>
+</div>
+</div>
+
+<div class="btn-row">
+<button type="submit" class="btn btn-primary" id="btn-submit">🚀 提交分析</button>
+<button type="button" class="btn btn-secondary" id="btn-clear">✕ 清除</button>
+</div>
+</form>
+
+<div id="output-area"></div>
+</div></div>
+
+<div class="card ref-section">
+<div class="card-header"><h2>📖 抗体可变区注释参考</h2></div>
+<div class="card-body">
+<h3>CDR 定义方案对照表</h3>
+<p>Kabat定义方案：基于序列可变性（variability），使用最为广泛。</p>
+<p>Chothia定义方案：基于结构loop区的位置。</p>
+<p>Contact 定义方案：基于抗体复合物晶体结构数据，适用于亲和力改造。</p>
+<div class="ref-table-wrapper"><table class="ref-table"><thead><tr><th>Loop</th><th>Kabat</th><th>AbM (Martin)</th><th>Chothia</th><th>Contact</th><th>IMGT</th></tr></thead><tbody>
+<tr><td>L1</td><td>L24--L34</td><td>L24--L34</td><td>L24--L34</td><td>L30--L36</td><td>L27--L32</td></tr>
+<tr><td>L2</td><td>L50--L56</td><td>L50--L56</td><td>L50--L56</td><td>L46--L55</td><td>L50--L51</td></tr>
+<tr><td>L3</td><td>L89--L97</td><td>L89--L97</td><td>L89--L97</td><td>L89--L96</td><td>L89--L97</td></tr>
+<tr><td>H1</td><td>H31--H35B (Kabat编号)</td><td>H26--H35B</td><td>H26--H32..34</td><td>H30--H35B</td><td>H26--H35B</td></tr>
+<tr><td>H1</td><td>H31--H35 (Chothia编号)</td><td>H26--H35</td><td>H26--H32</td><td>H30--H35</td><td>H26--H33</td></tr>
+<tr><td>H2</td><td>H50--H65</td><td>H50--H58</td><td>H52--H56</td><td>H47--H58</td><td>H51--H56</td></tr>
+<tr><td>H3</td><td>H95--H102</td><td>H95--H102</td><td>H95--H102</td><td>H93--H101</td><td>H93--H102</td></tr>
+</tbody></table></div>
+<h3>注意事项</h3>
+<p>注1：不同文献中的标注略有不同，特别是Chothia标注方案。</p>
+<p>注2：除Contact标注方案使用Chothia或Martin编号方案外，其他标注方案可与各种编号方案兼容。</p>
+<p>注3：CDR-H1的Chothia loop末端在使用Kabat编号时，根据loop长度不同位于H32至H34之间（取决于H35A和H35B的存在与否）。</p>
+<h3>参考资料</h3>
+<p>👉 <a href="http://www.bioinf.org.uk/abs/info.html" target="_blank" rel="noopener">abYsis - Antibody Information</a></p>
+<p>👉 <a href="https://www.imgt.org/IMGTScientificChart/Numbering/IMGTnumbering.html" target="_blank" rel="noopener">IMGT编号系统</a></p>
+</div></div>
+</div>
+
+<div class="spinner-overlay" id="spinner"><div class="spinner"><div class="loader"></div><div>正在分析中，请稍候…</div></div></div>
+
+<div class="app-footer"><p>本工具为本地离线版本，基于参考序列比对进行CDR标注，仅供科研参考。</p></div>
+
+<script>
+// ==================== CDR 注释引擎 ====================
+
+// --- BLOSUM62 评分矩阵 (压缩存储, 双向查找) ---
+(function(){ const A='ARNDCQEGHILKMFPSTWYV',V=[[4,-1,-2,-2,0,-1,-1,0,-2,-1,-1,-1,-1,-2,-1,1,0,-3,-2,0],[-1,5,0,-2,-3,1,0,-2,0,-3,-2,2,-1,-3,-2,-1,-1,-3,-2,-3],[-2,0,6,1,-3,0,0,0,1,-3,-3,0,-2,-3,-2,1,0,-4,-2,-3],[-2,-2,1,6,-3,0,2,-1,-1,-3,-4,-1,-3,-3,-1,0,-1,-4,-3,-3],[0,-3,-3,-3,9,-3,-4,-3,-3,-1,-1,-3,-1,-2,-3,-1,-1,-2,-2,-1],[-1,1,0,0,-3,5,2,-2,0,-3,-2,1,0,-3,-1,0,-1,-2,-1,-2],[-1,0,0,2,-4,2,5,-2,0,-3,-3,1,-2,-3,-1,0,-1,-3,-2,-2],[0,-2,0,-1,-3,-2,-2,6,-2,-4,-4,-2,-3,-3,-2,0,-2,-2,-3,-3],[-2,0,1,-1,-3,0,0,-2,8,-3,-3,-1,-2,-1,-2,-1,-2,-2,2,-3],[-1,-3,-3,-3,-1,-3,-3,-4,-3,4,2,-3,1,0,-3,-2,-1,-3,-1,3],[-1,-2,-3,-4,-1,-2,-3,-4,-3,2,4,-2,2,0,-3,-2,-1,-2,-1,1],[-1,2,0,-1,-3,1,1,-2,-1,-3,-2,5,-1,-3,-1,0,-1,-3,-2,-2],[-1,-1,-2,-3,-1,0,-2,-3,-2,1,2,-1,5,0,-2,-1,-1,-1,-1,1],[-2,-3,-3,-3,-2,-3,-3,-3,-1,0,0,-3,0,6,-4,-2,-2,1,3,-1],[-1,-2,-2,-1,-3,-1,-1,-2,-2,-3,-3,-1,-2,-4,7,-1,-1,-4,-3,-2],[1,-1,1,0,-1,0,0,0,-1,-2,-2,0,-1,-2,-1,4,1,-3,-2,-2],[0,-1,0,-1,-1,-1,-1,-2,-2,-1,-1,-1,-1,-2,-1,1,5,-2,-2,0],[-3,-3,-4,-4,-2,-2,-3,-2,-2,-3,-2,-3,-1,1,-4,-3,-2,11,2,-3],[-2,-2,-2,-3,-2,-1,-2,-3,2,-1,-1,-2,-1,3,-3,-2,-2,2,7,-1],[0,-3,-3,-3,-1,-2,-2,-3,-3,3,1,-2,1,-1,-2,-2,0,-3,-1,4]]; const m={}; for(let i=0;i<20;i++)for(let j=0;j<20;j++)m[A[i]+A[j]]=V[i][j]; window.BLOSUM62=m; })();
+
+function blosum(a,b){ const k=a+b; if(window.BLOSUM62[k]!==undefined)return window.BLOSUM62[k]; const rk=b+a; return window.BLOSUM62[rk]!==undefined?window.BLOSUM62[rk]:-4; }
+
+// --- 参考序列及Kabat编号定义 ---
+// 参考序列使用典型的人源种系抗体序列 (基于IMGT标准化命名)
+// 每个残基位置均定义对应的Kabat主编号; 插入位置(35A/B,52A-E等)在参考中为gap
+
+const REF = {
+  // 重链 VH - 基于IGHV3-23*01 + 典型CDR-H3/FR4
+  VH: {
+    seq: 'EVQLVESGGGLVQPGGSLRLSCAASGFTFSSYAMSWVRQAPGKGLEWVSAISGSGGSTYYADSVKGRFTISRDNSKNTLYLQMNSLRAEDTAVYYCAKGGYFDYWGQGTLVTV',
+    // 每个残基的Kabat主编号 (不含插入位)
+    kabat: (()=>{
+      const p=[];
+      for(let i=1;i<=35;i++)p.push(i);                    // 1-35  FR1+CDR1
+      for(let i=36;i<=52;i++)p.push(i);                   // 36-52 FR2+CDR2起始
+      for(let i=53;i<=65;i++)p.push(i);                   // 53-65 CDR2剩余 (跳52A-E)
+      for(let i=66;i<=82;i++)p.push(i);                   // 66-82 FR3前半
+      for(let i=83;i<=94;i++)p.push(i);                   // 83-94 FR3后半 (跳82A-C)
+      for(let i=95;i<=100;i++)p.push(i);                  // 95-100 CDR3前半
+      for(let i=101;i<=113;i++)p.push(i);                 // 101-113 CDR3+FR4 (跳100A-K)
+      return p;
+    })(),
+    // IMGT编号对应
+    imgt: (()=>{
+      const p=[];
+      for(let i=1;i<=26;i++)p.push(i);                   // FR1-IMGT: 1-26
+      for(let i=27;i<=38;i++)p.push(i);                  // CDR1-IMGT: 27-38
+      for(let i=39;i<=55;i++)p.push(i);                  // FR2-IMGT: 39-55
+      for(let i=56;i<=65;i++)p.push(i);                  // CDR2-IMGT: 56-65
+      for(let i=66;i<=104;i++)p.push(i);                 // FR3-IMGT: 66-104
+      for(let i=105;i<=117;i++)p.push(i);                // CDR3-IMGT: 105-117
+      for(let i=118;i<=128;i++)p.push(i);                // FR4-IMGT: 118-128
+      return p;
+    })(),
+    chain: 'H',
+    // 插入位置定义: {基准编号: [可用插入编号列表]}
+    insertions: {35: [35.1, 35.2], 52: [52.1, 52.2, 52.3, 52.4, 52.5], 82: [82.1, 82.2, 82.3], 100: [100.1, 100.2, 100.3, 100.4, 100.5, 100.6, 100.7, 100.8, 100.9, 100.10, 100.11]}
+  },
+
+  // Kappa轻链 VK - 基于IGKV1-39*01
+  VK: {
+    seq: 'DIQMTQSPSSLSASVGDRVTITCRASQSISSYLNWYQQKPGKAPKLLIYAASSLQSGVPSRFSGSGSGTDFTLTISSLQPEDFATYYCQQSYSTPLTFGGGTKVEIK',
+    kabat: (()=>{
+      const p=[];
+      for(let i=1;i<=23;i++)p.push(i);                   // 1-23  FR1
+      for(let i=24;i<=34;i++)p.push(i);                  // 24-34 CDR1 (跳27A-F)
+      for(let i=35;i<=49;i++)p.push(i);                  // 35-49 FR2
+      for(let i=50;i<=56;i++)p.push(i);                  // 50-56 CDR2
+      for(let i=57;i<=88;i++)p.push(i);                  // 57-88 FR3
+      for(let i=89;i<=97;i++)p.push(i);                  // 89-97 CDR3 (跳95A-F)
+      for(let i=98;i<=107;i++)p.push(i);                 // 98-107 FR4
+      return p;
+    })(),
+    imgt: (()=>{
+      const p=[];
+      for(let i=1;i<=26;i++)p.push(i);
+      for(let i=27;i<=38;i++)p.push(i);
+      for(let i=39;i<=55;i++)p.push(i);
+      for(let i=56;i<=65;i++)p.push(i);
+      for(let i=66;i<=104;i++)p.push(i);
+      for(let i=105;i<=117;i++)p.push(i);
+      for(let i=118;i<=127;i++)p.push(i);
+      return p;
+    })(),
+    chain: 'L',
+    insertions: {27: [27.1, 27.2, 27.3, 27.4, 27.5, 27.6], 95: [95.1, 95.2, 95.3, 95.4, 95.5, 95.6]}
+  },
+
+  // Lambda轻链 VL - 基于IGLV1-44*01
+  VL: {
+    seq: 'QSVLTQPPSASGTPGQRVTISCSGSSSNIGSNYVYWYQQLPGTAPKLLIYRNNQRPSGVPDRFSGSKSGTSASLAISGLRSEDEADYYCAAWDDSLSGPVFGGGTK',
+    kabat: (()=>{
+      const p=[];
+      for(let i=1;i<=23;i++)p.push(i);
+      for(let i=24;i<=34;i++)p.push(i);
+      for(let i=35;i<=49;i++)p.push(i);
+      for(let i=50;i<=56;i++)p.push(i);
+      for(let i=57;i<=88;i++)p.push(i);
+      for(let i=89;i<=97;i++)p.push(i);
+      for(let i=98;i<=106;i++)p.push(i);
+      return p;
+    })(),
+    imgt: (()=>{
+      const p=[];
+      for(let i=1;i<=26;i++)p.push(i);for(let i=27;i<=38;i++)p.push(i);for(let i=39;i<=55;i++)p.push(i);for(let i=56;i<=65;i++)p.push(i);for(let i=66;i<=104;i++)p.push(i);for(let i=105;i<=117;i++)p.push(i);for(let i=118;i<=127;i++)p.push(i);
+      return p;
+    })(),
+    chain: 'L',
+    insertions: {27: [27.1, 27.2, 27.3, 27.4, 27.5, 27.6], 95: [95.1, 95.2, 95.3, 95.4, 95.5, 95.6]}
+  }
+};
+
+// CDR 定义方案边界 (在Kabat编号系统中的位置)
+// 注意: 这些边界根据定义方案和编号方案不同, 这里以Kabat编号为基准
+const CDR_DEFS = {
+  Kabat: {
+    H: [
+      {name:'FR1',start:1,end:30},
+      {name:'CDR-H1',start:31,end:35.9},  // .9 includes all sub-positions (35A,35B)
+      {name:'FR2',start:36,end:49},
+      {name:'CDR-H2',start:50,end:65.9},
+      {name:'FR3',start:66,end:94},
+      {name:'CDR-H3',start:95,end:102.9},
+      {name:'FR4',start:103,end:113}
+    ],
+    L: [
+      {name:'FR1',start:1,end:23},
+      {name:'CDR-L1',start:24,end:34.9},
+      {name:'FR2',start:35,end:49},
+      {name:'CDR-L2',start:50,end:56.9},
+      {name:'FR3',start:57,end:88},
+      {name:'CDR-L3',start:89,end:97.9},
+      {name:'FR4',start:98,end:107}
+    ]
+  },
+  Chothia: {
+    H: [
+      {name:'FR1',start:1,end:25},
+      {name:'CDR-H1',start:26,end:35.9},  // 可变末端32-34
+      {name:'FR2',start:36,end:51},
+      {name:'CDR-H2',start:52,end:56.9},
+      {name:'FR3',start:57,end:94},
+      {name:'CDR-H3',start:95,end:102.9},
+      {name:'FR4',start:103,end:113}
+    ],
+    L: [
+      {name:'FR1',start:1,end:23},
+      {name:'CDR-L1',start:24,end:34.9},
+      {name:'FR2',start:35,end:49},
+      {name:'CDR-L2',start:50,end:56.9},
+      {name:'FR3',start:57,end:88},
+      {name:'CDR-L3',start:89,end:97.9},
+      {name:'FR4',start:98,end:107}
+    ]
+  },
+  IMGT: {
+    H: [
+      {name:'FR1',start:1,end:25},
+      {name:'CDR-H1',start:26,end:35.9},
+      {name:'FR2',start:36,end:50},
+      {name:'CDR-H2',start:51,end:56.9},
+      {name:'FR3',start:57,end:92},
+      {name:'CDR-H3',start:93,end:102.9},
+      {name:'FR4',start:103,end:113}
+    ],
+    L: [
+      {name:'FR1',start:1,end:26},
+      {name:'CDR-L1',start:27,end:32.9},
+      {name:'FR2',start:33,end:49},
+      {name:'CDR-L2',start:50,end:51.9},
+      {name:'FR3',start:52,end:88},
+      {name:'CDR-L3',start:89,end:97.9},
+      {name:'FR4',start:98,end:107}
+    ]
+  },
+  Contact: {
+    H: [
+      {name:'FR1',start:1,end:29},
+      {name:'CDR-H1',start:30,end:35.9},
+      {name:'FR2',start:36,end:46},
+      {name:'CDR-H2',start:47,end:58.9},
+      {name:'FR3',start:59,end:92},
+      {name:'CDR-H3',start:93,end:101.9},
+      {name:'FR4',start:102,end:113}
+    ],
+    L: [
+      {name:'FR1',start:1,end:29},
+      {name:'CDR-L1',start:30,end:36.9},
+      {name:'FR2',start:37,end:45},
+      {name:'CDR-L2',start:46,end:55.9},
+      {name:'FR3',start:56,end:88},
+      {name:'CDR-L3',start:89,end:96.9},
+      {name:'FR4',start:97,end:107}
+    ]
+  },
+  Martin: {  // AbM - 扩展Chothia
+    H: [
+      {name:'FR1',start:1,end:25},
+      {name:'CDR-H1',start:26,end:35.9},
+      {name:'FR2',start:36,end:49},
+      {name:'CDR-H2',start:50,end:58.9},
+      {name:'FR3',start:59,end:94},
+      {name:'CDR-H3',start:95,end:102.9},
+      {name:'FR4',start:103,end:113}
+    ],
+    L: [
+      {name:'FR1',start:1,end:23},
+      {name:'CDR-L1',start:24,end:34.9},
+      {name:'FR2',start:35,end:49},
+      {name:'CDR-L2',start:50,end:56.9},
+      {name:'FR3',start:57,end:88},
+      {name:'CDR-L3',start:89,end:97.9},
+      {name:'FR4',start:98,end:107}
+    ]
+  }
+};
+
+// --- Needleman-Wunsch 全局比对 (线性gap罚分, 单矩阵) ---
+function nwAlign(seq1, seq2, gapPenalty) {
+  const n=seq1.length, m=seq2.length;
+  const dp=new Array(n+1);
+  const trace=new Array(n+1);
+  for(let i=0;i<=n;i++){
+    dp[i]=new Float64Array(m+1);
+    trace[i]=new Int8Array(m+1); // 0=diag, 1=up(query gap), 2=left(ref gap)
+  }
+  // 初始化
+  for(let i=0;i<=n;i++){ dp[i][0]=-i*gapPenalty; trace[i][0]=1; }
+  for(let j=0;j<=m;j++){ dp[0][j]=-j*gapPenalty; trace[0][j]=2; }
+  trace[0][0]=0;
+
+  // DP
+  for(let i=1;i<=n;i++){
+    const a1=seq1[i-1];
+    for(let j=1;j<=m;j++){
+      const a2=seq2[j-1];
+      const diag=dp[i-1][j-1]+blosum(a1,a2);
+      const up=dp[i-1][j]-gapPenalty;
+      const left=dp[i][j-1]-gapPenalty;
+      if(diag>=up&&diag>=left){ dp[i][j]=diag; trace[i][j]=0; }
+      else if(up>=left){ dp[i][j]=up; trace[i][j]=1; }
+      else{ dp[i][j]=left; trace[i][j]=2; }
+    }
+  }
+
+  // 回溯
+  let i=n, j=m;
+  const aln1=[], aln2=[];
+  while(i>0||j>0){
+    const t=trace[i][j];
+    if(t===0){
+      aln1.push(seq1[i-1]); aln2.push(seq2[j-1]); i--; j--;
+    }else if(t===1){
+      aln1.push(seq1[i-1]); aln2.push('-'); i--;
+    }else{
+      aln1.push('-'); aln2.push(seq2[j-1]); j--;
+    }
+  }
+  aln1.reverse(); aln2.reverse();
+  return {aln1:aln1.join(''), aln2:aln2.join(''), score:dp[n][m]};
+}
+
+// --- 链类型检测 ---
+function detectChain(seq) {
+  const s=seq.toUpperCase();
+  // 检测保守的FR4基序
+  const vhFR4=/WG.QG/i.test(s);
+  const vkFR4=/FG.GTK/i.test(s);
+  const vlFR4=/FG.GT[KL]/i.test(s);
+  // 检测N端保守残基
+  const vhN=/^[EQ]V[QK]L/i.test(s);
+  const vkN=/^[DE]IQM/i.test(s);
+  const vlN=/^[QS][SV]L/i.test(s);
+
+  if(vhFR4&&vhN)return'VH';
+  if(vhFR4)return'VH';
+  if(vkFR4||vkN)return'VK';
+  if(vlFR4||vlN)return'VL';
+
+  // 回退: 比对N端30个残基到各参考
+  const ss=s.substring(0,Math.min(s.length,30));
+  let best=null,bestSc=-Infinity;
+  for(const[k,v]of Object.entries(REF)){
+    const rs=v.seq.substring(0,30);
+    let sc=0;
+    for(let i=0;i<Math.min(ss.length,rs.length);i++){
+      if(ss[i]===rs[i])sc+=5;else sc+=blosum(ss[i]||'X',rs[i]||'X');
+    }
+    if(sc>bestSc){bestSc=sc;best=k;}
+  }
+  return best||'VH';
+}
+
+// --- 将Kabat编号从参考转移到查询 ---
+function transferNumbering(queryAln, refAln, ref) {
+  const result=[];
+  let refIdx=0;          // 参考序列中的位置索引
+  let lastKabat=0;       // 最近分配的Kabat编号
+  let insTracker={};     // 跟踪每个插入点的使用情况: {baseNum: nextIndex}
+
+  // 初始化插入跟踪器
+  for(const base of Object.keys(ref.insertions||{})){
+    insTracker[parseInt(base)]=0;
+  }
+
+  for(let i=0;i<queryAln.length;i++){
+    const qRes=queryAln[i];
+    const rRes=refAln[i];
+
+    if(qRes!=='-'){
+      if(rRes!=='-'&&refIdx<ref.kabat.length){
+        // 匹配: 查询残基获得参考对应位置的Kabat编号
+        const kb=ref.kabat[refIdx];
+        const im=ref.imgt?.[refIdx];
+        result.push({residue:qRes, kabat:kb, imgt:im||null, isInsertion:false, queryIdx:result.length});
+        lastKabat=kb;
+        // 重置当前位置后的插入跟踪器(对于新匹配位置)
+        const baseKb=Math.floor(kb);
+        if(ref.insertions&&ref.insertions[baseKb]){
+          insTracker[baseKb]=0;
+        }
+        refIdx++;
+      }else{
+        // 查询插入: 参考此处为gap, 查询有额外残基
+        // 在最近的插入位置分配下一个可用插入编号
+        const baseKb=Math.floor(lastKabat);
+        let insNum;
+
+        if(ref.insertions&&ref.insertions[baseKb]){
+          const insList=ref.insertions[baseKb];
+          const idx=insTracker[baseKb]||0;
+          if(idx<insList.length){
+            insNum=insList[idx];
+            insTracker[baseKb]=idx+1;
+          }else{
+            // 已用完预定义的插入位, 继续按小数递增
+            insNum=baseKb+(idx+1)*0.1;
+            insTracker[baseKb]=idx+1;
+          }
+        }else{
+          // 不在已知插入点, 使用小数表示
+          const idx=insTracker[baseKb]||0;
+          insTracker[baseKb]=idx+1;
+          insNum=baseKb+(idx+1)*0.1;
+        }
+        result.push({residue:qRes, kabat:insNum, imgt:null, isInsertion:true, queryIdx:result.length});
+        lastKabat=insNum;
+      }
+    }else{
+      // 查询gap: 参考残基被删除
+      if(rRes!=='-'){
+        refIdx++; // 跳过该参考位置
+      }
+    }
+  }
+  return result;
+}
+
+// --- Kabat插入编号格式化 ---
+function kabatInsertLabel(num){
+  const base=Math.floor(num);
+  const frac=num-base;
+  if(frac<0.01)return String(base);
+  const idx=Math.round(frac*10);
+  return base+String.fromCharCode(64+idx); // 1→A,2→B,...
+}
+
+function formatKabatLabel(num){
+  if(Number.isInteger(num)||(num-Math.floor(num))<0.001)return String(Math.round(num));
+  return kabatInsertLabel(num);
+}
+
+// --- 从带编号的残基中提取CDR/FR区域 ---
+function extractRegions(numbering, chain, definitionScheme) {
+  const defs=CDR_DEFS[definitionScheme];
+  if(!defs)return[];
+  const chainDefs=defs[chain];
+  if(!chainDefs)return[];
+
+  const regions=[];
+  for(const regionDef of chainDefs){
+    const residues=[];
+    for(const entry of numbering){
+      const kn=entry.kabat;
+      // 检查Kabat编号是否在区域内 (使用数值比较)
+      const knBase=Math.floor(kn);
+      const startBase=Math.floor(regionDef.start);
+      const endBase=Math.floor(regionDef.end);
+      // 区域包含: start <= kn <= end (考虑插入)
+      if((knBase>startBase&&knBase<endBase)||
+         (knBase===startBase&&kn>=regionDef.start)||
+         (knBase===endBase&&kn<=regionDef.end)){
+        residues.push(entry);
+      }
+    }
+    if(residues.length>0){
+      regions.push({
+        name:regionDef.name,
+        sequence:residues.map(e=>e.residue).join(''),
+        residues:residues,
+        length:residues.length,
+        startLabel:formatKabatLabel(residues[0].kabat),
+        endLabel:formatKabatLabel(residues[residues.length-1].kabat)
+      });
+    }
+  }
+  return regions;
+}
+
+// --- 序列格式化 (保持原始工具的行为) ---
+function seqFormat(seq, groupSize, groupsPerLine) {
+  let result='';
+  let pos=0;
+  const chunkSize=groupSize*groupsPerLine;
+  while(pos<seq.length){
+    const chunk=seq.substring(pos,pos+chunkSize);
+    const lineNum=(pos+1).toString().padStart(5,' ');
+    result+=lineNum+' ';
+    for(let g=0;g<groupsPerLine;g++){
+      const group=chunk.substring(g*groupSize,(g+1)*groupSize);
+      if(group)result+=group+' ';
+    }
+    result+='\n';
+    pos+=chunkSize;
+  }
+  return result.trimEnd();
+}
+
+// --- 主分析函数 ---
+function analyzeCDR(seq, numscheme, defscheme) {
+  const s=seq.toUpperCase();
+  const chainType=detectChain(s);
+  const ref=REF[chainType]||REF['VH'];
+  const chain=ref.chain;
+
+  // 使用NW比对 (gap penalty=8 适用于蛋白序列比对)
+  const aln=nwAlign(s, ref.seq, 8);
+
+  // 转移Kabat编号
+  const numbering=transferNumbering(aln.aln1, aln.aln2, ref);
+
+  // 根据定义方案提取区域
+  const regions=extractRegions(numbering, chain, defscheme);
+
+  return {
+    chainType,
+    chain,
+    regions,
+    numbering,
+    alignment:aln,
+    seqLen:s.length
+  };
+}
+
+// ==================== UI 逻辑 ====================
+document.addEventListener('DOMContentLoaded',function(){
+  const textarea=document.getElementById('input-sequence');
+  const btnSubmit=document.getElementById('btn-submit');
+  const btnClear=document.getElementById('btn-clear');
+  const flLenEl=document.getElementById('fl-len');
+  const chainHint=document.getElementById('chain-hint');
+  const outputArea=document.getElementById('output-area');
+  const spinner=document.getElementById('spinner');
+  let currentSeq='';
+
+  // 输入处理
+  textarea.addEventListener('input',function(){
+    const raw=this.value;
+    const filtered=raw.replace(/[^ACDEFGHIKLMNPQRSTVWY]/gi,'').toUpperCase();
+    currentSeq=filtered;
+    flLenEl.textContent=filtered.length;
+    // 自动检测链类型
+    if(filtered.length>=30){
+      const ct=detectChain(filtered);
+      const names={VH:'重链 (Heavy Chain)',VK:'Kappa轻链',VL:'Lambda轻链'};
+      chainHint.textContent='| 检测: '+ (names[ct]||ct);
+    }else{chainHint.textContent='';}
+    if(filtered.length>0)this.value=seqFormat(filtered,10,7);
+  });
+
+  textarea.addEventListener('focus',function(){if(currentSeq.length>0)this.value=currentSeq;});
+
+  textarea.addEventListener('blur',function(){
+    if(currentSeq.length>0){this.value=seqFormat(currentSeq,10,7);flLenEl.textContent=currentSeq.length;}
+  });
+
+  // 清除
+  btnClear.addEventListener('click',function(){
+    textarea.value='';currentSeq='';flLenEl.textContent='0';chainHint.textContent='';
+    outputArea.innerHTML='';outputArea.classList.remove('show');
+  });
+
+  // 提交
+  btnSubmit.addEventListener('click',function(){
+    const numscheme=document.querySelector('input[name="numscheme"]:checked');
+    const defscheme=document.querySelector('input[name="defscheme"]:checked');
+    if(!numscheme||!defscheme){
+      outputArea.innerHTML='<div class="warning-box">请选择编号方案和定义方案</div>';
+      outputArea.classList.add('show');return;
+    }
+    const nskm=numscheme.value, dskm=defscheme.value;
+
+    if(nskm==='Kabat'&&dskm==='Contact'){
+      outputArea.innerHTML='<div class="warning-box">⚠️ Kabat编号方案与Contact定义方案不兼容。请更换编号方案或定义方案。</div>';
+      outputArea.classList.add('show');return;
+    }
+    if(!currentSeq||currentSeq.length<30){
+      outputArea.innerHTML='<div class="warning-box">请输入有效的抗体可变区序列（至少30个氨基酸）</div>';
+      outputArea.classList.add('show');return;
+    }
+
+    spinner.classList.add('show');
+    btnSubmit.disabled=true;
+    btnSubmit.textContent='分析中...';
+
+    setTimeout(()=>{
+      try{
+        const result=analyzeCDR(currentSeq,nskm,dskm);
+        let html='';
+        if(!result.regions||result.regions.length===0){
+          html='<div class="warning-box">该序列可能不包含抗体可变区，或无法正确识别CDR区域。</div>';
+        }else{
+          const names={VH:'重链 (Heavy Chain)',VK:'Kappa轻链 (Kappa Light Chain)',VL:'Lambda轻链 (Lambda Light Chain)'};
+          html+='<div class="info-badge">🔗 '+ (names[result.chainType]||result.chainType)+'</div>';
+          html+='<div class="summary-box"><strong>编号方案:</strong> '+nskm+' | <strong>定义方案:</strong> '+dskm+' | <strong>序列全长:</strong> '+result.seqLen+' aa | <strong>匹配得分:</strong> '+result.alignment.score.toFixed(0)+'</div>';
+
+          html+='<table class="result-table"><thead><tr><th>名称</th><th>序列</th><th>位置</th><th>长度</th></tr></thead><tbody>';
+          for(const r of result.regions){
+            const isCDR=r.name.startsWith('CDR');
+            html+='<tr class="'+(isCDR?'cdr-row':'')+'">';
+            html+='<td>'+(isCDR?'🔴 ':'▪ ')+r.name+'</td>';
+            html+='<td class="seq-col">'+r.sequence+'</td>';
+            html+='<td>'+r.startLabel+'~'+r.endLabel+'</td>';
+            html+='<td>'+r.length+'</td></tr>';
+          }
+          html+='</tbody></table>';
+
+          html+='<div style="margin-top:16px;padding:12px;background:#f0f7f4;border-radius:6px;font-size:13px;">';
+          html+='<strong>💡 提示:</strong> 本工具使用参考序列比对方法进行CDR标注。对于高变异抗体，建议同时参考';
+          html+='<a href="http://www.bioinf.org.uk/abs/" target="_blank" rel="noopener">abYsis</a>或';
+          html+='<a href="http://opig.stats.ox.ac.uk/webapps/anarci/" target="_blank" rel="noopener">ANARCI</a>等专业工具验证。';
+          html+='</div>';
+        }
+        outputArea.innerHTML=html;
+        outputArea.classList.add('show');
+        outputArea.scrollIntoView({behavior:'smooth',block:'start'});
+      }catch(err){
+        outputArea.innerHTML='<div class="error-box">❌ 分析出错: '+err.message+'</div>';
+        outputArea.classList.add('show');
+        console.error(err);
+      }finally{
+        spinner.classList.remove('show');
+        btnSubmit.disabled=false;
+        btnSubmit.textContent='🚀 提交分析';
+      }
+    },60);
+  });
+
+  // 预填示例序列
+  const example='QVQLVESGGGLVQPGGSLRLSCAASGFTFSSYAMSWVRQAPGKGLEWVSAISGSGGSTYYADSVKGRFTISRDNSKNTLYLQMNSLRAEDTAVYYCAKDYGDYWGQGTLVTVSS';
+  textarea.value=seqFormat(example,10,7);
+  currentSeq=example;
+  flLenEl.textContent=example.length;
+  chainHint.textContent='| 检测: 重链 (Heavy Chain)';
+});
+</script>
+</body>
+</html>

@@ -692,6 +692,29 @@ body {
 
 .btn-retry:hover { background: #FEF2F2; }
 
+/* 清除按钮 */
+.clear-btn {
+  margin-left: auto;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-family: var(--font);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: var(--card-bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.clear-btn:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+  background: #FEF2F2;
+}
+
+.clear-btn:active { transform: scale(0.95); }
+
 /* ===== 错误状态 ===== */
 .error-banner {
   padding: 12px 16px;
@@ -786,7 +809,10 @@ body {
 
   <!-- 卡片2: 转换器 -->
   <div class="card" id="converterCard">
-    <div class="card-header">💹 汇率转换</div>
+    <div class="card-header">
+      💹 汇率转换
+      <button class="clear-btn" id="clearBtn" title="一键清除">🗑️ 清除</button>
+    </div>
     <div class="card-body" id="converterBody">
       <!-- 骨架屏 -->
       <div class="skeleton" id="skeletonLoader">
@@ -846,6 +872,20 @@ body {
   <div class="card history-card" id="historyCard">
     <div class="card-header">📅 历史汇率查询</div>
     <div class="card-body">
+      <!-- 历史货币对选择 -->
+      <div class="currency-row">
+        <div class="currency-selector" id="historyFromSelector">
+          <span class="selector-arrow">▼</span>
+          <input class="selector-input" id="historyFromInput" placeholder="点击选择货币..." autocomplete="off">
+          <div class="dropdown" id="historyFromDropdown"></div>
+        </div>
+        <button class="swap-btn" id="historySwapBtn" title="互换货币">⇄</button>
+        <div class="currency-selector" id="historyToSelector">
+          <span class="selector-arrow">▼</span>
+          <input class="selector-input" id="historyToInput" placeholder="点击选择货币..." autocomplete="off">
+          <div class="dropdown" id="historyToDropdown"></div>
+        </div>
+      </div>
       <div class="date-nav">
         <button class="date-nav-arrow" id="datePrev" title="前一天">◀</button>
         <input type="date" class="date-picker" id="datePicker">
@@ -893,7 +933,7 @@ const CurrencyExchange = (() => {
     { from: 'AUD', to: 'USD' },
     { from: 'USD', to: 'HKD' },
     { from: 'EUR', to: 'CNY' },
-    { from: 'USD', to: 'KRW' },
+    { from: 'AUD', to: 'CNY' },
   ];
 
   // 常用货币置顶 — 覆盖全球主要经济体
@@ -1150,6 +1190,7 @@ const CurrencyExchange = (() => {
     dom = {
       tabGroup: document.getElementById('tabGroup'),
       quickPairs: document.getElementById('quickPairs'),
+      converterCard: document.getElementById('converterCard'),
       converterContent: document.getElementById('converterContent'),
       skeletonLoader: document.getElementById('skeletonLoader'),
       fromInput: document.getElementById('fromInput'),
@@ -1166,12 +1207,18 @@ const CurrencyExchange = (() => {
       rateChange: document.getElementById('rateChange'),
       copyBtn: document.getElementById('copyBtn'),
       historyCard: document.getElementById('historyCard'),
+      historyFromInput: document.getElementById('historyFromInput'),
+      historyToInput: document.getElementById('historyToInput'),
+      historyFromDropdown: document.getElementById('historyFromDropdown'),
+      historyToDropdown: document.getElementById('historyToDropdown'),
+      historySwapBtn: document.getElementById('historySwapBtn'),
       historyResult: document.getElementById('historyResult'),
       historyNotice: document.getElementById('historyNotice'),
       datePicker: document.getElementById('datePicker'),
       datePrev: document.getElementById('datePrev'),
       dateNext: document.getElementById('dateNext'),
       retryBtn: document.getElementById('retryBtn'),
+      clearBtn: document.getElementById('clearBtn'),
       errorBanner: document.getElementById('errorBanner'),
     };
   }
@@ -1187,6 +1234,18 @@ const CurrencyExchange = (() => {
     if (!state.currencies) return code;
     const info = state.currencies.get(code);
     return info ? `${code} — ${info.name}` : code;
+  }
+
+  // 同步所有货币显示（转换器 + 历史卡片）
+  function syncAllCurrencyDisplays() {
+    const fromDisplay = getCurrencyDisplay(state.fromCurrency);
+    const toDisplay = getCurrencyDisplay(state.toCurrency);
+    dom.fromInput.value = fromDisplay;
+    dom.toInput.value = toDisplay;
+    dom.fromTag.textContent = state.fromCurrency;
+    dom.toTag.textContent = state.toCurrency;
+    if (dom.historyFromInput) dom.historyFromInput.value = fromDisplay;
+    if (dom.historyToInput) dom.historyToInput.value = toDisplay;
   }
 
   function filterCurrencies(query) {
@@ -1232,9 +1291,18 @@ const CurrencyExchange = (() => {
   }
 
   function openDropdown(side) {
-    const inputEl = side === 'from' ? dom.fromInput : dom.toInput;
-    const dropdownEl = side === 'from' ? dom.fromDropdown : dom.toDropdown;
-    const currentCode = side === 'from' ? state.fromCurrency : state.toCurrency;
+    let inputEl, dropdownEl, currentCode;
+    if (side === 'from') {
+      inputEl = dom.fromInput; dropdownEl = dom.fromDropdown; currentCode = state.fromCurrency;
+    } else if (side === 'to') {
+      inputEl = dom.toInput; dropdownEl = dom.toDropdown; currentCode = state.toCurrency;
+    } else if (side === 'historyFrom') {
+      inputEl = dom.historyFromInput; dropdownEl = dom.historyFromDropdown; currentCode = state.fromCurrency;
+    } else if (side === 'historyTo') {
+      inputEl = dom.historyToInput; dropdownEl = dom.historyToDropdown; currentCode = state.toCurrency;
+    } else {
+      return;
+    }
 
     closeAllDropdowns();
     state.activeDropdown = side;
@@ -1247,6 +1315,8 @@ const CurrencyExchange = (() => {
   function closeAllDropdowns() {
     dom.fromDropdown.classList.remove('open');
     dom.toDropdown.classList.remove('open');
+    if (dom.historyFromDropdown) dom.historyFromDropdown.classList.remove('open');
+    if (dom.historyToDropdown) dom.historyToDropdown.classList.remove('open');
     state.activeDropdown = null;
   }
 
@@ -1264,8 +1334,6 @@ const CurrencyExchange = (() => {
         return;
       }
       state.fromCurrency = code;
-      dom.fromInput.value = getCurrencyDisplay(code);
-      dom.fromTag.textContent = code;
       prefSet('fromCurrency', code);
     } else {
       if (code === state.fromCurrency) {
@@ -1273,13 +1341,14 @@ const CurrencyExchange = (() => {
         return;
       }
       state.toCurrency = code;
-      dom.toInput.value = getCurrencyDisplay(code);
-      dom.toTag.textContent = code;
       prefSet('toCurrency', code);
     }
     closeAllDropdowns();
+    syncAllCurrencyDisplays();
     updateQuickPairsActive();
     fetchAndUpdateLiveRate();
+    // 如果在历史模式，同步刷新历史查询
+    if (state.mode === 'history') queryHistory();
   }
 
   // ==================== 快捷货币对 ====================
@@ -1304,12 +1373,9 @@ const CurrencyExchange = (() => {
     if (from === to) return;
     state.fromCurrency = from;
     state.toCurrency = to;
-    dom.fromInput.value = getCurrencyDisplay(from);
-    dom.toInput.value = getCurrencyDisplay(to);
-    dom.fromTag.textContent = from;
-    dom.toTag.textContent = to;
     prefSet('fromCurrency', from);
     prefSet('toCurrency', to);
+    syncAllCurrencyDisplays();
     updateQuickPairsActive();
     fetchAndUpdateLiveRate();
   }
@@ -1403,16 +1469,42 @@ const CurrencyExchange = (() => {
     }
   }
 
-  // ==================== 互换货币 ====================
+  // ==================== 一键清除 ====================
+  function clearAll() {
+    // 重置为默认货币对
+    state.fromCurrency = 'USD';
+    state.toCurrency = 'CNY';
+    state.amount = 1;
+    state.rate = null;
+    state.rateDate = null;
+    state.realTimeRate = null;
+
+    // 更新UI
+    syncAllCurrencyDisplays();
+    dom.amountInput.value = '1';
+    dom.resultValue.textContent = '--';
+    dom.rateInfo.querySelector('.rate-text').textContent = '--';
+    dom.rateDate.textContent = '';
+    dom.rateChange.textContent = '';
+
+    // 持久化
+    prefSet('fromCurrency', 'USD');
+    prefSet('toCurrency', 'CNY');
+
+    // 更新快捷货币对高亮
+    updateQuickPairsActive();
+
+    // 重新获取汇率
+    fetchAndUpdateLiveRate();
+
+    showToast('已重置为默认设置', 'info');
+  }
   function swapCurrencies() {
     const oldFrom = state.fromCurrency;
     const oldTo = state.toCurrency;
     state.fromCurrency = oldTo;
     state.toCurrency = oldFrom;
-    dom.fromInput.value = getCurrencyDisplay(oldTo);
-    dom.toInput.value = getCurrencyDisplay(oldFrom);
-    dom.fromTag.textContent = oldTo;
-    dom.toTag.textContent = oldFrom;
+    syncAllCurrencyDisplays();
     // 将金额更新为之前的结果（如果有汇率）
     if (state.rate) {
       const result = calculate(state.amount, state.rate);
@@ -1556,10 +1648,12 @@ const CurrencyExchange = (() => {
     });
 
     if (tab === 'history') {
+      dom.converterCard.style.display = 'none';
       dom.historyCard.classList.add('visible');
       if (!state.historyDate) initDatePicker();
       queryHistory();
     } else {
+      dom.converterCard.style.display = '';
       dom.historyCard.classList.remove('visible');
       fetchAndUpdateLiveRate();
     }
@@ -1575,10 +1669,7 @@ const CurrencyExchange = (() => {
     const savedTab = prefGet('tab', 'live');
 
     // 设置初始显示
-    dom.fromInput.value = state.fromCurrency;
-    dom.toInput.value = state.toCurrency;
-    dom.fromTag.textContent = state.fromCurrency;
-    dom.toTag.textContent = state.toCurrency;
+    syncAllCurrencyDisplays();
 
     initDatePicker();
     renderQuickPairs();
@@ -1603,9 +1694,8 @@ const CurrencyExchange = (() => {
       showToast('货币列表加载失败，使用本地数据', 'warning');
     }
 
-    // 更新选择器显示
-    dom.fromInput.value = getCurrencyDisplay(state.fromCurrency);
-    dom.toInput.value = getCurrencyDisplay(state.toCurrency);
+    // 更新选择器显示（含历史卡片）
+    syncAllCurrencyDisplays();
 
     // 切换加载状态
     dom.skeletonLoader.style.display = 'none';
@@ -1641,6 +1731,9 @@ const CurrencyExchange = (() => {
     // 互换按钮
     dom.swapBtn.addEventListener('click', swapCurrencies);
 
+    // 清除按钮
+    dom.clearBtn.addEventListener('click', clearAll);
+
     // 金额输入
     dom.amountInput.addEventListener('input', () => {
       const raw = dom.amountInput.value.replace(/,/g, '');
@@ -1661,9 +1754,19 @@ const CurrencyExchange = (() => {
       if (e.key === 'Enter') fetchAndUpdateLiveRate();
     });
 
-    // 货币选择器
+    // 货币选择器（转换器）
     setupSelector('from', dom.fromInput, dom.fromDropdown, () => state.fromCurrency, (code) => selectCurrency('from', code));
     setupSelector('to', dom.toInput, dom.toDropdown, () => state.toCurrency, (code) => selectCurrency('to', code));
+
+    // 货币选择器（历史卡片）
+    setupSelector('historyFrom', dom.historyFromInput, dom.historyFromDropdown, () => state.fromCurrency, (code) => selectCurrency('from', code));
+    setupSelector('historyTo', dom.historyToInput, dom.historyToDropdown, () => state.toCurrency, (code) => selectCurrency('to', code));
+
+    // 历史卡片互换按钮
+    dom.historySwapBtn.addEventListener('click', () => {
+      swapCurrencies();
+      if (state.mode === 'history') queryHistory();
+    });
 
     // 复制按钮
     dom.copyBtn.addEventListener('click', copyRate);

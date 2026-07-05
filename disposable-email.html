@@ -551,12 +551,27 @@ function jsEsc(s) {
 function formatTime(dateStr) {
   if (!dateStr) return '';
   try {
-    // Guerrilla Mail 返回格式: "2024-01-01 12:00:00" 或时间戳
     let d;
     if (/^\d+$/.test(String(dateStr))) {
+      // Unix 时间戳（秒）：Date 构造函数自动转为本地时间
       d = new Date(Number(dateStr) * 1000);
     } else {
-      d = new Date(dateStr.replace(' ', 'T'));
+      // Guerrilla Mail 服务器使用 UTC 时间
+      // 先尝试作为纯时间格式 "HH:MM:SS" 处理——拼接今日日期
+      if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(dateStr.trim())) {
+        const now = new Date();
+        const utcY = now.getUTCFullYear();
+        const utcM = String(now.getUTCMonth() + 1).padStart(2, '0');
+        const utcD = String(now.getUTCDate()).padStart(2, '0');
+        d = new Date(utcY + '-' + utcM + '-' + utcD + 'T' + dateStr.trim() + 'Z');
+      } else {
+        // 完整日期字符串，添加 Z 标记为 UTC
+        d = new Date(dateStr.replace(' ', 'T') + 'Z');
+        // 若加 Z 解析失败，回退不加 Z
+        if (isNaN(d.getTime())) {
+          d = new Date(dateStr.replace(' ', 'T'));
+        }
+      }
     }
     if (isNaN(d.getTime())) return dateStr;
     const now = Date.now();
@@ -564,8 +579,8 @@ function formatTime(dateStr) {
     if (diff < 60000) return '刚刚';
     if (diff < 3600000) return Math.floor(diff / 60000) + ' 分钟前';
     if (diff < 86400000) return Math.floor(diff / 3600000) + ' 小时前';
-    return d.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }) + ' ' +
-      d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', timeZone: 'Asia/Shanghai' }) + ' ' +
+      d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Shanghai' });
   } catch { return dateStr; }
 }
 
@@ -857,7 +872,7 @@ async function onViewEmail(mailId) {
   try {
     const data = await fetchEmailBody(mailId);
     domModalSubject.textContent = data.mail_subject || '(无主题)';
-    domModalMeta.textContent = '发件人：' + (data.mail_from || '未知') + ' ｜ ' + formatTime(data.mail_date);
+    domModalMeta.textContent = '发件人：' + (data.mail_from || '未知') + ' ｜ ' + formatTime(data.mail_timestamp || data.mail_date);
 
     // 邮件正文处理
     let body = data.mail_body || '(无内容)';

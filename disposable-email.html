@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一次性邮箱</title>
+<style>
+/* ===== CSS 变量 ===== */
+:root {
+  --bg: #C0C0C0;
+  --surface: #C8C8C8;
+  --surface-light: #D4D4D4;
+  --border: #A8A8A8;
+  --text: #1a1a1a;
+  --text-secondary: #555;
+  --text-hint: #888;
+  --accent: #246fe0;
+  --accent-hover: #1b5ec7;
+  --accent-light: #e8f0fe;
+  --danger: #d1453b;
+  --danger-hover: #b83030;
+  --warning: #eb8909;
+  --white: #fff;
+  --unread-bar: #246fe0;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+  --radius: 6px;
+  --radius-sm: 3px;
+  --transition: 120ms ease;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+}
+
+html { color-scheme: light; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+}
+
+/* ===== Header ===== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 16px;
+}
+.header-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+.header-actions { display: flex; gap: 8px; }
+
+/* ===== 按钮 ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 15px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all var(--transition);
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--surface-light); }
+.btn-small { padding: 3px 10px; font-size: 13px; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: var(--danger-hover); }
+.btn-icon {
+  background: none; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); cursor: pointer;
+  padding: 4px 10px; font-size: 16px; transition: all var(--transition);
+}
+.btn-icon:hover { background: var(--surface-light); }
+.btn-copy {
+  font-family: "Consolas", "Monaco", "Courier New", monospace;
+  font-size: 13px;
+}
+
+/* ===== 邮箱卡片 ===== */
+.email-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+.email-address-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.email-address {
+  font-family: "Consolas", "Monaco", "Courier New", monospace;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--accent);
+  word-break: break-all;
+  cursor: pointer;
+  user-select: all;
+  flex: 1;
+  min-width: 200px;
+}
+.email-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.countdown { font-weight: 500; }
+.countdown.warning { color: var(--danger); font-weight: 600; animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0.4; } }
+.countdown.expired { color: var(--danger); font-weight: 600; }
+
+/* ===== 域名选择器 ===== */
+.domain-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+  flex-wrap: wrap;
+}
+.domain-label {
+  font-size: 12px;
+  color: var(--text-hint);
+  white-space: nowrap;
+}
+.domain-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.domain-chip {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  font-family: var(--font);
+}
+.domain-chip:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+.domain-chip.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.domain-chip.switching {
+  opacity: 0.6;
+  pointer-events: none;
+  animation: pulse 1s ease-in-out infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+/* ===== 收件箱卡片 ===== */
+.inbox-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.inbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: #fafbfc;
+}
+.inbox-title {
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.auto-refresh-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-hint);
+  background: var(--bg);
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+.inbox-actions { display: flex; gap: 6px; }
+
+/* ===== 邮件列表项 ===== */
+.email-list { min-height: 120px; }
+.email-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background var(--transition);
+  position: relative;
+}
+.email-item:hover { background: #f5f7fa; }
+.email-item:last-child { border-bottom: none; }
+.email-item.unread { background: #fafcff; }
+.email-item.unread::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 6px; bottom: 6px;
+  width: 3px;
+  background: var(--unread-bar);
+  border-radius: 0 2px 2px 0;
+}
+.email-item-body { flex: 1; min-width: 0; }
+.email-item-from {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.email-item-subject {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.email-item.unread .email-item-from,
+.email-item.unread .email-item-subject { font-weight: 700; color: var(--text); }
+.email-item-time {
+  font-size: 12px;
+  color: var(--text-hint);
+  white-space: nowrap;
+  margin-left: auto;
+  align-self: center;
+}
+.email-item-delete {
+  visibility: hidden;
+  background: none;
+  border: none;
+  color: var(--text-hint);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  align-self: center;
+  flex-shrink: 0;
+}
+.email-item:hover .email-item-delete { visibility: visible; }
+.email-item-delete:hover { color: var(--danger); background: #fef2f2; }
+
+/* ===== 空状态 ===== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: var(--text-hint);
+  text-align: center;
+}
+.empty-state-icon { font-size: 40px; margin-bottom: 10px; opacity: 0.6; }
+.empty-state-text { font-size: 14px; line-height: 1.6; }
+
+/* ===== 加载指示器 ===== */
+.loading-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  color: var(--text-hint);
+  font-size: 13px;
+}
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== Modal 浮层 ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal-overlay.hidden { display: none; }
+.modal {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  max-width: 700px;
+  width: 100%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  background: #fafbfc;
+}
+.modal-subject {
+  font-size: 1.05rem;
+  font-weight: 600;
+  flex: 1;
+  margin-right: 12px;
+}
+.modal-meta {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--text-hint);
+  padding: 0 4px;
+  line-height: 1;
+  transition: color var(--transition);
+}
+.modal-close:hover { color: var(--text); }
+.modal-body {
+  padding: 16px 20px;
+  overflow-y: auto;
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.7;
+  word-break: break-word;
+}
+.modal-body pre {
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* ===== Toast 通知 ===== */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  background: var(--text);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
+  animation: slideIn 200ms ease;
+  max-width: 320px;
+}
+.toast.success { background: #2e7d32; }
+.toast.error { background: var(--danger); }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 600px) {
+  .app { padding: 12px 10px 30px; }
+  .header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .email-address-row { flex-direction: column; align-items: flex-start; }
+  .email-address { font-size: 0.95rem; }
+  .email-card { padding: 14px 16px; }
+  .email-item { padding: 10px 14px; }
+  .email-item-delete { visibility: visible; }
+  .inbox-header { padding: 10px 14px; }
+  .modal { max-height: 90vh; border-radius: var(--radius) var(--radius) 0 0; }
+  .toast-container { top: 10px; right: 10px; left: 10px; }
+  .toast { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-title">📧 一次性邮箱</div>
+    <div class="header-actions">
+      <button class="btn btn-secondary btn-small" onclick="onGenerateNew()" id="btn-new">🆕 新邮箱</button>
+    </div>
+  </div>
+
+  <!-- 邮箱卡片 -->
+  <div class="email-card" id="email-card">
+    <div class="email-address-row">
+      <span class="email-address" id="email-address" onclick="onCopyEmail()" title="点击复制邮箱地址"></span>
+      <button class="btn btn-primary btn-copy" id="btn-copy" onclick="onCopyEmail()">📋 复制</button>
+    </div>
+    <div class="email-meta">
+      <span class="countdown" id="countdown"></span>
+    </div>
+    <div class="domain-selector" id="domain-selector">
+      <span class="domain-label">📎 域名：</span>
+      <div class="domain-chips" id="domain-chips"></div>
+    </div>
+  </div>
+
+  <!-- 收件箱卡片 -->
+  <div class="inbox-card">
+    <div class="inbox-header">
+      <div class="inbox-title">
+        收件箱
+        <span class="auto-refresh-badge" id="refresh-badge" title="每15秒自动刷新">🔄 自动刷新</span>
+      </div>
+      <div class="inbox-actions">
+        <button class="btn btn-secondary btn-small" onclick="onRefresh()" id="btn-refresh">🔄 刷新</button>
+      </div>
+    </div>
+    <div class="email-list" id="email-list"></div>
+  </div>
+</div>
+
+<!-- 邮件详情 Modal -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="onCloseModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <div class="modal-subject" id="modal-subject"></div>
+        <div class="modal-meta" id="modal-meta"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- Toast 容器 -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+/* ===== 状态 ===== */
+const state = {
+  email: '',
+  sidToken: '',
+  expireTime: 0,
+  emails: [],
+  pollTimer: null,
+  countdownTimer: null,
+  isLoading: false,
+  pollFailCount: 0,
+  preferredDomain: '', // 用户偏好的域名，空字符串表示不限制
+};
+
+const API_BASE = 'https://api.guerrillamail.com/ajax.php';
+
+/* ===== 可用域名 ===== */
+const ALL_DOMAINS = [
+  { domain: 'sharklasers.com', label: 'sharklasers.com', group: '隐蔽' },
+  { domain: 'grr.la', label: 'grr.la', group: '隐蔽' },
+  { domain: 'pokemail.net', label: 'pokemail.net', group: '隐蔽' },
+  { domain: 'spam4.me', label: 'spam4.me', group: '隐蔽' },
+  { domain: 'guerrillamail.info', label: 'guerrillamail.info', group: 'GMail' },
+  { domain: 'guerrillamail.biz', label: 'guerrillamail.biz', group: 'GMail' },
+  { domain: 'guerrillamail.de', label: 'guerrillamail.de', group: 'GMail' },
+  { domain: 'guerrillamail.net', label: 'guerrillamail.net', group: 'GMail' },
+  { domain: 'guerrillamail.org', label: 'guerrillamail.org', group: 'GMail' },
+  { domain: 'guerrillamail.com', label: 'guerrillamail.com', group: 'GMail' },
+  { domain: 'guerrillamailblock.com', label: 'guerrillamailblock.com', group: 'GMail' },
+];
+
+function getDomain(email) {
+  const idx = email.lastIndexOf('@');
+  return idx >= 0 ? email.substring(idx + 1) : '';
+}
+
+/* ===== DOM 引用 ===== */
+const $ = (id) => document.getElementById(id);
+const domEmail = $('email-address');
+const domCountdown = $('countdown');
+const domList = $('email-list');
+const domBtnCopy = $('btn-copy');
+const domBtnNew = $('btn-new');
+const domBtnRefresh = $('btn-refresh');
+const domModalOverlay = $('modal-overlay');
+const domModalSubject = $('modal-subject');
+const domModalMeta = $('modal-meta');
+const domModalBody = $('modal-body');
+const domToast = $('toast-container');
+const domRefreshBadge = $('refresh-badge');
+
+/* ===== 工具函数 ===== */
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function jsEsc(s) {
+  return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
+}
+
+function formatTime(dateStr) {
+  if (!dateStr) return '';
+  try {
+    // Guerrilla Mail 返回格式: "2024-01-01 12:00:00" 或时间戳
+    let d;
+    if (/^\d+$/.test(String(dateStr))) {
+      d = new Date(Number(dateStr) * 1000);
+    } else {
+      d = new Date(dateStr.replace(' ', 'T'));
+    }
+    if (isNaN(d.getTime())) return dateStr;
+    const now = Date.now();
+    const diff = now - d.getTime();
+    if (diff < 60000) return '刚刚';
+    if (diff < 3600000) return Math.floor(diff / 60000) + ' 分钟前';
+    if (diff < 86400000) return Math.floor(diff / 3600000) + ' 小时前';
+    return d.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }) + ' ' +
+      d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+  } catch { return dateStr; }
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(text);
+  }
+  // 降级方案
+  return new Promise((resolve, reject) => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      resolve();
+    } catch (e) {
+      document.body.removeChild(ta);
+      reject(e);
+    }
+  });
+}
+
+function showToast(msg, type) {
+  type = type || '';
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  domToast.appendChild(el);
+  setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transition = 'opacity 300ms';
+    setTimeout(() => el.remove(), 300);
+  }, 2500);
+}
+
+/* ===== API 层 ===== */
+async function apiCall(params) {
+  const url = API_BASE + '?' + new URLSearchParams(params).toString();
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return res.json();
+}
+
+async function generateEmail() {
+  const data = await apiCall({ f: 'get_email_address' });
+  state.email = data.email_addr;
+  state.sidToken = data.sid_token;
+  state.expireTime = (Number(data.email_timestamp) + 3600) * 1000; // 60分钟有效期
+  state.emails = [];
+  state.pollFailCount = 0;
+}
+
+async function checkEmails() {
+  const data = await apiCall({
+    f: 'check_email',
+    sid_token: state.sidToken,
+    seq: 0,
+  });
+  state.emails = data.list || [];
+  return data;
+}
+
+async function fetchEmailBody(mailId) {
+  const data = await apiCall({
+    f: 'fetch_email',
+    sid_token: state.sidToken,
+    email_id: mailId,
+  });
+  return data;
+}
+
+async function deleteEmailRemote(mailId) {
+  await apiCall({
+    f: 'del_email',
+    sid_token: state.sidToken,
+    'email_ids[]': mailId,
+  });
+}
+
+async function forgetEmail() {
+  try {
+    await apiCall({
+      f: 'forget_me',
+      sid_token: state.sidToken,
+      email_addr: state.email,
+    });
+  } catch (e) {
+    // best effort，不阻塞流程
+  }
+}
+
+/* ===== 轮询 & 倒计时 ===== */
+function startPolling() {
+  stopPolling();
+  pollOnce(); // 立即拉取一次
+  state.pollTimer = setInterval(pollOnce, 15000);
+  domRefreshBadge.textContent = '🔄 自动刷新';
+  domRefreshBadge.style.color = '';
+}
+
+function stopPolling() {
+  if (state.pollTimer) {
+    clearInterval(state.pollTimer);
+    state.pollTimer = null;
+  }
+}
+
+async function pollOnce() {
+  if (state.isLoading || !state.sidToken) return;
+  state.isLoading = true;
+  try {
+    const oldCount = state.emails.length;
+    await checkEmails();
+    state.pollFailCount = 0;
+    renderInbox();
+    // 新邮件通知
+    if (state.emails.length > oldCount && oldCount > 0) {
+      const newCount = state.emails.length - oldCount;
+      showToast('收到 ' + newCount + ' 封新邮件', 'success');
+    }
+  } catch (e) {
+    state.pollFailCount++;
+    if (state.pollFailCount >= 3) {
+      stopPolling();
+      domRefreshBadge.textContent = '⚠ 已暂停';
+      domRefreshBadge.style.color = 'var(--danger)';
+      showToast('自动刷新已暂停，请检查网络后手动刷新', 'error');
+    }
+  } finally {
+    state.isLoading = false;
+  }
+}
+
+function startCountdown() {
+  stopCountdown();
+  updateCountdown();
+  state.countdownTimer = setInterval(updateCountdown, 30000);
+}
+
+function stopCountdown() {
+  if (state.countdownTimer) {
+    clearInterval(state.countdownTimer);
+    state.countdownTimer = null;
+  }
+}
+
+function updateCountdown() {
+  const remaining = state.expireTime - Date.now();
+  if (remaining <= 0) {
+    domCountdown.textContent = '⏰ 已过期，请生成新地址';
+    domCountdown.className = 'countdown expired';
+    stopPolling();
+    return;
+  }
+  const minutes = Math.floor(remaining / 60000);
+  const seconds = Math.floor((remaining % 60000) / 1000);
+  if (minutes < 5) {
+    domCountdown.textContent = '⏱ 剩余 ' + minutes + ' 分 ' + seconds + ' 秒（即将过期）';
+    domCountdown.className = 'countdown warning';
+  } else {
+    domCountdown.textContent = '⏱ 剩余约 ' + minutes + ' 分钟';
+    domCountdown.className = 'countdown';
+  }
+}
+
+/* ===== 页面可见性处理 ===== */
+function handleVisibilityChange() {
+  if (document.hidden) {
+    stopPolling();
+  } else {
+    if (state.sidToken && state.expireTime > Date.now()) {
+      pollOnce();
+      startPolling();
+    }
+  }
+}
+
+/* ===== 渲染函数 ===== */
+function renderEmailCard() {
+  domEmail.textContent = state.email;
+  domBtnCopy.textContent = '📋 复制';
+  renderDomainSelector();
+}
+
+function renderDomainSelector() {
+  const currentDomain = getDomain(state.email);
+  let html = '';
+  ALL_DOMAINS.forEach((d) => {
+    const active = d.domain === currentDomain ? ' active' : '';
+    html += '<span class="domain-chip' + active + '" '
+      + 'onclick="onSelectDomain(\'' + jsEsc(d.domain) + '\')" '
+      + 'title="切换到 @' + d.domain + (d.group === '隐蔽' ? '（较不易被屏蔽）' : '') + '">'
+      + '@' + d.domain + '</span>';
+  });
+  $('domain-chips').innerHTML = html;
+}
+
+function renderInbox() {
+  if (state.emails.length === 0) {
+    domList.innerHTML = ''
+      + '<div class="empty-state">'
+      + '<div class="empty-state-icon">📭</div>'
+      + '<div class="empty-state-text">收件箱为空<br>等待接收邮件中…</div>'
+      + '</div>';
+    return;
+  }
+
+  // 按时间倒序排列（最新的在前）
+  const sorted = [...state.emails].sort((a, b) => {
+    const ta = Number(a.mail_timestamp) || 0;
+    const tb = Number(b.mail_timestamp) || 0;
+    return tb - ta;
+  });
+
+  let html = '';
+  sorted.forEach((m) => {
+    const unread = Number(m.mail_read) === 0 ? ' unread' : '';
+    const from = esc(m.mail_from || '未知发件人');
+    const subject = esc(m.mail_subject || '(无主题)');
+    const time = formatTime(m.mail_timestamp || m.mail_date);
+    html += ''
+      + '<div class="email-item' + unread + '" onclick="onViewEmail(\'' + jsEsc(m.mail_id) + '\')">'
+      + '<div class="email-item-body">'
+      + '<div class="email-item-from">' + from + '</div>'
+      + '<div class="email-item-subject">' + subject + '</div>'
+      + '</div>'
+      + '<span class="email-item-time">' + time + '</span>'
+      + '<button class="email-item-delete" onclick="event.stopPropagation();onDeleteEmail(\'' + jsEsc(m.mail_id) + '\')" title="删除">✕</button>'
+      + '</div>';
+  });
+
+  domList.innerHTML = html;
+}
+
+function renderLoading() {
+  domList.innerHTML = ''
+    + '<div class="loading-row">'
+    + '<div class="spinner"></div>'
+    + '<span>加载中…</span>'
+    + '</div>';
+}
+
+/* ===== 交互处理 ===== */
+async function onCopyEmail() {
+  if (!state.email) return;
+  try {
+    await copyToClipboard(state.email);
+    domBtnCopy.textContent = '已复制 ✓';
+    domBtnCopy.style.background = '#2e7d32';
+    setTimeout(() => {
+      domBtnCopy.textContent = '📋 复制';
+      domBtnCopy.style.background = '';
+    }, 2000);
+  } catch {
+    showToast('复制失败，请手动选择地址复制', 'error');
+  }
+}
+
+async function onRefresh() {
+  if (state.isLoading || !state.sidToken) return;
+  renderLoading();
+  state.pollFailCount = 0;
+  try {
+    await checkEmails();
+    renderInbox();
+    showToast('已刷新', 'success');
+  } catch (e) {
+    showToast('刷新失败，请检查网络连接', 'error');
+  } finally {
+    state.isLoading = false;
+  }
+}
+
+async function onViewEmail(mailId) {
+  if (!mailId) return;
+  domModalOverlay.classList.remove('hidden');
+  domModalBody.innerHTML = ''
+    + '<div class="loading-row">'
+    + '<div class="spinner"></div>'
+    + '<span>加载邮件内容…</span>'
+    + '</div>';
+  domModalSubject.textContent = '';
+  domModalMeta.textContent = '';
+
+  try {
+    const data = await fetchEmailBody(mailId);
+    domModalSubject.textContent = data.mail_subject || '(无主题)';
+    domModalMeta.textContent = '发件人：' + (data.mail_from || '未知') + ' ｜ ' + formatTime(data.mail_date);
+
+    // 邮件正文处理
+    let body = data.mail_body || '(无内容)';
+    // 如果是纯文本，wrap 在 <pre> 中
+    if (data.content_type === 'text/plain') {
+      body = '<pre>' + esc(body) + '</pre>';
+    }
+    domModalBody.innerHTML = body;
+
+    // 标记为已读（视觉上）
+    const email = state.emails.find((e) => e.mail_id === mailId);
+    if (email) email.mail_read = 1;
+    renderInbox();
+  } catch (e) {
+    domModalBody.innerHTML = '<div class="empty-state"><div class="empty-state-text">加载失败，请重试</div></div>';
+  }
+}
+
+function onCloseModal(event) {
+  if (event && event.target !== domModalOverlay) return;
+  closeModal();
+}
+
+function closeModal() {
+  domModalOverlay.classList.add('hidden');
+}
+
+async function onDeleteEmail(mailId) {
+  if (!mailId || !confirm('确定要删除这封邮件吗？')) return;
+  try {
+    await deleteEmailRemote(mailId);
+    state.emails = state.emails.filter((e) => e.mail_id !== mailId);
+    renderInbox();
+    showToast('邮件已删除', 'success');
+  } catch (e) {
+    showToast('删除失败', 'error');
+  }
+}
+
+/* ===== 域名切换 ===== */
+// Guerrilla Mail 的所有域名共享同一收件箱，只需改显示地址即可
+function switchDomain(desiredDomain) {
+  const atIdx = state.email.lastIndexOf('@');
+  const username = atIdx >= 0 ? state.email.substring(0, atIdx) : state.email;
+  state.email = username + '@' + desiredDomain;
+  state.preferredDomain = desiredDomain;
+  renderEmailCard();
+  showToast('已切换到 @' + desiredDomain, 'success');
+}
+
+async function onSelectDomain(desiredDomain) {
+  const currentDomain = getDomain(state.email);
+  if (desiredDomain === currentDomain) return;
+  switchDomain(desiredDomain);
+}
+
+async function onGenerateNew() {
+  if (!confirm('确定要生成新邮箱地址吗？当前邮箱将被销毁，所有邮件将丢失。')) return;
+
+  stopPolling();
+  stopCountdown();
+  domBtnNew.disabled = true;
+  domBtnNew.textContent = '⏳ 生成中…';
+  renderLoading();
+
+  try {
+    // 尝试销毁旧邮箱
+    if (state.email && state.sidToken) {
+      await forgetEmail();
+    }
+    // 生成新邮箱
+    await generateEmail();
+    // 如果有偏好域名，切换到该域名
+    if (state.preferredDomain) {
+      switchDomain(state.preferredDomain);
+    }
+    // 重新渲染
+    renderEmailCard();
+    renderInbox();
+    startPolling();
+    startCountdown();
+    showToast('已生成新邮箱', 'success');
+  } catch (e) {
+    showToast('生成失败，请刷新页面重试', 'error');
+  } finally {
+    domBtnNew.disabled = false;
+    domBtnNew.textContent = '🆕 新邮箱';
+  }
+}
+
+/* ===== 键盘快捷键 ===== */
+document.addEventListener('keydown', function(e) {
+  // 在 input/textarea 中不触发快捷键
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+  if (e.key === 'r' || e.key === 'R') {
+    e.preventDefault();
+    onRefresh();
+  } else if (e.key === 'n' || e.key === 'N') {
+    e.preventDefault();
+    onGenerateNew();
+  } else if (e.key === 'Escape') {
+    closeModal();
+  }
+});
+
+/* ===== 初始化 ===== */
+async function init() {
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+
+  try {
+    await generateEmail();
+    state.preferredDomain = getDomain(state.email); // 记录初始域名作为偏好
+    renderEmailCard();
+    renderInbox();
+    startPolling();
+    startCountdown();
+  } catch (e) {
+    domList.innerHTML = ''
+      + '<div class="empty-state">'
+      + '<div class="empty-state-icon">⚠️</div>'
+      + '<div class="empty-state-text">无法连接到邮箱服务<br>请检查网络连接后刷新页面</div>'
+      + '</div>';
+    domBtnNew.disabled = true;
+    domBtnRefresh.disabled = true;
+  }
+}
+
+init();
+</script>
+</body>
+</html>

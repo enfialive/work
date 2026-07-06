@@ -277,7 +277,12 @@ body {
   <!-- Header -->
   <header class="header">
     <div class="header-title"><span class="icon">📅</span> 日历待办</div>
-    <button class="btn btn-primary" onclick="toggleQuickAdd()">+ 快速添加</button>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="btn btn-secondary btn-small" onclick="exportData()" title="导出数据为JSON文件">📤 导出</button>
+      <button class="btn btn-secondary btn-small" onclick="document.getElementById('import-file').click()" title="从JSON文件导入数据">📥 导入</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+      <button class="btn btn-primary" onclick="toggleQuickAdd()">+ 快速添加</button>
+    </div>
   </header>
 
   <!-- 快速添加栏 -->
@@ -664,6 +669,47 @@ document.addEventListener('keydown', e => {
     case 'escape': closeModal(); break;
   }
 });
+
+/* ===== 导入/导出 ===== */
+function exportData() {
+  const data = JSON.stringify(tasks, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `calendar-todo-backup-${todayStr()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) { alert('文件格式不正确，需要 JSON 数组格式'); return; }
+      const mode = confirm('点击"确定"：用导入数据完全替换当前数据\n点击"取消"：与当前数据合并（保留两边的任务）');
+      if (mode) {
+        tasks = imported;
+      } else {
+        // 合并：以 id 去重，导入的优先
+        const existingIds = new Set(tasks.map(t => t.id));
+        const newTasks = imported.filter(t => !existingIds.has(t.id));
+        tasks = [...tasks, ...newTasks];
+      }
+      saveTasks();
+      renderAll();
+      closeModal();
+      alert(`导入完成！共 ${mode ? imported.length : tasks.length} 条任务。`);
+    } catch (err) {
+      alert('导入失败：' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = ''; // 允许重复选择同一文件
+}
 
 /* ===== 初始化 ===== */
 initState();

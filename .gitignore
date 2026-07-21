@@ -20,3 +20,8 @@ cnipa_*
 
 # Cloudflare wrangler 缓存
 .wrangler/
+
+# 预算管理系统 - 数据库和上传文件
+budget-app/data/
+budget-app/uploads/
+budget-app/__pycache__/

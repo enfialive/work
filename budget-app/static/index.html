@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>预算与支出管理系统</title>
+<style>
+:root {
+  --color-primary: #4A90D9; --color-primary-dark: #3570B0; --color-primary-light: #EBF3FC;
+  --color-expense: #FF6B6B; --color-expense-bg: #FFE8E8;
+  --color-warning: #F39C12; --color-warning-bg: #FFF8E1;
+  --color-danger: #E74C3C; --color-success: #00B894; --color-success-bg: #E6F9F5;
+  --color-bg: #F5F6F8; --color-surface: #FFFFFF;
+  --color-border: #E1E5EA; --color-text: #1A1A2E;
+  --color-text-secondary: #636E72; --color-text-muted: #B2BEC3;
+  --spacing-xs: 4px; --spacing-sm: 8px; --spacing-md: 16px;
+  --spacing-lg: 24px; --spacing-xl: 32px;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+  --font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  --font-size-xs: 0.75rem; --font-size-sm: 0.875rem; --font-size-md: 1rem;
+  --font-size-lg: 1.125rem; --font-size-xl: 1.375rem; --font-size-xxl: 2rem;
+  --transition-fast: 150ms ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-family);background:var(--color-bg);color:var(--color-text);line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+.app-shell{display:flex;min-height:100vh;max-width:1400px;margin:0 auto}
+
+/* Sidebar */
+.sidebar{width:240px;min-width:240px;background:var(--color-surface);border-right:1px solid var(--color-border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:100}
+.sidebar-header{padding:var(--spacing-md);border-bottom:1px solid var(--color-border);display:flex;align-items:center;gap:var(--spacing-sm);font-size:var(--font-size-md);font-weight:700;color:var(--color-primary-dark)}
+.sidebar-nav{flex:1;padding:var(--spacing-sm);overflow-y:auto}
+.sidebar-section-title{font-size:var(--font-size-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.5px;padding:var(--spacing-sm);margin-top:var(--spacing-xs)}
+.sidebar-item{display:flex;align-items:center;gap:var(--spacing-sm);padding:10px var(--spacing-sm);border-radius:var(--radius-md);cursor:pointer;font-size:var(--font-size-sm);font-weight:500;color:var(--color-text-secondary);transition:all var(--transition-fast);position:relative;margin-bottom:2px}
+.sidebar-item:hover{background:var(--color-bg);color:var(--color-text)}
+.sidebar-item.active{background:var(--color-primary);color:#fff}
+.sidebar-item .proj-color{width:4px;height:20px;border-radius:2px;flex-shrink:0}
+.sidebar-item .proj-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-item .proj-badge{font-size:var(--font-size-xs);background:rgba(0,0,0,.08);padding:1px 8px;border-radius:99px;white-space:nowrap}
+.sidebar-item.active .proj-badge{background:rgba(255,255,255,.2)}
+.sidebar-footer{padding:var(--spacing-sm);border-top:1px solid var(--color-border)}
+.sidebar-footer .btn{width:100%;justify-content:center;margin-bottom:4px}
+
+/* Sidebar groups */
+.sidebar-group{margin-bottom:2px}
+.sidebar-group-header{display:flex;align-items:center;gap:4px;padding:6px var(--spacing-sm);border-radius:var(--radius-md);cursor:pointer;font-size:var(--font-size-xs);font-weight:600;color:var(--color-text-secondary);transition:all var(--transition-fast)}
+.sidebar-group-header:hover{background:var(--color-bg)}
+.sidebar-group-header .collapse-arrow{font-size:10px;transition:transform var(--transition-fast);flex-shrink:0;width:14px;text-align:center}
+.sidebar-group.collapsed .collapse-arrow{transform:rotate(-90deg)}
+.sidebar-group-header .group-icon{flex-shrink:0}
+.sidebar-group-header .group-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-group-header .group-count{font-size:10px;opacity:.6;background:rgba(0,0,0,.06);padding:1px 6px;border-radius:99px;white-space:nowrap}
+.sidebar-group-header .group-actions{display:flex;gap:2px;opacity:0;transition:opacity var(--transition-fast)}
+.sidebar-group-header:hover .group-actions{opacity:1}
+.sidebar-group-header .group-act-btn{width:22px;height:22px;border:none;background:rgba(0,0,0,.08);border-radius:var(--radius-sm);cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;transition:all var(--transition-fast)}
+.sidebar-group-header .group-act-btn:hover{background:rgba(0,0,0,.15)}
+.sidebar-group.collapsed .sidebar-item{display:none}
+.sidebar-item.in-group{padding-left:20px}
+
+/* Project item hover actions */
+.sidebar-item .item-actions{display:flex;gap:2px;flex-shrink:0;opacity:0;transition:opacity var(--transition-fast)}
+.sidebar-item:hover .item-actions,.sidebar-item.active .item-actions{opacity:1}
+.sidebar-item .item-act-btn{width:24px;height:24px;border:none;background:rgba(0,0,0,.08);border-radius:var(--radius-sm);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all var(--transition-fast);color:inherit}
+.sidebar-item.active .item-act-btn{background:rgba(255,255,255,.2);color:#fff}
+.sidebar-item .item-act-btn:hover{background:rgba(0,0,0,.18);transform:scale(1.1)}
+.sidebar-item.active .item-act-btn:hover{background:rgba(255,255,255,.4)}
+
+/* Drag & Drop */
+.sidebar-item .drag-handle{cursor:grab;flex-shrink:0;font-size:12px;color:var(--color-text-muted);opacity:0;transition:opacity var(--transition-fast);user-select:none;letter-spacing:-1px;padding:0 2px}
+.sidebar-item:hover .drag-handle,.sidebar-item.active .drag-handle{opacity:.6}
+.sidebar-item .drag-handle:active{cursor:grabbing}
+.sidebar-item.dragging{opacity:.35;background:var(--color-primary-light)!important}
+.sidebar-item.drop-target-above{border-top:2px solid var(--color-primary)}
+.sidebar-item.drop-target-below{border-bottom:2px solid var(--color-primary)}
+.sidebar-group.drop-target{background:var(--color-primary-light);border-radius:var(--radius-md);box-shadow:inset 0 0 0 2px var(--color-primary)}
+.sidebar-group-header.drop-target{background:var(--color-primary-light);border-radius:var(--radius-md);box-shadow:inset 0 0 0 2px var(--color-primary)}
+
+/* Group header drag */
+.sidebar-group-header .drag-handle{display:none;cursor:grab;flex-shrink:0;font-size:12px;color:var(--color-text-muted);opacity:.5;user-select:none;letter-spacing:-1px;padding:0 2px}
+.sidebar-group-header:hover .drag-handle{display:inline}
+.sidebar-group-header .drag-handle:active{cursor:grabbing}
+.sidebar-group-header.dragging{opacity:.35;background:var(--color-primary-light)!important}
+
+/* Main */
+.main-area{flex:1;display:flex;flex-direction:column;min-width:0;padding:var(--spacing-md);gap:var(--spacing-md)}
+.app-header{background:var(--color-surface);border-radius:var(--radius-lg);padding:var(--spacing-md) var(--spacing-lg);box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--spacing-sm)}
+.app-header .page-title{font-size:var(--font-size-lg);font-weight:600;color:var(--color-text)}
+
+/* Tabs */
+.tab-bar{display:flex;background:var(--color-surface);border-radius:var(--radius-lg);padding:var(--spacing-xs);box-shadow:var(--shadow-sm);gap:2px}
+.tab-btn{flex:1;padding:10px var(--spacing-sm);border:none;background:transparent;border-radius:var(--radius-md);cursor:pointer;font-size:var(--font-size-sm);font-family:var(--font-family);color:var(--color-text-secondary);transition:all var(--transition-fast);white-space:nowrap;font-weight:500;display:flex;align-items:center;justify-content:center;gap:4px}
+.tab-btn:hover{color:var(--color-text);background:var(--color-bg)}
+.tab-btn.active{background:var(--color-primary);color:#fff;box-shadow:var(--shadow-sm)}
+.tab-content{display:none;flex:1}
+.tab-content.active{display:flex;flex-direction:column;gap:var(--spacing-md)}
+
+/* Cards */
+.card{background:var(--color-surface);border-radius:var(--radius-lg);padding:var(--spacing-lg);box-shadow:var(--shadow-sm)}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--spacing-md);flex-wrap:wrap;gap:var(--spacing-sm)}
+.card-title{font-size:var(--font-size-lg);font-weight:600;color:var(--color-text)}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--spacing-md);margin-bottom:var(--spacing-md)}
+.stat-card{background:var(--color-surface);border-radius:var(--radius-lg);padding:var(--spacing-lg);box-shadow:var(--shadow-sm);text-align:center;transition:transform var(--transition-fast)}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-card .stat-value{font-size:var(--font-size-xxl);font-weight:700;color:var(--color-text);line-height:1.2}
+.stat-card .stat-value.expense{color:var(--color-expense)}
+.stat-card .stat-value.success{color:var(--color-success)}
+.stat-card .stat-value.warn{color:var(--color-warning)}
+.stat-card .stat-label{font-size:var(--font-size-xs);color:var(--color-text-muted);margin-top:var(--spacing-xs)}
+.stat-card .stat-sub{font-size:var(--font-size-xs);color:var(--color-text-secondary);margin-top:2px}
+
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-md);margin-bottom:var(--spacing-md)}
+.chart-container{background:var(--color-surface);border-radius:var(--radius-lg);padding:var(--spacing-lg);box-shadow:var(--shadow-sm)}
+.chart-container .chart-title{font-size:var(--font-size-sm);font-weight:600;color:var(--color-text-secondary);margin-bottom:var(--spacing-md);text-align:center}
+.chart-container canvas{display:block;margin:0 auto;max-width:100%}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:none;border-radius:var(--radius-md);cursor:pointer;font-size:var(--font-size-sm);font-family:var(--font-family);font-weight:500;transition:all var(--transition-fast);white-space:nowrap}
+.btn-primary{background:var(--color-primary);color:#fff}
+.btn-primary:hover{background:var(--color-primary-dark);transform:translateY(-1px)}
+.btn-secondary{background:var(--color-bg);color:var(--color-text);border:1.5px solid var(--color-border)}
+.btn-secondary:hover{background:var(--color-border)}
+.btn-danger{background:var(--color-expense-bg);color:var(--color-danger)}
+.btn-danger:hover{background:#ffd4d4}
+.btn-success{background:var(--color-success-bg);color:var(--color-success)}
+.btn-success:hover{background:#c8f0e6}
+.btn-sm{padding:5px 12px;font-size:var(--font-size-xs)}
+.btn-icon{width:32px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);background:transparent;border:none;cursor:pointer;font-size:var(--font-size-md);transition:background var(--transition-fast)}
+.btn-icon:hover{background:var(--color-bg)}
+.btn-icon.danger:hover{background:var(--color-expense-bg);color:var(--color-danger)}
+
+/* Forms */
+.form-group{margin-bottom:var(--spacing-md)}
+.form-group label{display:block;font-size:var(--font-size-sm);font-weight:500;margin-bottom:var(--spacing-xs);color:var(--color-text-secondary)}
+.form-input,.form-select,.form-textarea{width:100%;padding:10px 14px;border:1.5px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--font-size-md);font-family:var(--font-family);background:var(--color-bg);color:var(--color-text);outline:none;transition:border-color var(--transition-fast)}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(74,144,217,.1)}
+.form-textarea{resize:vertical;min-height:60px}
+.form-row{display:flex;gap:var(--spacing-sm);flex-wrap:wrap}
+.form-row .form-group{flex:1;min-width:150px}
+
+/* Filter bar */
+.filter-bar{display:flex;gap:var(--spacing-sm);flex-wrap:wrap;align-items:center;margin-bottom:var(--spacing-md)}
+.filter-bar .form-input,.filter-bar .form-select{width:auto;min-width:120px}
+.filter-bar .search-input{flex:1;min-width:150px}
+.filter-result-count{font-size:var(--font-size-xs);color:var(--color-text-muted);white-space:nowrap}
+.filter-active-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:var(--spacing-sm)}
+.filter-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:99px;font-size:var(--font-size-xs);background:var(--color-primary-light);color:var(--color-primary);cursor:pointer;transition:background var(--transition-fast)}
+.filter-tag:hover{background:#d0e3f8}
+
+/* Badges */
+.status-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 10px;border-radius:99px;font-size:var(--font-size-xs);font-weight:500;white-space:nowrap}
+.status-badge.pending{background:var(--color-warning-bg);color:var(--color-warning)}
+.status-badge.paid{background:var(--color-success-bg);color:var(--color-success)}
+.status-badge.failed{background:var(--color-expense-bg);color:var(--color-danger)}
+.proj-badge{display:inline-flex;align-items:center;gap:3px;padding:1px 8px;border-radius:99px;font-size:var(--font-size-xs);font-weight:500;white-space:nowrap}
+
+/* Budget list */
+.budget-date-group{margin-bottom:var(--spacing-md)}
+.budget-date-header{font-size:var(--font-size-sm);font-weight:600;color:var(--color-text-secondary);padding:var(--spacing-xs) var(--spacing-sm);margin-bottom:var(--spacing-xs);display:flex;align-items:center;gap:var(--spacing-sm)}
+.budget-date-header .date-total{font-size:var(--font-size-xs);color:var(--color-expense);font-weight:500}
+.budget-list{list-style:none}
+.budget-item{display:flex;align-items:center;gap:var(--spacing-sm);padding:12px var(--spacing-md);background:var(--color-surface);border-radius:var(--radius-md);margin-bottom:4px;transition:all var(--transition-fast)}
+.budget-item:hover{background:var(--color-bg)}
+.budget-item .item-icon{font-size:1.4rem;flex-shrink:0}
+.budget-item .item-info{flex:1;min-width:0}
+.budget-item .item-info .item-main{font-size:var(--font-size-sm);font-weight:500;display:flex;align-items:center;gap:var(--spacing-sm);flex-wrap:wrap}
+.budget-item .item-info .item-meta{display:flex;align-items:center;gap:var(--spacing-xs);flex-wrap:wrap;font-size:var(--font-size-xs);color:var(--color-text-muted);margin-top:2px}
+.budget-item .item-amount{font-weight:600;font-size:var(--font-size-md);white-space:nowrap;color:var(--color-expense)}
+.budget-item .item-actions{display:flex;gap:2px;opacity:.35;transition:opacity var(--transition-fast);flex-shrink:0}
+.budget-item:hover .item-actions{opacity:1}
+
+/* Attachment */
+.attach-zone{border:2px dashed var(--color-border);border-radius:var(--radius-md);padding:var(--spacing-md);text-align:center;cursor:pointer;transition:all var(--transition-fast);margin-top:var(--spacing-sm)}
+.attach-zone:hover{border-color:var(--color-primary);background:#f8faff}
+.attach-zone.has-file{border-style:solid;border-color:var(--color-success);background:var(--color-success-bg)}
+.attach-zone .attach-icon{font-size:2rem;margin-bottom:var(--spacing-xs)}
+.attach-zone .attach-text{font-size:var(--font-size-xs);color:var(--color-text-muted)}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease}
+.modal{background:var(--color-surface);border-radius:var(--radius-lg);padding:var(--spacing-lg);width:90%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:slideUp .25s ease}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--spacing-md)}
+.modal-title{font-size:var(--font-size-lg);font-weight:600}
+.modal-close{width:32px;height:32px;border:none;background:var(--color-bg);border-radius:50%;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:var(--color-border)}
+.modal-footer{display:flex;justify-content:flex-end;gap:var(--spacing-sm);margin-top:var(--spacing-lg)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* Toast */
+.toast-container{position:fixed;top:20px;right:20px;z-index:2000;display:flex;flex-direction:column;gap:var(--spacing-sm)}
+.toast{padding:12px 20px;border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-lg);font-size:var(--font-size-sm);font-weight:500;display:flex;align-items:center;gap:var(--spacing-sm);animation:slideIn .3s ease;min-width:200px}
+.toast.success{border-left:4px solid var(--color-success)}
+.toast.error{border-left:4px solid var(--color-danger)}
+.toast.warning{border-left:4px solid var(--color-warning)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* Empty state */
+.empty-state{text-align:center;padding:var(--spacing-xl) var(--spacing-md);color:var(--color-text-muted)}
+.empty-state .empty-icon{font-size:3rem;margin-bottom:var(--spacing-md)}
+.empty-state .empty-text{font-size:var(--font-size-sm);margin-bottom:var(--spacing-md)}
+
+/* Rank list */
+.rank-list{list-style:none}
+.rank-item{display:flex;align-items:center;gap:var(--spacing-sm);padding:8px 0;border-bottom:1px solid var(--color-border)}
+.rank-item:last-child{border-bottom:none}
+.rank-item .rank-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--font-size-xs);font-weight:700;color:#fff;flex-shrink:0}
+.rank-item .rank-num.gold{background:#F39C12}
+.rank-item .rank-num.silver{background:#B2BEC3}
+.rank-item .rank-num.bronze{background:#E17055}
+.rank-item .rank-info{flex:1;min-width:0}
+.rank-item .rank-name{font-size:var(--font-size-sm);font-weight:500}
+.rank-item .rank-bar-wrap{height:6px;background:var(--color-bg);border-radius:3px;margin-top:3px;overflow:hidden}
+.rank-item .rank-bar{height:100%;border-radius:3px;transition:width .5s ease}
+.rank-item .rank-amount{font-weight:600;font-size:var(--font-size-sm);white-space:nowrap;color:var(--color-expense)}
+
+/* Recent list */
+.recent-list{list-style:none}
+.recent-item{display:flex;align-items:center;gap:var(--spacing-sm);padding:8px var(--spacing-sm);border-bottom:1px solid var(--color-border);font-size:var(--font-size-sm);cursor:pointer;transition:background var(--transition-fast);border-radius:var(--radius-sm)}
+.recent-item:hover{background:var(--color-bg)}
+.recent-item:last-child{border-bottom:none}
+
+/* Settings table */
+.data-table{width:100%;border-collapse:collapse;font-size:var(--font-size-sm)}
+.data-table th{text-align:left;padding:8px 12px;border-bottom:2px solid var(--color-border);color:var(--color-text-secondary);font-weight:600}
+.data-table td{padding:8px 12px;border-bottom:1px solid var(--color-border)}
+.data-table tr:hover td{background:var(--color-bg)}
+.color-dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle;margin-right:4px}
+
+/* Setup banner */
+.setup-banner{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border-radius:var(--radius-lg);padding:var(--spacing-lg);margin-bottom:var(--spacing-md);box-shadow:var(--shadow-md)}
+.setup-banner h3{font-size:var(--font-size-lg);margin-bottom:var(--spacing-sm)}
+.setup-banner p{font-size:var(--font-size-sm);opacity:.9;margin-bottom:var(--spacing-md)}
+.setup-banner .btn{background:#fff;color:#764ba2}
+
+/* Responsive */
+@media(max-width:850px){
+  .sidebar{display:none}
+  .app-shell{flex-direction:column}
+  .main-area{padding:var(--spacing-sm);padding-bottom:80px}
+  .app-header{padding:var(--spacing-sm) var(--spacing-md)}
+  .tab-btn{font-size:var(--font-size-xs);padding:8px 4px}
+  .filter-bar{flex-direction:column}
+  .filter-bar .form-input,.filter-bar .form-select{width:100%}
+  .budget-item .item-actions{opacity:1}
+  .chart-row{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .modal{width:95%;padding:var(--spacing-md);border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin-top:auto;max-height:85vh}
+  .toast-container{left:10px;right:10px;top:auto;bottom:20px}
+  .form-row .form-group{min-width:100%}
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><span>💼</span> 预算管理</div>
+    <nav class="sidebar-nav" id="sidebarNav">
+      <div class="sidebar-item active" data-project="all" onclick="App.selectProject('all')">
+        <span class="proj-name">全部项目</span>
+        <span class="proj-badge" id="sidebarAllCount">0</span>
+      </div>
+      <div class="sidebar-section-title">项目列表</div>
+      <div id="sidebarProjectList"></div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn btn-secondary btn-sm" onclick="App.showGroupModal()">📂 + 新建分组</button>
+      <button class="btn btn-primary btn-sm" onclick="App.showProjectModal()">+ 新建项目</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-area">
+    <header class="app-header">
+      <span class="page-title" id="pageTitle">📊 概览</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:var(--font-size-sm);color:var(--color-text-secondary);">筛选月份:</span>
+        <input type="month" id="globalMonth" style="padding:6px 12px;border:1.5px solid var(--color-border);border-radius:var(--radius-md);font-family:var(--font-family);font-size:var(--font-size-sm);" title="选择月份"/>
+      </div>
+    </header>
+
+    <!-- Tab bar -->
+    <nav class="tab-bar">
+      <button class="tab-btn active" data-tab="dashboard">📊 概览</button>
+      <button class="tab-btn" data-tab="budgets">📝 支出管理</button>
+      <button class="tab-btn" data-tab="pending">💳 预算记录 (<span id="pendingBadge">0</span>)</button>
+      <button class="tab-btn" data-tab="settings">⚙️ 设置</button>
+    </nav>
+
+    <!-- Dashboard Tab -->
+    <section class="tab-content active" id="tab-dashboard">
+      <div id="dashboardContent"></div>
+    </section>
+
+    <!-- Budgets Tab -->
+    <section class="tab-content" id="tab-budgets">
+      <div class="card" style="flex:1;display:flex;flex-direction:column;">
+        <div class="card-header">
+          <span class="card-title">预算记录</span>
+          <button class="btn btn-primary" onclick="App.showBudgetModal()">+ 新建预算</button>
+        </div>
+        <div class="filter-bar">
+          <select class="form-select" id="filterStatus"><option value="all">全部状态</option><option value="pending">待支付</option><option value="paid">已支付</option><option value="failed">支付失败</option></select>
+          <select class="form-select" id="filterMonth"><option value="all">全部月份</option></select>
+          <select class="form-select" id="filterProject"><option value="all">全部项目</option></select>
+          <input type="text" class="form-input search-input" id="filterKeyword" placeholder="🔍 搜索供应商/备注/提交人..."/>
+          <span class="filter-result-count" id="filterResultCount"></span>
+        </div>
+        <div class="filter-active-tags" id="filterActiveTags"></div>
+        <div id="budgetList" style="flex:1;overflow-y:auto;"></div>
+      </div>
+    </section>
+
+    <!-- Pending Tab -->
+    <section class="tab-content" id="tab-pending">
+      <div class="card" style="flex:1;display:flex;flex-direction:column;">
+        <div class="card-header">
+          <span class="card-title">待支付列表</span>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="font-size:var(--font-size-sm);color:var(--color-text-muted);" id="pendingSummary"></span>
+            <button class="btn btn-primary" onclick="App.showBudgetModal()">+ 新建预算</button>
+          </div>
+        </div>
+        <div id="pendingList" style="flex:1;overflow-y:auto;"></div>
+      </div>
+    </section>
+
+    <!-- Settings Tab -->
+    <section class="tab-content" id="tab-settings">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-md);">
+        <!-- Members -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">👥 团队成员</span><button class="btn btn-primary btn-sm" onclick="App.showMemberModal()">+ 添加</button></div>
+          <div id="memberList"></div>
+        </div>
+        <!-- Categories -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">🏷️ 支出分类</span><button class="btn btn-primary btn-sm" onclick="App.showCategoryModal()">+ 添加</button></div>
+          <div id="categoryList"></div>
+        </div>
+        <!-- Suppliers -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">🏢 供应商管理</span><button class="btn btn-primary btn-sm" onclick="App.showSupplierModal()">+ 添加</button></div>
+          <div id="supplierList"></div>
+        </div>
+        <!-- Data Management -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">📤 数据管理</span></div>
+          <div id="dataManagement">
+            <p style="font-size:var(--font-size-sm);color:var(--color-text-secondary);margin-bottom:var(--spacing-md);">
+              当前 <strong id="dataCount">0</strong> 条预算，<strong id="projectCount">0</strong> 个项目，<strong id="catCount">0</strong> 个分类，<strong id="memberCount">0</strong> 个成员。
+            </p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-secondary btn-sm" onclick="App.exportCSV()">📥 导出 CSV</button>
+              <button class="btn btn-secondary btn-sm" onclick="App.exportJSON()">💾 导出备份</button>
+              <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFileInput').click()">📂 导入备份</button>
+              <input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="App.importJSON(event)"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div id="modalContainer"></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+const App = (() => {
+'use strict';
+
+const $ = (s, p = document) => p.querySelector(s);
+const $$ = (s, p = document) => Array.from(p.querySelectorAll(s));
+
+// ==================== API ====================
+const Api = {
+  async _fetch(path, options = {}) {
+    const headers = { ...options.headers };
+    if (!options.body || options.body instanceof FormData) {
+      delete headers['Content-Type'];
+    } else if (!headers['Content-Type']) {
+      headers['Content-Type'] = 'application/json';
+    }
+    const res = await fetch('/api' + path, { ...options, headers });
+    const contentType = res.headers.get('Content-Type') || '';
+    if (contentType.includes('application/json')) {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `请求失败 (${res.status})`);
+      return data;
+    }
+    if (!res.ok) throw new Error(`请求失败 (${res.status})`);
+    return res;
+  },
+
+  // Members
+  getMembers: () => Api._fetch('/members'),
+  createMember: (data) => Api._fetch('/members', { method: 'POST', body: JSON.stringify(data) }),
+  updateMember: (id, data) => Api._fetch(`/members/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteMember: (id) => Api._fetch(`/members/${id}`, { method: 'DELETE' }),
+
+  // Categories
+  getCategories: () => Api._fetch('/categories'),
+  createCategory: (data) => Api._fetch('/categories', { method: 'POST', body: JSON.stringify(data) }),
+  updateCategory: (id, data) => Api._fetch(`/categories/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteCategory: (id) => Api._fetch(`/categories/${id}`, { method: 'DELETE' }),
+
+  // Project Groups
+  getProjectGroups: () => Api._fetch('/project-groups'),
+  createProjectGroup: (data) => Api._fetch('/project-groups', { method: 'POST', body: JSON.stringify(data) }),
+  updateProjectGroup: (id, data) => Api._fetch(`/project-groups/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteProjectGroup: (id) => Api._fetch(`/project-groups/${id}`, { method: 'DELETE' }),
+
+  // Projects
+  getProjects: () => Api._fetch('/projects'),
+  createProject: (data) => Api._fetch('/projects', { method: 'POST', body: JSON.stringify(data) }),
+  updateProject: (id, data) => Api._fetch(`/projects/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteProject: (id) => Api._fetch(`/projects/${id}`, { method: 'DELETE' }),
+
+  // Budgets
+  getBudgets: (params = {}) => {
+    const qs = new URLSearchParams(params).toString();
+    return Api._fetch('/budgets' + (qs ? '?' + qs : ''));
+  },
+  createBudget: (formData) => Api._fetch('/budgets', { method: 'POST', body: formData }),
+  updateBudget: (id, formData) => Api._fetch(`/budgets/${id}`, { method: 'PUT', body: formData }),
+  deleteBudget: (id) => Api._fetch(`/budgets/${id}`, { method: 'DELETE' }),
+  getAttachmentUrl: (id) => `/api/budgets/${id}/attachment`,
+
+  // Suppliers
+  getSuppliers: () => Api._fetch('/suppliers'),
+  createSupplier: (data) => Api._fetch('/suppliers', { method: 'POST', body: JSON.stringify(data) }),
+  updateSupplier: (id, data) => Api._fetch(`/suppliers/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteSupplier: (id) => Api._fetch(`/suppliers/${id}`, { method: 'DELETE' }),
+
+  // Stats
+  getOverview: () => Api._fetch('/stats/overview'),
+
+  // Export
+  exportCSV: (data) => Api._fetch('/export/csv', { method: 'POST', body: JSON.stringify(data) }),
+  exportJSON: () => Api._fetch('/export/json', { method: 'POST' }),
+  importJSON: (file) => {
+    const fd = new FormData();
+    fd.append('file', file);
+    return fetch('/api/import/json', { method: 'POST', body: fd }).then(r => r.json());
+  }
+};
+
+// ==================== STATE ====================
+let state = {
+  activeTab: 'dashboard',
+  activeProject: 'all',
+  globalMonth: '',
+  members: [],
+  categories: [],
+  projectGroups: [],
+  projects: [],
+  suppliers: [],
+  currentViewData: [],
+  collapsedGroups: []
+};
+
+// ==================== UTILS ====================
+const U = {
+  fmtMoney: (a) => `¥${Math.abs(a).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+  fmtDate: (d) => { const p = d.split('-'); return p.length === 3 ? `${parseInt(p[1])}月${parseInt(p[2])}日` : `${parseInt(p[0])}年${parseInt(p[1])}月`; },
+  fmtFileSize: (b) => { if (b < 1024) return b + ' B'; if (b < 1048576) return (b / 1024).toFixed(1) + ' KB'; return (b / 1048576).toFixed(1) + ' MB'; },
+  getCurrentMonth: () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; },
+  debounce: (fn, d = 300) => { let t; return function (...a) { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), d); }; },
+  esc: (s) => { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; },
+  statusLabel: (s) => ({ pending: '待支付', paid: '已支付', failed: '支付失败' }[s] || s),
+};
+
+// ==================== RENDER ====================
+function renderSidebar() {
+  const projects = state.projects;
+  const groups = state.projectGroups || [];
+  const el = $('#sidebarProjectList');
+
+  if (!projects.length && !groups.length) {
+    el.innerHTML = '<div style="padding:12px;text-align:center;color:var(--color-text-muted);font-size:var(--font-size-xs);">暂无项目<br/>点击下方按钮创建</div>';
+    return;
+  }
+
+  // Build group-id -> projects mapping
+  const pmap = {};
+  const ungrouped = [];
+  projects.forEach(p => {
+    if (p.group_id) {
+      if (!pmap[p.group_id]) pmap[p.group_id] = [];
+      pmap[p.group_id].push(p);
+    } else {
+      ungrouped.push(p);
+    }
+  });
+
+  const gm = {};
+  groups.forEach(g => { gm[g.id] = g; });
+
+  // Count budgets per project
+  const counts = {};
+  state.currentViewData.forEach(b => {
+    if (b.project_id) counts[b.project_id] = (counts[b.project_id] || 0) + 1;
+  });
+
+  const buildItem = (p, inGroup) => {
+    const count = counts[p.id] || 0;
+    const active = state.activeProject === String(p.id);
+    return `<div class="sidebar-item${inGroup ? ' in-group' : ''}${active ? ' active' : ''}" data-project="${p.id}" data-group="${p.group_id || '__ungrouped__'}" draggable="true" onclick="App.selectProject('${p.id}')" title="${U.esc(p.description || '')}">
+      <span class="drag-handle" title="拖拽排序">⋮⋮</span>
+      <span class="proj-name">${U.esc(p.name)}</span>
+      ${count > 0 ? `<span class="proj-badge">${count}</span>` : ''}
+      <span class="item-actions">
+        <button class="item-act-btn" onclick="event.stopPropagation();App.editProjectSidebar('${p.id}')" title="编辑">✏️</button>
+        <button class="item-act-btn" onclick="event.stopPropagation();App.deleteProjectSidebar('${p.id}')" title="删除" style="color:var(--color-danger);">🗑️</button>
+      </span></div>`;
+  };
+
+  let h = '';
+
+  // Render groups with their projects
+  groups.forEach(g => {
+    const gps = pmap[g.id] || [];
+    const isCollapsed = state.collapsedGroups && state.collapsedGroups.includes(g.id);
+    h += `<div class="sidebar-group${isCollapsed ? ' collapsed' : ''}" id="group_${g.id}" data-group="${g.id}">
+      <div class="sidebar-group-header" data-gid="${g.id}" data-gtype="group" draggable="true" onclick="App.toggleGroup(${g.id})">
+        <span class="drag-handle" title="拖拽排序" style="display:inline;">⋮⋮</span>
+        <span class="collapse-arrow">▼</span>
+        <span class="group-name">${U.esc(g.name)}</span>
+        <span class="group-count">${gps.length}</span>
+        <span class="group-actions">
+          <button class="group-act-btn" onclick="event.stopPropagation();App.showGroupModal(${g.id})" title="编辑分组">✏️</button>
+          <button class="group-act-btn" onclick="event.stopPropagation();App.deleteGroup(${g.id})" title="删除分组">🗑️</button>
+        </span>
+      </div>`;
+    if (gps.length === 0) {
+      h += `<div class="sidebar-item in-group drop-zone" style="opacity:.5;font-size:var(--font-size-xs);min-height:28px;" data-group="${g.id}" data-empty="1">（拖拽项目至此）</div>`;
+    } else {
+      gps.forEach(p => { h += buildItem(p, true); });
+    }
+    h += `</div>`;
+  });
+
+  // Ungrouped projects
+  if (ungrouped.length > 0 || groups.length === 0) {
+    if (groups.length > 0) {
+      h += `<div class="sidebar-section-title">未分组项目</div>`;
+    }
+    ungrouped.forEach(p => { h += buildItem(p, false); });
+  }
+
+  el.innerHTML = h;
+}
+
+function getProjectMap() {
+  const m = {};
+  state.projects.forEach(p => { m[p.id] = p; });
+  return m;
+}
+function getCategoryMap() {
+  const m = {};
+  state.categories.forEach(c => { m[c.id] = c; });
+  return m;
+}
+
+// ==================== DASHBOARD ====================
+async function renderDashboard() {
+  try {
+    const data = await Api.getOverview();
+    const s = data.stats, pm = getProjectMap(), cm = getCategoryMap();
+
+    // Stats cards
+    let h = `<div class="stats-grid">
+      <div class="stat-card"><div class="stat-value expense">${U.fmtMoney(s.total_paid)}</div><div class="stat-label">累计已支付</div></div>
+      <div class="stat-card"><div class="stat-value warn">${U.fmtMoney(s.total_pending)}</div><div class="stat-label">待支付金额</div><div class="stat-sub">${s.pending_count} 笔待处理</div></div>
+      <div class="stat-card"><div class="stat-value">${s.paid_count}</div><div class="stat-label">已支付笔数</div></div>
+      <div class="stat-card"><div class="stat-value success">${s.project_count}</div><div class="stat-label">活跃项目</div><div class="stat-sub">${s.member_count} 位成员</div></div>
+    </div>`;
+
+    // Charts row
+    h += `<div class="chart-row">
+      <div class="chart-container"><div class="chart-title">🏆 项目支出排行（已支付）</div>`;
+
+    if (data.by_project.length === 0) {
+      h += `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">暂无已支付记录</div></div>`;
+    } else {
+      h += `<ul class="rank-list">`;
+      data.by_project.slice(0, 5).forEach((p, i) => {
+        const rank = i + 1;
+        const rc = rank === 1 ? 'gold' : (rank === 2 ? 'silver' : (rank === 3 ? 'bronze' : ''));
+        const maxVal = data.by_project[0].total;
+        h += `<li class="rank-item" onclick="App.selectProject('${p.id}')" style="cursor:pointer;">
+          <span class="rank-num${rc ? ' ' + rc : ''}" style="${!rc ? 'background:#DFE6E9;color:#636E72' : ''}">${rank}</span>
+          <div class="rank-info"><div class="rank-name">${p.icon} ${U.esc(p.name)}</div><div class="rank-bar-wrap"><div class="rank-bar" style="width:${maxVal > 0 ? p.total / maxVal * 100 : 0}%;background:${p.color};"></div></div></div>
+          <span class="rank-amount">${U.fmtMoney(p.total)}</span></li>`;
+      });
+      h += `</ul>`;
+    }
+    h += `</div>`;
+
+    // Category breakdown chart
+    h += `<div class="chart-container"><div class="chart-title">📊 分类支出占比（已支付）</div>`;
+    h += `<canvas id="pieChart" style="width:100%;height:280px;"></canvas></div></div>`;
+
+    // Monthly trend bar chart removed per user request
+
+    // Recent records
+    h += `<div class="card"><div class="card-header"><span class="card-title">🕐 最近预算记录</span></div>`;
+    const recent = state.currentViewData.slice(0, 10);
+    if (!recent.length) {
+      h += `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">暂无预算记录</div></div>`;
+    } else {
+      h += `<ul class="recent-list">`;
+      recent.forEach(b => {
+        const cat = cm[b.category_id] || { name: '未分类', icon: '📌' };
+        const proj = pm[b.project_id];
+        const statusCls = b.payment_status;
+        h += `<li class="recent-item" onclick="App.editBudget(${b.id})">
+          <span>${cat.icon}</span><div style="flex:1;min-width:0;"><div style="font-weight:500;">${cat.name}${b.supplier ? ' · ' + U.esc(b.supplier) : ''}</div><div style="font-size:var(--font-size-xs);color:var(--color-text-muted);">${b.budget_month}${proj ? ' · ' + proj.icon + ' ' + U.esc(proj.name) : ''}</div></div>
+          <span class="status-badge ${statusCls}">${U.statusLabel(b.payment_status)}</span>
+          <span style="font-weight:600;color:var(--color-expense);">${U.fmtMoney(b.amount)}</span></li>`;
+      });
+      h += `</ul>`;
+    }
+    h += `</div>`;
+
+    $('#dashboardContent').innerHTML = h;
+
+    // Draw charts after DOM update
+    setTimeout(() => {
+      drawPieChart(data.by_category);
+    }, 100);
+
+  } catch (e) { console.error(e); $('#dashboardContent').innerHTML = `<div class="card"><div class="empty-state"><div class="empty-icon">❌</div><div class="empty-text">加载失败: ${e.message}</div></div></div>`; }
+}
+
+function drawPieChart(data) {
+  const canvas = $('#pieChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth, h = canvas.clientHeight || 280;
+  canvas.width = w * dpr; canvas.height = h * dpr; ctx.scale(dpr, dpr);
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  ctx.clearRect(0, 0, w, h);
+
+  const total = data.reduce((s, d) => s + d.total, 0);
+  if (total === 0) {
+    ctx.fillStyle = '#B2BEC3'; ctx.font = '14px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('暂无数据', w / 2, h / 2); return;
+  }
+  const cx = w / 2, cy = h / 2, r = Math.min(w, h) / 2 - 30, ir = r * 0.55;
+  let angle = -Math.PI / 2;
+  data.forEach(d => {
+    const slice = d.total / total * Math.PI * 2;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, angle, angle + slice); ctx.closePath();
+    ctx.fillStyle = d.color; ctx.fill();
+    const mid = angle + slice / 2;
+    const lx = cx + Math.cos(mid) * (r + 18), ly = cy + Math.sin(mid) * (r + 18);
+    ctx.fillStyle = '#636E72'; ctx.font = '11px sans-serif';
+    ctx.textAlign = lx > cx ? 'left' : 'right';
+    const pct = Math.round(d.total / total * 100);
+    if (pct >= 5) ctx.fillText(`${d.icon} ${d.name} ${pct}%`, lx, ly);
+    angle += slice;
+  });
+  ctx.beginPath(); ctx.arc(cx, cy, ir, 0, Math.PI * 2); ctx.fillStyle = '#FFFFFF'; ctx.fill();
+  ctx.fillStyle = '#1A1A2E'; ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('分类占比', cx, cy - 4);
+  ctx.fillStyle = '#636E72'; ctx.font = '12px sans-serif';
+  ctx.fillText(`总额: ${U.fmtMoney(total)}`, cx, cy + 16);
+}
+
+// Bar chart removed per user request
+
+// ==================== BUDGET LIST ====================
+async function renderBudgetList() {
+  const filters = getFilters();
+  try {
+    const budgets = await Api.getBudgets(filters);
+    if (state.activeTab === 'budgets') state.currentViewData = budgets;
+
+    const pm = getProjectMap(), cm = getCategoryMap();
+    $('#filterResultCount').textContent = `共 ${budgets.length} 条`;
+
+    // Active filter tags
+    let tags = '';
+    if (filters.status) tags += `<span class="filter-tag" onclick="App.clearFilter('status')">${U.statusLabel(filters.status)} ×</span>`;
+    if (filters.month) tags += `<span class="filter-tag" onclick="App.clearFilter('month')">📅 ${filters.month} ×</span>`;
+    if (filters.project_id) {
+      const p = pm[filters.project_id];
+      tags += `<span class="filter-tag" onclick="App.clearFilter('project_id')">${p ? p.icon + ' ' + p.name : '项目'} ×</span>`;
+    }
+    if (filters.keyword) tags += `<span class="filter-tag" onclick="App.clearFilter('keyword')">🔍 "${filters.keyword}" ×</span>`;
+    if (tags) tags += `<span class="filter-tag" onclick="App.clearAllFilters()" style="background:var(--color-expense-bg);color:var(--color-danger);">清除全部</span>`;
+    $('#filterActiveTags').innerHTML = tags;
+
+    if (!budgets.length) {
+      const isFiltered = filters.status || filters.month || filters.project_id || filters.keyword;
+      $('#budgetList').innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">${isFiltered ? '没有符合条件的预算记录' : '暂无预算记录'}</div>${!isFiltered ? '<button class="btn btn-primary btn-sm" onclick="App.showBudgetModal()">+ 新建第一笔预算</button>' : ''}</div>`;
+      return;
+    }
+
+    // Group by month
+    const groups = {};
+    budgets.forEach(b => {
+      const m = b.budget_month || '未知月份';
+      if (!groups[m]) groups[m] = [];
+      groups[m].push(b);
+    });
+
+    let h = '';
+    Object.keys(groups).sort().reverse().forEach(month => {
+      const items = groups[month];
+      const monthTotal = items.reduce((s, b) => s + b.amount, 0);
+      const [y, m] = month.split('-');
+      h += `<div class="budget-date-group"><div class="budget-date-header">${y}年${parseInt(m)}月 <span class="date-total">${U.fmtMoney(monthTotal)}</span></div><ul class="budget-list">`;
+
+      items.forEach(b => {
+        const cat = cm[b.category_id] || { name: '未分类', icon: '📌' };
+        const proj = pm[b.project_id];
+        const statusCls = b.payment_status;
+        const projBadge = proj ? `<span class="proj-badge" style="background:${proj.color}20;color:${proj.color};cursor:pointer;" onclick="event.stopPropagation();App.selectProject('${proj.id}')">${proj.icon} ${U.esc(proj.name)}</span>` : '<span class="proj-badge" style="background:var(--color-bg);color:var(--color-text-muted);">未归属</span>';
+        const hasAttach = b.attachment_name;
+
+        h += `<li class="budget-item" style="cursor:pointer;" onclick="App.editBudget(${b.id})">
+          <span class="item-icon">${cat.icon}</span>
+          <div class="item-info">
+            <div class="item-main"><span>${cat.name}</span><span class="status-badge ${statusCls}">${U.statusLabel(b.payment_status)}</span>${projBadge}</div>
+            <div class="item-meta">
+              ${b.submitter ? `<span>👤 ${U.esc(b.submitter)}</span>` : ''}
+              ${b.supplier ? `<span>🏢 ${U.esc(b.supplier)}</span>` : ''}
+              ${b.payer ? `<span>💳 ${U.esc(b.payer)}</span>` : ''}
+              ${b.note ? `<span>💬 ${U.esc(b.note)}</span>` : ''}
+            </div>
+          </div>
+          ${hasAttach ? `<span style="cursor:pointer;opacity:.6;" onclick="event.stopPropagation();window.open(App.getAttachmentUrl(${b.id}))" title="查看发票">🧾</span>` : ''}
+          <span class="item-amount">${U.fmtMoney(b.amount)}</span>
+          <div class="item-actions">
+            ${b.payment_status === 'pending' ? `<button class="btn-icon" onclick="event.stopPropagation();App.payBudget(${b.id})" title="标记已支付">✅</button>` : ''}
+            <button class="btn-icon danger" onclick="event.stopPropagation();App.deleteBudget(${b.id})" title="删除">🗑️</button>
+          </div></li>`;
+      });
+      h += `</ul></div>`;
+    });
+    $('#budgetList').innerHTML = h;
+  } catch (e) { console.error(e); $('#budgetList').innerHTML = `<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-text">加载失败: ${e.message}</div></div>`; }
+}
+
+function getFilters() {
+  const f = {};
+  const fs = $('#filterStatus'), fm = $('#filterMonth'), fp = $('#filterProject'), fk = $('#filterKeyword');
+  if (fs && fs.value !== 'all') f.status = fs.value;
+  if (fm && fm.value !== 'all') f.month = fm.value;
+  if (fp && fp.value !== 'all') f.project_id = fp.value;
+  if (fk && fk.value.trim()) f.keyword = fk.value.trim();
+  if (state.activeProject !== 'all' && state.activeTab === 'budgets') {
+    // Only filter if no explicit project filter set
+    if (!f.project_id) f.project_id = state.activeProject;
+  }
+  return f;
+}
+
+// ==================== PENDING LIST ====================
+async function renderPendingList() {
+  try {
+    const budgets = await Api.getBudgets({ status: 'pending' });
+    state.currentViewData = budgets;
+
+    const totalPending = budgets.reduce((s, b) => s + b.amount, 0);
+    $('#pendingBadge').textContent = budgets.length;
+    $('#pendingSummary').textContent = `共 ${budgets.length} 笔，合计 ${U.fmtMoney(totalPending)}`;
+
+    if (!budgets.length) {
+      $('#pendingList').innerHTML = `<div class="empty-state"><div class="empty-icon">🎉</div><div class="empty-text">暂无待支付的预算，太棒了！</div></div>`;
+      return;
+    }
+
+    const pm = getProjectMap(), cm = getCategoryMap();
+    // Group by month
+    const groups = {};
+    budgets.forEach(b => {
+      const m = b.budget_month || '未知月份';
+      if (!groups[m]) groups[m] = [];
+      groups[m].push(b);
+    });
+
+    let h = '';
+    Object.keys(groups).sort().reverse().forEach(month => {
+      const items = groups[month];
+      const monthTotal = items.reduce((s, b) => s + b.amount, 0);
+      const [y, m] = month.split('-');
+      h += `<div class="budget-date-group"><div class="budget-date-header">${y}年${parseInt(m)}月 <span class="date-total">${U.fmtMoney(monthTotal)}</span></div><ul class="budget-list">`;
+
+      items.forEach(b => {
+        const cat = cm[b.category_id] || { name: '未分类', icon: '📌' };
+        const proj = pm[b.project_id];
+        const hasAttach = b.attachment_name;
+
+        h += `<li class="budget-item">
+          <span class="item-icon">${cat.icon}</span>
+          <div class="item-info">
+            <div class="item-main"><span>${cat.name}</span>${proj ? `<span class="proj-badge" style="background:${proj.color}20;color:${proj.color};">${proj.icon} ${U.esc(proj.name)}</span>` : '<span class="proj-badge" style="background:var(--color-bg);color:var(--color-text-muted);">未归属</span>'}</div>
+            <div class="item-meta">
+              ${b.submitter ? `<span>👤 ${U.esc(b.submitter)}</span>` : ''}
+              ${b.supplier ? `<span>🏢 ${U.esc(b.supplier)}</span>` : ''}
+              ${b.expense_detail ? `<span>📋 ${U.esc(b.expense_detail)}</span>` : ''}
+              ${b.note ? `<span>💬 ${U.esc(b.note)}</span>` : ''}
+            </div>
+          </div>
+          ${hasAttach ? `<span style="cursor:pointer;opacity:.6;" onclick="event.stopPropagation();window.open(App.getAttachmentUrl(${b.id}))" title="查看发票">🧾</span>` : ''}
+          <span class="item-amount">${U.fmtMoney(b.amount)}</span>
+          <div class="item-actions" style="opacity:1;">
+            <button class="btn btn-success btn-sm" onclick="App.payBudget(${b.id})" title="确认支付">✅ 支付</button>
+            <button class="btn btn-danger btn-sm" onclick="App.failBudget(${b.id})" title="支付失败">❌</button>
+          </div></li>`;
+      });
+      h += `</ul></div>`;
+    });
+    $('#pendingList').innerHTML = h;
+  } catch (e) { console.error(e); $('#pendingList').innerHTML = `<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-text">加载失败: ${e.message}</div></div>`; }
+}
+
+// ==================== SETTINGS ====================
+function renderSettings() {
+  // Members
+  let mh = '<table class="data-table"><thead><tr><th>姓名</th><th>角色</th><th>操作</th></tr></thead><tbody>';
+  state.members.forEach(m => {
+    mh += `<tr><td>${U.esc(m.name)}</td><td><span class="status-badge ${m.role === 'payer' ? 'paid' : 'pending'}">${m.role === 'payer' ? '支付负责人' : '普通成员'}</span></td>
+      <td><button class="btn-icon" onclick="App.showMemberModal(${m.id})">✏️</button><button class="btn-icon danger" onclick="App.deleteMember(${m.id})">🗑️</button></td></tr>`;
+  });
+  mh += '</tbody></table>';
+  $('#memberList').innerHTML = mh;
+
+  // Categories
+  let ch = '<table class="data-table"><thead><tr><th>名称</th><th>操作</th></tr></thead><tbody>';
+  state.categories.forEach(c => {
+    ch += `<tr><td><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${c.color};vertical-align:middle;margin-right:6px;"></span>${U.esc(c.name)}</td>
+      <td><button class="btn-icon" onclick="App.showCategoryModal(${c.id})">✏️</button><button class="btn-icon danger" onclick="App.deleteCategory(${c.id})">🗑️</button></td></tr>`;
+  });
+  ch += '</tbody></table>';
+  $('#categoryList').innerHTML = ch;
+
+  // Suppliers
+  let sh = '<table class="data-table"><thead><tr><th>名称</th><th>联系人</th><th>已签协议</th><th>操作</th></tr></thead><tbody>';
+  state.suppliers.forEach(s => {
+    sh += `<tr><td>${U.esc(s.name)}</td><td style="color:var(--color-text-muted);font-size:var(--font-size-xs);">${U.esc(s.contact || '-')}</td><td><span class="status-badge ${s.contract_signed ? 'paid' : 'pending'}">${s.contract_signed ? '是' : '否'}</span></td>
+      <td><button class="btn-icon" onclick="App.showSupplierModal(${s.id})">✏️</button><button class="btn-icon danger" onclick="App.deleteSupplier(${s.id})">🗑️</button></td></tr>`;
+  });
+  if (!state.suppliers.length) sh += '<tr><td colspan="4" style="color:var(--color-text-muted);text-align:center;">暂无供应商</td></tr>';
+  sh += '</tbody></table>';
+  $('#supplierList').innerHTML = sh;
+
+  // Data counts
+  Api.getBudgets().then(b => { $('#dataCount').textContent = b.length; }).catch(() => {});
+  $('#projectCount').textContent = state.projects.length;
+  $('#catCount').textContent = state.categories.length;
+  $('#memberCount').textContent = state.members.length;
+}
+
+// ==================== MODALS ====================
+function showModal(title, contentHTML, onSave) {
+  const ov = document.createElement('div'); ov.className = 'modal-overlay';
+  ov.innerHTML = `<div class="modal"><div class="modal-header"><span class="modal-title">${title}</span><button class="modal-close">&times;</button></div><div class="modal-body">${contentHTML}</div><div class="modal-footer"><button class="btn btn-secondary cancel-btn">取消</button><button class="btn btn-primary save-btn">保存</button></div></div>`;
+  document.body.appendChild(ov);
+
+  const close = () => ov.remove();
+  ov.querySelector('.modal-close').onclick = close;
+  ov.querySelector('.cancel-btn').onclick = close;
+  ov.querySelector('.save-btn').onclick = () => { const r = onSave(ov); if (r !== false) close(); };
+  ov.addEventListener('click', (e) => { if (e.target === ov) close(); });
+  const onKey = (e) => { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', onKey); } };
+  document.addEventListener('keydown', onKey);
+}
+
+function showToast(msg, type = 'success', dur = 2500) {
+  const ct = $('#toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const ic = { success: '✅', error: '❌', warning: '⚠️' };
+  t.innerHTML = `<span>${ic[type] || 'ℹ️'}</span> <span>${msg}</span>`;
+  ct.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'all 300ms ease'; setTimeout(() => t.remove(), 300); }, dur);
+}
+
+// ==================== BUDGET MODAL ====================
+function showBudgetModal(budget) {
+  const isEdit = !!budget;
+  const members = state.members, projects = state.projects, cats = state.categories;
+
+  const defMonth = budget ? budget.budget_month : U.getCurrentMonth();
+  const defAmount = budget ? budget.amount : '';
+  const defSupplier = budget ? budget.supplier || '' : '';
+  const defDetail = budget ? budget.expense_detail || '' : '';
+  const defNote = budget ? budget.note || '' : '';
+  const defSubmitter = budget ? budget.submitter || '' : '';
+  const defPayer = budget ? budget.payer || '' : '';
+  const hasExisting = budget && budget.attachment_name;
+  let pendingFile = null;
+
+  const memberOpts = members.map(m => `<option value="${U.esc(m.name)}" ${(!isEdit && m.role === 'payer' ? '' : '')}>${U.esc(m.name)}${m.role === 'payer' ? ' (支付)' : ''}</option>`).join('');
+  const projOpts = '<option value="">不归属项目</option>' + projects.map(p => `<option value="${p.id}" ${budget && budget.project_id === p.id ? 'selected' : ''}>${p.icon} ${U.esc(p.name)}</option>`).join('');
+  const catOpts = '<option value="">未分类</option>' + cats.map(c => `<option value="${c.id}" ${budget && budget.category_id === c.id ? 'selected' : ''}>${c.icon} ${U.esc(c.name)}</option>`).join('');
+
+  let ch = `
+    <div class="form-row">
+      <div class="form-group"><label>预算月份 *</label><input type="month" class="form-input" id="bdgMonth" value="${defMonth}"/></div>
+      <div class="form-group"><label>金额 *</label><input type="number" class="form-input" id="bdgAmount" placeholder="0.00" min="0.01" step="0.01" value="${defAmount}"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>支出分类</label><select class="form-select" id="bdgCategory">${catOpts}</select></div>
+      <div class="form-group"><label>所属项目</label><select class="form-select" id="bdgProject">${projOpts}</select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>供应商</label><select class="form-select" id="bdgSupplier"><option value="">选择供应商</option>${state.suppliers.map(sup => `<option value="${U.esc(sup.name)}" ${defSupplier === sup.name ? 'selected' : ''}>${U.esc(sup.name)}</option>`).join('')}</select></div>
+      <div class="form-group"><label>提交人</label><select class="form-select" id="bdgSubmitter"><option value="">选择提交人</option>${memberOpts}</select></div>
+    </div>
+    <div class="form-group"><label>费用明细</label><textarea class="form-textarea" id="bdgDetail" placeholder="具体费用项目说明...">${U.esc(defDetail)}</textarea></div>
+    <div class="form-group"><label>备注</label><input type="text" class="form-input" id="bdgNote" placeholder="其他备注说明" value="${U.esc(defNote)}"/></div>
+    <div class="form-group"><label>发票附件</label>
+      <div class="attach-zone${hasExisting ? ' has-file' : ''}" id="attachZone">
+        ${hasExisting ? `<div id="attachPreview"><span style="font-size:1.5rem;">📄</span> <span style="font-size:var(--font-size-sm);">${U.esc(budget.attachment_name)}</span> <button type="button" class="btn btn-sm btn-danger" id="btnRemoveAttach" style="margin-left:8px;">✕ 移除</button></div>`
+        : `<div class="attach-icon">📎</div><div class="attach-text">点击或拖拽上传发票（图片/PDF，最大10MB）</div>`}
+      </div>
+      <input type="file" id="fileInput" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;"/>
+    </div>`;
+
+  if (isEdit && budget.payment_status === 'pending') {
+    ch += `<div class="form-group"><label>支付人（可选预设）</label><select class="form-select" id="bdgPayer"><option value="">未指定</option>${memberOpts}</select></div>`;
+  }
+
+  if (isEdit) {
+    // Pre-select submitter
+    setTimeout(() => {
+      const sel = $('#bdgSubmitter'); if (sel && defSubmitter) { for (const o of sel.options) { if (o.value === defSubmitter) { o.selected = true; break; } } }
+      const psel = $('#bdgPayer'); if (psel && defPayer) { for (const o of psel.options) { if (o.value === defPayer) { o.selected = true; break; } } }
+    }, 50);
+  }
+
+  showModal(isEdit ? '编辑预算' : '新建预算', ch, async (ov) => {
+    const month = ov.querySelector('#bdgMonth').value;
+    const amount = parseFloat(ov.querySelector('#bdgAmount').value);
+    const category = ov.querySelector('#bdgCategory').value;
+    const project = ov.querySelector('#bdgProject').value;
+    const supplier = ov.querySelector('#bdgSupplier').value.trim();
+    const detail = ov.querySelector('#bdgDetail').value.trim();
+    const note = ov.querySelector('#bdgNote').value.trim();
+    const submitter = ov.querySelector('#bdgSubmitter').value;
+
+    if (!month) { showToast('请选择预算月份', 'warning'); return false; }
+    if (isNaN(amount) || amount <= 0) { showToast('请输入有效金额', 'warning'); return false; }
+
+    const fd = new FormData();
+    fd.append('budget_month', month);
+    fd.append('amount', amount);
+    if (project) fd.append('project_id', project);
+    if (category) fd.append('category_id', category);
+    fd.append('supplier', supplier);
+    fd.append('expense_detail', detail);
+    fd.append('note', note);
+    fd.append('submitter', submitter);
+
+    const payerEl = ov.querySelector('#bdgPayer');
+    if (payerEl && payerEl.value) fd.append('payer', payerEl.value);
+
+    // Handle attachment
+    const removeBtn = ov.querySelector('#btnRemoveAttach');
+    if (removeBtn && removeBtn.dataset.removed === '1') {
+      fd.append('attachment_path', '');
+      fd.append('attachment_name', '');
+    } else if (pendingFile) {
+      fd.append('attachment', pendingFile);
+    }
+
+    try {
+      if (isEdit) {
+        await Api.updateBudget(budget.id, fd);
+        showToast('预算已更新');
+      } else {
+        await Api.createBudget(fd);
+        showToast('预算已保存');
+      }
+      refreshAll();
+    } catch (e) { showToast(e.message, 'error'); }
+  });
+
+  // Setup file upload
+  setTimeout(() => {
+    const az = document.querySelector('#attachZone'), fi = document.querySelector('#fileInput');
+    const showPreview = (file) => {
+      az.classList.add('has-file'); pendingFile = file;
+      const isImg = file.type.startsWith('image/');
+      az.innerHTML = `<div id="attachPreview">${isImg ? `<img src="${URL.createObjectURL(file)}" alt="预览" style="max-width:100%;max-height:150px;border-radius:var(--radius-sm);display:block;margin-bottom:8px;"/>` : '<span style="font-size:1.5rem;">📄</span>'} <span style="font-size:var(--font-size-sm);">${U.esc(file.name)}</span> <span style="font-size:var(--font-size-xs);color:var(--color-text-muted);">${U.fmtFileSize(file.size)}</span> <button type="button" class="btn btn-sm btn-danger" id="btnRemoveAttach" style="margin-left:8px;">✕ 移除</button></div>`;
+      document.querySelector('#btnRemoveAttach').addEventListener('click', () => { az.classList.remove('has-file'); az.innerHTML = '<div class="attach-icon">📎</div><div class="attach-text">点击或拖拽上传发票（图片/PDF，最大10MB）</div>'; pendingFile = null; });
+    };
+
+    if (az && !hasExisting) {
+      az.addEventListener('click', () => fi.click());
+      az.addEventListener('dragover', (e) => { e.preventDefault(); });
+      az.addEventListener('drop', (e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) { if (f.size > 10 * 1024 * 1024) { showToast('文件超过10MB限制', 'warning'); return; } showPreview(f); } });
+    }
+    if (fi) fi.addEventListener('change', () => { const f = fi.files[0]; if (f) { if (f.size > 10 * 1024 * 1024) { showToast('文件超过10MB限制', 'warning'); return; } showPreview(f); } });
+    const rb = document.querySelector('#btnRemoveAttach');
+    if (rb) rb.addEventListener('click', () => { az.classList.remove('has-file'); az.innerHTML = '<div class="attach-icon">📎</div><div class="attach-text">点击或拖拽上传发票（图片/PDF，最大10MB）</div>'; pendingFile = null; rb.dataset.removed = '1'; });
+  }, 50);
+}
+
+// ==================== PAYMENT ACTIONS ====================
+function payBudget(bid) {
+  const members = state.members;
+  const payerOpts = members.filter(m => m.role === 'payer').map(m => `<option value="${U.esc(m.name)}">${U.esc(m.name)}</option>`).join('') || members.map(m => `<option value="${U.esc(m.name)}">${U.esc(m.name)}</option>`).join('');
+  const today = new Date().toISOString().split('T')[0];
+
+  const ch = `
+    <div class="form-group"><label>支付人</label><select class="form-select" id="payPayer"><option value="">选择支付人</option>${payerOpts}</select></div>
+    <div class="form-group"><label>支付日期</label><input type="date" class="form-input" id="payDate" value="${today}"/></div>
+    <div class="form-group"><label>支付备注（可选）</label><input type="text" class="form-input" id="payNote" placeholder="如：银行转账、支付宝等"/></div>`;
+
+  showModal('确认支付', ch, async (ov) => {
+    const payer = ov.querySelector('#payPayer').value;
+    const date = ov.querySelector('#payDate').value;
+    const note = ov.querySelector('#payNote').value.trim();
+    if (!payer) { showToast('请选择支付人', 'warning'); return false; }
+
+    const fd = new FormData();
+    fd.append('payer', payer);
+    fd.append('payment_status', 'paid');
+    fd.append('payment_date', date);
+    fd.append('payment_note', note);
+
+    try {
+      await Api.updateBudget(bid, fd);
+      showToast('已标记为支付完成 ✅');
+      refreshAll();
+    } catch (e) { showToast(e.message, 'error'); }
+  });
+}
+
+function failBudget(bid) {
+  const ch = `<div class="form-group"><label>失败原因（可选）</label><input type="text" class="form-input" id="failReason" placeholder="如：供应商信息有误、金额不符等"/></div>`;
+  showModal('标记支付失败', ch, async (ov) => {
+    const reason = ov.querySelector('#failReason').value.trim();
+    const fd = new FormData();
+    fd.append('payment_status', 'failed');
+    fd.append('payment_note', reason);
+    try {
+      await Api.updateBudget(bid, fd);
+      showToast('已标记为支付失败', 'warning');
+      refreshAll();
+    } catch (e) { showToast(e.message, 'error'); }
+  });
+}
+
+// ==================== MEMBER MODAL ====================
+function showMemberModal(member) {
+  const isEdit = !!member;
+  const ch = `
+    <div class="form-group"><label>姓名</label><input type="text" class="form-input" id="memName" placeholder="成员姓名" value="${isEdit ? U.esc(member.name) : ''}"/></div>
+    <div class="form-group"><label>角色</label><select class="form-select" id="memRole"><option value="member" ${isEdit && member.role === 'member' ? 'selected' : ''}>普通成员（提交预算）</option><option value="payer" ${isEdit && member.role === 'payer' ? 'selected' : ''}>支付负责人（审核支付）</option></select></div>`;
+
+  showModal(isEdit ? '编辑成员' : '添加成员', ch, async (ov) => {
+    const name = ov.querySelector('#memName').value.trim();
+    const role = ov.querySelector('#memRole').value;
+    if (!name) { showToast('请输入姓名', 'warning'); return false; }
+    try {
+      if (isEdit) {
+        await Api.updateMember(member.id, { name, role });
+      } else {
+        await Api.createMember({ name, role });
+      }
+      showToast(isEdit ? '成员已更新' : '成员已添加');
+      await loadBaseData();
+      renderSettings();
+    } catch (e) { showToast(e.message, 'error'); }
+  });
+}
+
+// ==================== CATEGORY MODAL ====================
+function showCategoryModal(cat) {
+  const isEdit = !!cat;
+  const ch = `
+    <div class="form-group"><label>分类名称</label><input type="text" class="form-input" id="catName" placeholder="分类名称" value="${isEdit ? U.esc(cat.name) : ''}"/></div>
+    <div class="form-group"><label>图标 (emoji)</label><input type="text" class="form-input" id="catIcon" placeholder="📌" maxlength="2" value="${isEdit ? cat.icon : '📌'}"/></div>
+    <div class="form-group"><label>颜色</label><input type="color" class="form-input" id="catColor" value="${isEdit ? cat.color : '#4A90D9'}" style="height:40px;padding:4px;"/></div>`;
+
+  showModal(isEdit ? '编辑分类' : '添加分类', ch, async (ov) => {
+    const name = ov.querySelector('#catName').value.trim();
+    const icon = ov.querySelector('#catIcon').value.trim() || '📌';
+    const color = ov.querySelector('#catColor').value;
+    if (!name) { showToast('请输入分类名称', 'warning'); return false; }
+    try {
+      if (isEdit) {
+        await Api.updateCategory(cat.id, { name, icon, color });
+      } else {
+        await Api.createCategory({ name, icon, color });
+      }
+      showToast(isEdit ? '分类已更新' : '分类已添加');
+      await loadBaseData();
+      renderSettings();
+      refreshAll();
+    } catch (e) { showToast(e.message, 'error'); }
+  });
+}
+
+// ==================== PROJECT MODAL ====================
+function showProjectModal(project) {
+  const isEdit = !!project;
+  const groups = state.projectGroups || [];
+  const groupOpts = '<option value="">不归属分组（未分组）</option>' + groups.map(g => `<option value="${g.id}" ${project && project.group_id === g.id ? 'selected' : ''}>${g.icon} ${U.esc(g.name)}</option>`).join('');
+
+  const ch = `
+    <div class="form-group"><label>项目名称</label><input type="text" class="form-input" id="projName" placeholder="项目名称" value="${isEdit ? U.esc(project.name) : ''}" autofocus/></div>
+    <div class="form-group"><label>描述（可选）</label><input type="text" class="form-input" id="projDesc" placeholder="简要描述" value="${isEdit ? U.esc(project.description || '') : ''}"/></div>
+    <div class="form-group"><label>所属分组</label><select class="form-select" id="projGroup">${groupOpts}</select></div>
+    <div class="form-group"><label>图标</label><input type="text" class="form-input" id="projIcon" placeholder="📁" maxlength="2" value="${isEdit ? project.icon : '📁'}"/></div>`;
+
+  showModal(isEdit ? '编辑项目' : '新建项目', ch, async (ov) => {
+    const name = ov.querySelector('#projName').value.trim();
+    const desc = ov.querySelector('#projDesc').value.trim();
+    const groupEl = ov.querySelector('#projGroup');
+    const groupId = groupEl ? (groupEl.value || null) : null;
+    const icon = ov.querySelector('#projIcon').value.trim() || '📁';
+    if (!name) { showToast('请输入项目名称', 'warning'); return false; }
+    try {
+      if (isEdit) {
+        await Api.updateProject(project.id, { name, description: desc, icon, group_id: groupId });
+        showToast('项目已更新');
+      } else {
+        const groupIdCreate = groupEl ? (groupEl.value ? parseInt(groupEl.value) : null) : null;
+        await Api.createProject({ name, description: desc, icon, group_id: groupIdCreate });
+        showToast('项目已创建');
+      }
+      await loadBaseData();
+      renderSidebar();
+      renderSettings();
+      refreshAll();
+    } catch (e) { showToast(e.message, 'error'); }
+  });
+}
+
+// ==================== GROUP MODAL & SIDEBAR ACTIONS ====================
+function showGroupModal(groupOrId) {
+  let group = groupOrId;
+  if (typeof groupOrId === 'number' || (typeof groupOrId === 'string' && !isNaN(groupOrId))) {
+    group = state.projectGroups.find(x => x.id === parseInt(groupOrId)) || null;
+  }
+  const isEdit = !!group;
+  const ch = `
+    <div class="form-group"><label>分组名称</label><input type="text" class="form-input" id="grpName" placeholder="例如：客户项目、内部管理" value="${isEdit ? U.esc(group.name) : ''}" autofocus/></div>
+    <div class="form-group"><label>图标</label><input type="text" class="form-input" id="grpIcon" placeholder="📂" maxlength="2" value="${isEdit ? group.icon : '📂'}"/></div>`;
+
+  showModal(isEdit ? '编辑分组' : '新建分组', ch, async (ov) => {
+    const name = ov.querySelector('#grpName').value.trim();
+    const icon = ov.querySelector('#grpIcon').value.trim() || '📂';
+    if (!name) { showToast('请输入分组名称', 'warning'); return false; }
+    try {
+      if (isEdit) {
+        await Api.updateProjectGroup(group.id, { name, icon });
+        showToast('分组已更新');
+      } else {
+        await Api.createProjectGroup({ name, icon });
+        showToast('分组已创建');
+      }
+      await loadBaseData();
+      renderSidebar();
+      renderSettings();
+    } catch (e) { showToast(e.message, 'error'); }
+  });
+}
+
+function toggleGroup(gid) {
+  if (!state.collapsedGroups) state.collapsedGroups = [];
+  const idx = state.collapsedGroups.indexOf(gid);
+  if (idx >= 0) state.collapsedGroups.splice(idx, 1);
+  else state.collapsedGroups.push(gid);
+  renderSidebar();
+}
+
+async function deleteGroup(gid) {
+  const g = state.projectGroups.find(x => x.id === parseInt(gid));
+  if (!g) return;
+  const projCount = state.projects.filter(p => p.group_id === gid).length;
+  if (!confirm(`确定删除分组"${g.name}"？${projCount > 0 ? `该分组下的 ${projCount} 个项目将变为"未分组"。` : '此分组当前为空。'}`)) return;
+  try {
+    await Api.deleteProjectGroup(gid);
+    showToast(`分组"${g.name}"已删除`);
+    await loadBaseData();
+    renderSidebar();
+    renderSettings();
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+function showSupplierModal(supplierOrId) {
+  let supplier = supplierOrId;
+  if (typeof supplierOrId === 'number' || (typeof supplierOrId === 'string' && !isNaN(supplierOrId))) {
+    supplier = state.suppliers.find(x => x.id === parseInt(supplierOrId)) || null;
+  }
+  const isEdit = !!supplier;
+  const csVal = isEdit ? (supplier.contract_signed ? 1 : 0) : 0;
+  const ch = `
+    <div class="form-group"><label>供应商名称</label><input type="text" class="form-input" id="supName" placeholder="供应商名称" value="${isEdit ? U.esc(supplier.name) : ''}" autofocus/></div>
+    <div class="form-group"><label>联系人（可选）</label><input type="text" class="form-input" id="supContact" placeholder="联系人姓名/电话" value="${isEdit ? U.esc(supplier.contact || '') : ''}"/></div>
+    <div class="form-group"><label>是否已签协议</label><select class="form-select" id="supContract"><option value="0" ${csVal === 0 ? 'selected' : ''}>否</option><option value="1" ${csVal === 1 ? 'selected' : ''}>是</option></select></div>`;
+
+  showModal(isEdit ? '编辑供应商' : '添加供应商', ch, async (ov) => {
+    const name = ov.querySelector('#supName').value.trim();
+    const contact = ov.querySelector('#supContact').value.trim();
+    const contractSigned = ov.querySelector('#supContract').value === '1';
+    if (!name) { showToast('请输入供应商名称', 'warning'); return false; }
+    try {
+      if (isEdit) {
+        await Api.updateSupplier(supplier.id, { name, contact, contract_signed: contractSigned });
+        showToast('供应商已更新');
+      } else {
+        await Api.createSupplier({ name, contact, contract_signed: contractSigned });
+        showToast('供应商已添加');
+      }
+      await loadBaseData();
+      renderSettings();
+    } catch (e) { showToast(e.message, 'error'); }
+  });
+}
+
+async function deleteSupplier(sid) {
+  const s = state.suppliers.find(x => x.id === parseInt(sid));
+  if (!s) return;
+  if (!confirm(`确定删除供应商"${s.name}"？`)) return;
+  try {
+    await Api.deleteSupplier(parseInt(sid));
+    showToast(`供应商"${s.name}"已删除`);
+    await loadBaseData();
+    renderSettings();
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+function editProjectSidebar(pid) {
+  const p = state.projects.find(x => x.id === parseInt(pid));
+  if (p) showProjectModal(p);
+  else showToast('项目不存在', 'error');
+}
+
+async function deleteProjectSidebar(pid) {
+  const p = state.projects.find(x => x.id === parseInt(pid));
+  if (!p) return;
+  if (!confirm(`确定删除项目"${p.name}"？关联的预算记录将变为"未归属"。`)) return;
+  try {
+    await Api.deleteProject(pid);
+    showToast(`项目"${p.name}"已删除`);
+    if (state.activeProject === String(pid)) state.activeProject = 'all';
+    await loadBaseData();
+    renderSidebar();
+    renderSettings();
+    refreshAll();
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+// ==================== DELETE ACTIONS ====================
+async function deleteBudget(bid) {
+  if (!confirm('确定删除这条预算记录？此操作不可恢复。')) return;
+  try {
+    await Api.deleteBudget(bid);
+    showToast('预算已删除');
+    refreshAll();
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+async function deleteMember(mid) {
+  const m = state.members.find(x => x.id === parseInt(mid));
+  if (!m || !confirm(`确定删除成员"${m.name}"？`)) return;
+  try { await Api.deleteMember(mid); showToast('成员已删除'); await loadBaseData(); renderSettings(); } catch (e) { showToast(e.message, 'error'); }
+}
+
+async function deleteCategory(cid) {
+  const c = state.categories.find(x => x.id === parseInt(cid));
+  if (!c || !confirm(`确定删除分类"${c.name}"？关联预算将变为"未分类"。`)) return;
+  try { await Api.deleteCategory(cid); showToast('分类已删除'); await loadBaseData(); renderSettings(); refreshAll(); } catch (e) { showToast(e.message, 'error'); }
+}
+
+async function deleteProject(pid) {
+  const p = state.projects.find(x => x.id === parseInt(pid));
+  if (!p || !confirm(`确定删除项目"${p.name}"？关联预算将变为"未归属"。`)) return;
+  try {
+    await Api.deleteProject(pid);
+    showToast('项目已删除');
+    if (state.activeProject === String(pid)) state.activeProject = 'all';
+    await loadBaseData();
+    renderSidebar();
+    renderSettings();
+    refreshAll();
+  } catch (e) { showToast(e.message, 'error'); }
+}
+
+// ==================== EXPORT/IMPORT ====================
+async function exportCSV() {
+  try {
+    const filters = getFilters();
+    const res = await fetch('/api/export/csv', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(filters) });
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `预算导出_${U.getCurrentMonth()}.csv`; a.click();
+    URL.revokeObjectURL(url);
+    showToast('CSV 导出成功');
+  } catch (e) { showToast('导出失败: ' + e.message, 'error'); }
+}
+
+async function exportJSON() {
+  try {
+    const data = await Api.exportJSON();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `预算备份_${U.getCurrentMonth()}.json`; a.click();
+    URL.revokeObjectURL(url);
+    showToast('JSON 备份导出成功');
+  } catch (e) { showToast('导出失败: ' + e.message, 'error'); }
+}
+
+async function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!confirm(`即将导入备份文件"${file.name}"。⚠️ 这将覆盖当前所有数据，确定继续？`)) { event.target.value = ''; return; }
+  try {
+    const result = await Api.importJSON(file);
+    showToast(result.message || '导入成功');
+    await loadBaseData();
+    renderSidebar();
+    refreshAll();
+  } catch (e) { showToast('导入失败: ' + e.message, 'error'); }
+  event.target.value = '';
+}
+
+// ==================== FILTERS ====================
+function clearFilter(type) {
+  const map = { status: 'filterStatus', month: 'filterMonth', project_id: 'filterProject', keyword: 'filterKeyword' };
+  const id = map[type];
+  if (id) {
+    const el = $('#' + id);
+    if (el) el.value = 'all';
+  }
+  if (state.activeTab === 'budgets') renderBudgetList();
+}
+
+function clearAllFilters() {
+  $('#filterStatus').value = 'all';
+  $('#filterMonth').value = 'all';
+  $('#filterProject').value = 'all';
+  $('#filterKeyword').value = '';
+  if (state.activeTab === 'budgets') renderBudgetList();
+}
+
+// ==================== CORE ====================
+async function loadBaseData() {
+  try {
+    const [members, categories, projects, groups, suppliers] = await Promise.all([
+      Api.getMembers(), Api.getCategories(), Api.getProjects(), Api.getProjectGroups(), Api.getSuppliers()
+    ]);
+    state.members = members;
+    state.categories = categories;
+    state.projects = projects;
+    state.projectGroups = groups;
+    state.suppliers = suppliers;
+
+    // Populate filter dropdowns
+    const months = await Api._fetch('/stats/overview').then(d => d.available_months).catch(() => []);
+    let mo = '<option value="all">全部月份</option>';
+    months.forEach(m => { mo += `<option value="${m}">${m}</option>`; });
+    if ($('#filterMonth')) $('#filterMonth').innerHTML = mo;
+
+    let po = '<option value="all">全部项目</option>';
+    projects.forEach(p => { po += `<option value="${p.id}">${p.icon} ${U.esc(p.name)}</option>`; });
+    if ($('#filterProject')) $('#filterProject').innerHTML = po;
+
+    // Global month
+    if (!state.globalMonth) {
+      state.globalMonth = months.length > 0 ? months[months.length - 1] : U.getCurrentMonth();
+      $('#globalMonth').value = state.globalMonth;
+    }
+  } catch (e) { console.error('Failed to load base data:', e); }
+}
+
+function selectProject(pid) {
+  state.activeProject = String(pid);
+  renderSidebar();
+  refreshCurrentTab();
+}
+
+function getAttachmentUrl(bid) {
+  return `/api/budgets/${bid}/attachment`;
+}
+
+function editBudget(bid) {
+  // Find budget in current view data or fetch
+  const b = state.currentViewData.find(x => x.id === bid);
+  if (b) {
+    showBudgetModal(b);
+  } else {
+    // Quick fetch
+    Api.getBudgets().then(budgets => {
+      const found = budgets.find(x => x.id === bid);
+      if (found) showBudgetModal(found);
+    }).catch(() => showToast('无法加载预算详情', 'error'));
+  }
+}
+
+// ==================== DRAG & DROP ====================
+let dragSrcId = null, dragSrcEl = null;
+
+function clearDragIndicators() {
+  document.querySelectorAll('.drop-target-above,.drop-target-below,.drop-target').forEach(el => {
+    el.classList.remove('drop-target-above','drop-target-below','drop-target');
+  });
+}
+
+
+async function applyReorder(srcId, targetGroupId, insertBeforeId) {
+  const items = [];
+  const seenIds = new Set();
+
+  // Helper: add items from a group, optionally inserting srcId at a position
+  function addItems(gid, insertBefore) {
+    const sg = gid ? document.getElementById('group_' + gid) :
+      document.querySelector('#sidebarProjectList');
+    if (!sg) return;
+    // Get all project items directly in this container (not nested)
+    let els;
+    if (gid) {
+      els = Array.from(sg.querySelectorAll(':scope > .sidebar-item[draggable]'));
+    } else {
+      // For ungrouped, items are direct children of sidebarProjectList that are NOT in a group
+      els = Array.from(document.querySelectorAll('#sidebarProjectList > .sidebar-item[draggable]:not(.in-group)'));
+    }
+    let idx = 0;
+    for (const el of els) {
+      const eid = parseInt(el.dataset.project);
+      if (eid === srcId) continue; // skip, will be inserted
+      if (insertBefore && eid === insertBefore && !seenIds.has(srcId)) {
+        items.push({ id: srcId, group_id: gid, sort_order: items.length });
+        seenIds.add(srcId);
+      }
+      if (!seenIds.has(eid)) {
+        items.push({ id: eid, group_id: gid, sort_order: items.length });
+        seenIds.add(eid);
+      }
+    }
+  }
+
+  // Determine which groups are affected
+  const srcEl = document.querySelector(`.sidebar-item[data-project="${srcId}"]`);
+  const oldGroupId = srcEl ? (srcEl.closest('.sidebar-group') ? parseInt(srcEl.closest('.sidebar-group').dataset.group || '0') || null : null) : null;
+
+  // Collect all groups
+  const allGroupIds = new Set();
+  state.projectGroups.forEach(g => allGroupIds.add(g.id));
+  allGroupIds.add(null); // ungrouped
+
+  for (const gid of allGroupIds) {
+    if (gid === targetGroupId) {
+      addItems(gid, insertBeforeId);
+    } else if (gid === oldGroupId && oldGroupId !== targetGroupId) {
+      addItems(gid, null); // src removed from old group
+    } else {
+      addItems(gid, null);
+    }
+  }
+
+  // If src not yet inserted (e.g., empty group), append to target
+  if (!seenIds.has(srcId)) {
+    items.push({ id: srcId, group_id: targetGroupId, sort_order: items.filter(i => i.group_id === targetGroupId).length });
+  }
+
+  try {
+    await fetch('/api/projects/reorder', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(items) });
+  } catch (e) { showToast('排序失败', 'error'); }
+}
+
+function setupDragDrop() {
+  document.addEventListener('dragstart', (e) => {
+    // Check for group header drag first
+    const gh = e.target.closest('.sidebar-group-header[draggable]');
+    if (gh && gh.dataset.gtype === 'group') {
+      dragSrcId = parseInt(gh.dataset.gid);
+      dragSrcEl = gh;
+      dragSrcEl.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', 'group:' + dragSrcId);
+      return;
+    }
+    // Project item drag
+    const item = e.target.closest('.sidebar-item[draggable]');
+    if (!item || !item.dataset.project || item.dataset.empty) { e.preventDefault(); return; }
+    dragSrcId = parseInt(item.dataset.project);
+    dragSrcEl = item;
+    item.classList.add('dragging');
+    item.style.opacity = '0.35';
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', 'proj:' + dragSrcId);
+  });
+
+  document.addEventListener('dragend', () => {
+    if (dragSrcEl) { dragSrcEl.classList.remove('dragging'); if (dragSrcEl.style) dragSrcEl.style.opacity = ''; }
+    clearDragIndicators();
+    dragSrcId = null; dragSrcEl = null;
+  });
+
+  document.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    if (!dragSrcId) return;
+    e.dataTransfer.dropEffect = 'move';
+
+    const data = e.dataTransfer.types.includes('text/plain') ? '' : '';
+    // Determine drag type from source element
+    const isGroupDrag = dragSrcEl && dragSrcEl.dataset.gtype === 'group';
+
+    if (isGroupDrag) {
+      // Group drag: only highlight above/below other group headers
+      const gh = e.target.closest('.sidebar-group-header[draggable]');
+      if (gh && parseInt(gh.dataset.gid) !== dragSrcId) {
+        const rect = gh.getBoundingClientRect();
+        const above = e.clientY < rect.top + rect.height / 2;
+        clearDragIndicators();
+        gh.classList.add(above ? 'drop-target-above' : 'drop-target-below');
+        return;
+      }
+      clearDragIndicators();
+      return;
+    }
+
+    // Project drag (existing logic)
+    const gh2 = e.target.closest('.sidebar-group-header');
+    if (gh2) {
+      const sg = gh2.closest('.sidebar-group');
+      clearDragIndicators();
+      if (sg) sg.classList.add('drop-target');
+      return;
+    }
+
+    const dz = e.target.closest('.sidebar-item.drop-zone');
+    if (dz && dz.dataset.empty === '1') {
+      clearDragIndicators();
+      dz.classList.add('drop-target-above');
+      return;
+    }
+
+    const item = e.target.closest('.sidebar-item[draggable]');
+    if (item && !item.dataset.empty && parseInt(item.dataset.project) !== dragSrcId) {
+      const rect = item.getBoundingClientRect();
+      const above = e.clientY < rect.top + rect.height / 2;
+      clearDragIndicators();
+      item.classList.add(above ? 'drop-target-above' : 'drop-target-below');
+      return;
+    }
+
+    const sgFallback = e.target.closest('.sidebar-group');
+    if (sgFallback) {
+      const hasItems = sgFallback.querySelector('.sidebar-item[draggable]:not(.drop-zone)');
+      if (!hasItems || e.target === sgFallback || !e.target.closest('.sidebar-item')) {
+        clearDragIndicators();
+        sgFallback.classList.add('drop-target');
+        return;
+      }
+    }
+
+    clearDragIndicators();
+  });
+
+  document.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    if (!dragSrcId) return;
+    clearDragIndicators();
+
+    const isGroupDrag = dragSrcEl && dragSrcEl.dataset.gtype === 'group';
+
+    // --- GROUP DROP: reorder groups ---
+    if (isGroupDrag) {
+      const gh = e.target.closest('.sidebar-group-header[draggable]');
+      if (gh && parseInt(gh.dataset.gid) !== dragSrcId) {
+        const rect = gh.getBoundingClientRect();
+        const above = e.clientY < rect.top + rect.height / 2;
+        // Collect all group headers in DOM order
+        const allHeaders = Array.from(document.querySelectorAll('.sidebar-group-header[draggable]'));
+        const reorder = [];
+        let inserted = false;
+        for (const h of allHeaders) {
+          const gid = parseInt(h.dataset.gid);
+          if (gid === dragSrcId) continue;
+          if (!inserted && gid === parseInt(gh.dataset.gid) && above) {
+            reorder.push({ id: dragSrcId, sort_order: reorder.length });
+            inserted = true;
+          }
+          reorder.push({ id: gid, sort_order: reorder.length });
+          if (!inserted && gid === parseInt(gh.dataset.gid) && !above) {
+            reorder.push({ id: dragSrcId, sort_order: reorder.length });
+            inserted = true;
+          }
+        }
+        if (!inserted) reorder.push({ id: dragSrcId, sort_order: reorder.length });
+        try {
+          await fetch('/api/project-groups/reorder', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reorder) });
+          await loadBaseData(); renderSidebar();
+        } catch (e) { showToast('排序失败', 'error'); }
+      }
+      dragSrcId = null; dragSrcEl = null;
+      return;
+    }
+
+    // --- PROJECT DROP (existing logic) ---
+    let targetGroupId = null;
+    let insertBeforeId = null;
+
+    const gh3 = e.target.closest('.sidebar-group-header');
+    if (gh3) {
+      const sg = gh3.closest('.sidebar-group');
+      targetGroupId = sg && sg.dataset.group ? parseInt(sg.dataset.group) : null;
+      await applyReorder(dragSrcId, targetGroupId, null);
+      await loadBaseData(); renderSidebar();
+      return;
+    }
+
+    const dz = e.target.closest('.sidebar-item.drop-zone');
+    if (dz && dz.dataset.empty === '1') {
+      targetGroupId = dz.dataset.group ? parseInt(dz.dataset.group) : null;
+      await applyReorder(dragSrcId, targetGroupId, null);
+      await loadBaseData(); renderSidebar();
+      return;
+    }
+
+    const item = e.target.closest('.sidebar-item[draggable]');
+    if (item && !item.dataset.empty && parseInt(item.dataset.project) !== dragSrcId) {
+      const rect = item.getBoundingClientRect();
+      const above = e.clientY < rect.top + rect.height / 2;
+      const targetPid = parseInt(item.dataset.project);
+      const sg = item.closest('.sidebar-group');
+      targetGroupId = sg && sg.dataset.group ? parseInt(sg.dataset.group) : null;
+      insertBeforeId = above ? targetPid : null;
+      if (!above) {
+        const siblings = item.parentElement.querySelectorAll(':scope > .sidebar-item[draggable]');
+        let found = false;
+        for (const s of siblings) {
+          if (found) { insertBeforeId = parseInt(s.dataset.project); break; }
+          if (parseInt(s.dataset.project) === targetPid) found = true;
+        }
+      }
+      await applyReorder(dragSrcId, targetGroupId, insertBeforeId);
+      await loadBaseData(); renderSidebar();
+      return;
+    }
+
+    const sgFallback = e.target.closest('.sidebar-group');
+    if (sgFallback && sgFallback.dataset.group) {
+      targetGroupId = parseInt(sgFallback.dataset.group);
+      await applyReorder(dragSrcId, targetGroupId, null);
+      await loadBaseData(); renderSidebar();
+      return;
+    }
+
+    targetGroupId = null;
+    await applyReorder(dragSrcId, targetGroupId, null);
+    await loadBaseData(); renderSidebar();
+  });
+}
+
+// Make public methods accessible
+const publicApi = {
+  selectProject,
+  showBudgetModal: (b) => showBudgetModal(b),
+  editBudget: (bid) => editBudget(bid),
+  payBudget: (bid) => payBudget(bid),
+  failBudget: (bid) => failBudget(bid),
+  deleteBudget: (bid) => deleteBudget(bid),
+  showMemberModal: (m) => showMemberModal(m),
+  deleteMember: (id) => deleteMember(id),
+  showCategoryModal: (c) => showCategoryModal(c),
+  deleteCategory: (id) => deleteCategory(id),
+  showProjectModal: (p) => showProjectModal(p),
+  deleteProject: (id) => deleteProject(id),
+  showGroupModal: (g) => showGroupModal(g),
+  toggleGroup: (gid) => toggleGroup(gid),
+  deleteGroup: (gid) => deleteGroup(gid),
+  editProjectSidebar: (pid) => editProjectSidebar(pid),
+  deleteProjectSidebar: (pid) => deleteProjectSidebar(pid),
+  showSupplierModal: (s) => showSupplierModal(s),
+  deleteSupplier: (id) => deleteSupplier(id),
+  clearFilter,
+  clearAllFilters,
+  exportCSV,
+  exportJSON,
+  importJSON,
+  getAttachmentUrl,
+};
+
+async function refreshCurrentTab() {
+  const tab = state.activeTab;
+  const titles = { dashboard: '📊 概览', budgets: '📝 支出管理', pending: '💳 预算记录', settings: '⚙️ 设置' };
+  $('#pageTitle').textContent = titles[tab] || '';
+
+  switch (tab) {
+    case 'dashboard': await renderDashboard(); break;
+    case 'budgets': await renderBudgetList(); break;
+    case 'pending': await renderPendingList(); break;
+    case 'settings': renderSettings(); break;
+  }
+}
+
+async function refreshAll() {
+  await loadBaseData();
+  renderSidebar();
+  await refreshCurrentTab();
+}
+
+// ==================== INIT ====================
+async function init() {
+  await loadBaseData();
+
+  // Tab switching
+  $$('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      $$('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      $$('.tab-content').forEach(c => c.classList.remove('active'));
+      const tabId = 'tab-' + btn.dataset.tab;
+      const el = $('#' + tabId);
+      if (el) el.classList.add('active');
+      state.activeTab = btn.dataset.tab;
+      refreshCurrentTab();
+    });
+  });
+
+  // Global month change
+  $('#globalMonth').addEventListener('change', () => {
+    state.globalMonth = $('#globalMonth').value;
+    if (state.activeTab === 'dashboard') renderDashboard();
+    if (state.activeTab === 'budgets') renderBudgetList();
+  });
+
+  // Filter changes
+  const filterEls = ['#filterStatus', '#filterMonth', '#filterProject'];
+  filterEls.forEach(sel => {
+    const el = $(sel);
+    if (el) el.addEventListener('change', () => { if (state.activeTab === 'budgets') renderBudgetList(); });
+  });
+  const kwEl = $('#filterKeyword');
+  if (kwEl) kwEl.addEventListener('input', U.debounce(() => { if (state.activeTab === 'budgets') renderBudgetList(); }, 300));
+
+  // Setup drag-and-drop for sidebar
+  setupDragDrop();
+
+  // Refresh sidebar periodically for badge counts
+  renderSidebar();
+
+  // Initial render
+  await refreshCurrentTab();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+return publicApi;
+})();
+</script>
+</body>
+</html>

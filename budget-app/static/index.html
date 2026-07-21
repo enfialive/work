@@ -371,85 +371,59 @@ body{font-family:var(--font-family);background:var(--color-bg);color:var(--color
 <div id="modalContainer"></div>
 <div class="toast-container" id="toastContainer"></div>
 
+
 <script>
 const App = (() => {
 'use strict';
 
 const $ = (s, p = document) => p.querySelector(s);
 const $$ = (s, p = document) => Array.from(p.querySelectorAll(s));
+const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
-// ==================== API ====================
-const Api = {
-  async _fetch(path, options = {}) {
-    const headers = { ...options.headers };
-    if (!options.body || options.body instanceof FormData) {
-      delete headers['Content-Type'];
-    } else if (!headers['Content-Type']) {
-      headers['Content-Type'] = 'application/json';
-    }
-    const res = await fetch('/api' + path, { ...options, headers });
-    const contentType = res.headers.get('Content-Type') || '';
-    if (contentType.includes('application/json')) {
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || `请求失败 (${res.status})`);
-      return data;
-    }
-    if (!res.ok) throw new Error(`请求失败 (${res.status})`);
-    return res;
-  },
+// ==================== STORE (localStorage) ====================
+const Store = {
+  _read(k) { try { const r = localStorage.getItem('bg_'+k); return r ? JSON.parse(r) : null; } catch(e) { return null; } },
+  _write(k, v) { localStorage.setItem('bg_'+k, JSON.stringify(v)); },
 
-  // Members
-  getMembers: () => Api._fetch('/members'),
-  createMember: (data) => Api._fetch('/members', { method: 'POST', body: JSON.stringify(data) }),
-  updateMember: (id, data) => Api._fetch(`/members/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  deleteMember: (id) => Api._fetch(`/members/${id}`, { method: 'DELETE' }),
-
-  // Categories
-  getCategories: () => Api._fetch('/categories'),
-  createCategory: (data) => Api._fetch('/categories', { method: 'POST', body: JSON.stringify(data) }),
-  updateCategory: (id, data) => Api._fetch(`/categories/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  deleteCategory: (id) => Api._fetch(`/categories/${id}`, { method: 'DELETE' }),
-
-  // Project Groups
-  getProjectGroups: () => Api._fetch('/project-groups'),
-  createProjectGroup: (data) => Api._fetch('/project-groups', { method: 'POST', body: JSON.stringify(data) }),
-  updateProjectGroup: (id, data) => Api._fetch(`/project-groups/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  deleteProjectGroup: (id) => Api._fetch(`/project-groups/${id}`, { method: 'DELETE' }),
-
-  // Projects
-  getProjects: () => Api._fetch('/projects'),
-  createProject: (data) => Api._fetch('/projects', { method: 'POST', body: JSON.stringify(data) }),
-  updateProject: (id, data) => Api._fetch(`/projects/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  deleteProject: (id) => Api._fetch(`/projects/${id}`, { method: 'DELETE' }),
-
-  // Budgets
-  getBudgets: (params = {}) => {
-    const qs = new URLSearchParams(params).toString();
-    return Api._fetch('/budgets' + (qs ? '?' + qs : ''));
-  },
-  createBudget: (formData) => Api._fetch('/budgets', { method: 'POST', body: formData }),
-  updateBudget: (id, formData) => Api._fetch(`/budgets/${id}`, { method: 'PUT', body: formData }),
-  deleteBudget: (id) => Api._fetch(`/budgets/${id}`, { method: 'DELETE' }),
-  getAttachmentUrl: (id) => `/api/budgets/${id}/attachment`,
-
-  // Suppliers
-  getSuppliers: () => Api._fetch('/suppliers'),
-  createSupplier: (data) => Api._fetch('/suppliers', { method: 'POST', body: JSON.stringify(data) }),
-  updateSupplier: (id, data) => Api._fetch(`/suppliers/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  deleteSupplier: (id) => Api._fetch(`/suppliers/${id}`, { method: 'DELETE' }),
-
-  // Stats
-  getOverview: () => Api._fetch('/stats/overview'),
-
-  // Export
-  exportCSV: (data) => Api._fetch('/export/csv', { method: 'POST', body: JSON.stringify(data) }),
-  exportJSON: () => Api._fetch('/export/json', { method: 'POST' }),
-  importJSON: (file) => {
-    const fd = new FormData();
-    fd.append('file', file);
-    return fetch('/api/import/json', { method: 'POST', body: fd }).then(r => r.json());
-  }
+  getAll(k) { return this._read(k) || []; },
+  add(k, item) { const l = this.getAll(k); item.id = item.id || genId(); item.created_at = item.created_at || new Date().toISOString(); l.push(item); this._write(k, l); return item; },
+  update(k, id, data) { const l = this.getAll(k); const i = l.findIndex(x => x.id == id); if (i === -1) return; Object.assign(l[i], data); this._write(k, l); },
+  delete(k, id) { const l = this.getAll(k); this._write(k, l.filter(x => x.id != id)); },
+  saveAll(k, l) { this._write(k, l); },
 };
+
+// Seed defaults if empty
+function seedDefaults() {
+  if (Store.getAll('members').length === 0) {
+    Store.saveAll('members', [
+      { id: 1, name: '张三', role: 'member', active: 1 },
+      { id: 2, name: '李四', role: 'member', active: 1 },
+      { id: 3, name: '王五', role: 'payer', active: 1 },
+      { id: 4, name: '赵六', role: 'payer', active: 1 },
+    ]);
+    Store.saveAll('categories', [
+      { id: 1, name: '人力成本', icon: '👥', color: '#E17055' },
+      { id: 2, name: '物料采购', icon: '📦', color: '#00B894' },
+      { id: 3, name: '差旅费', icon: '✈️', color: '#0984E3' },
+      { id: 4, name: '办公费用', icon: '🖨️', color: '#6C5CE7' },
+      { id: 5, name: '营销推广', icon: '📢', color: '#F39C12' },
+      { id: 6, name: '外包服务', icon: '🤝', color: '#00CEC9' },
+      { id: 7, name: '研发支出', icon: '🔬', color: '#FD79A8' },
+      { id: 8, name: '其他支出', icon: '📌', color: '#636E72' },
+    ]);
+    Store.saveAll('project_groups', [
+      { id: 1, name: '客户项目', icon: '🤝', color: '#4A90D9', sort_order: 0 },
+      { id: 2, name: '内部管理', icon: '🏢', color: '#6C5CE7', sort_order: 1 },
+    ]);
+    Store.saveAll('projects', [
+      { id: 1, name: 'Q3产品研发', description: '第三季度核心产品研发项目', group_id: 1, icon: '🚀', color: '#4A90D9', sort_order: 0 },
+      { id: 2, name: '市场推广活动', description: '年度市场推广与品牌建设', group_id: 1, icon: '📢', color: '#E17055', sort_order: 1 },
+      { id: 3, name: '办公环境改造', description: '新办公室装修与设备采购', group_id: 2, icon: '🏗️', color: '#00B894', sort_order: 0 },
+    ]);
+    Store.saveAll('suppliers', []);
+    Store.saveAll('budgets', []);
+  }
+}
 
 // ==================== STATE ====================
 let state = {
@@ -461,7 +435,7 @@ let state = {
   projectGroups: [],
   projects: [],
   suppliers: [],
-  currentViewData: [],
+  budgets: [],
   collapsedGroups: []
 };
 
@@ -476,10 +450,40 @@ const U = {
   statusLabel: (s) => ({ pending: '待支付', paid: '已支付', failed: '支付失败' }[s] || s),
 };
 
-// ==================== RENDER ====================
+function loadBaseData() {
+  state.members = Store.getAll('members');
+  state.categories = Store.getAll('categories');
+  state.projectGroups = Store.getAll('project_groups');
+  state.projects = Store.getAll('projects');
+  state.suppliers = Store.getAll('suppliers');
+  state.budgets = Store.getAll('budgets');
+
+  // Populate filter dropdowns
+  const months = [...new Set(state.budgets.map(b => b.budget_month))].sort();
+  let mo = '<option value="all">全部月份</option>';
+  months.forEach(m => { mo += `<option value="${m}">${m}</option>`; });
+  if ($('#filterMonth')) $('#filterMonth').innerHTML = mo;
+
+  let po = '<option value="all">全部项目</option>';
+  state.projects.forEach(p => { po += `<option value="${p.id}">${p.icon} ${U.esc(p.name)}</option>`; });
+  if ($('#filterProject')) $('#filterProject').innerHTML = po;
+
+  if (!state.globalMonth) {
+    state.globalMonth = months.length > 0 ? months[months.length - 1] : U.getCurrentMonth();
+    $('#globalMonth').value = state.globalMonth;
+  }
+  // Update sidebar all count
+  const mc = state.budgets.filter(b => b.budget_month === state.globalMonth).length;
+  $('#sidebarAllCount').textContent = mc;
+}
+
+function getProjectMap() { const m = {}; state.projects.forEach(p => { m[p.id] = p; }); return m; }
+function getCategoryMap() { const m = {}; state.categories.forEach(c => { m[c.id] = c; }); return m; }
+
+// ==================== SIDEBAR RENDER ====================
 function renderSidebar() {
-  const projects = state.projects;
-  const groups = state.projectGroups || [];
+  const projects = state.projects.sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
+  const groups = (state.projectGroups || []).sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
   const el = $('#sidebarProjectList');
 
   if (!projects.length && !groups.length) {
@@ -487,26 +491,14 @@ function renderSidebar() {
     return;
   }
 
-  // Build group-id -> projects mapping
-  const pmap = {};
-  const ungrouped = [];
+  const pmap = {}; const ungrouped = [];
   projects.forEach(p => {
-    if (p.group_id) {
-      if (!pmap[p.group_id]) pmap[p.group_id] = [];
-      pmap[p.group_id].push(p);
-    } else {
-      ungrouped.push(p);
-    }
+    if (p.group_id) { if (!pmap[p.group_id]) pmap[p.group_id] = []; pmap[p.group_id].push(p); }
+    else ungrouped.push(p);
   });
 
-  const gm = {};
-  groups.forEach(g => { gm[g.id] = g; });
-
-  // Count budgets per project
   const counts = {};
-  state.currentViewData.forEach(b => {
-    if (b.project_id) counts[b.project_id] = (counts[b.project_id] || 0) + 1;
-  });
+  state.budgets.forEach(b => { if (b.project_id) counts[b.project_id] = (counts[b.project_id] || 0) + 1; });
 
   const buildItem = (p, inGroup) => {
     const count = counts[p.id] || 0;
@@ -522,14 +514,12 @@ function renderSidebar() {
   };
 
   let h = '';
-
-  // Render groups with their projects
   groups.forEach(g => {
     const gps = pmap[g.id] || [];
-    const isCollapsed = state.collapsedGroups && state.collapsedGroups.includes(g.id);
+    const isCollapsed = state.collapsedGroups.includes(g.id);
     h += `<div class="sidebar-group${isCollapsed ? ' collapsed' : ''}" id="group_${g.id}" data-group="${g.id}">
       <div class="sidebar-group-header" data-gid="${g.id}" data-gtype="group" draggable="true" onclick="App.toggleGroup(${g.id})">
-        <span class="drag-handle" title="拖拽排序" style="display:inline;">⋮⋮</span>
+        <span class="drag-handle" title="拖拽排序">⋮⋮</span>
         <span class="collapse-arrow">▼</span>
         <span class="group-name">${U.esc(g.name)}</span>
         <span class="group-count">${gps.length}</span>
@@ -546,209 +536,193 @@ function renderSidebar() {
     h += `</div>`;
   });
 
-  // Ungrouped projects
   if (ungrouped.length > 0 || groups.length === 0) {
-    if (groups.length > 0) {
-      h += `<div class="sidebar-section-title">未分组项目</div>`;
-    }
+    if (groups.length > 0) h += `<div class="sidebar-section-title">未分组项目</div>`;
     ungrouped.forEach(p => { h += buildItem(p, false); });
   }
-
   el.innerHTML = h;
 }
-
-function getProjectMap() {
-  const m = {};
-  state.projects.forEach(p => { m[p.id] = p; });
-  return m;
-}
-function getCategoryMap() {
-  const m = {};
-  state.categories.forEach(c => { m[c.id] = c; });
-  return m;
-}
-
 // ==================== DASHBOARD ====================
-async function renderDashboard() {
-  try {
-    const data = await Api.getOverview();
-    const s = data.stats, pm = getProjectMap(), cm = getCategoryMap();
+function getOverviewStats() {
+  const paid = state.budgets.filter(b => b.payment_status === 'paid');
+  const pending = state.budgets.filter(b => b.payment_status === 'pending');
+  return {
+    total_paid: paid.reduce((s,b) => s + b.amount, 0),
+    total_pending: pending.reduce((s,b) => s + b.amount, 0),
+    total_count: state.budgets.length,
+    paid_count: paid.length,
+    pending_count: pending.length,
+    project_count: state.projects.length,
+    member_count: state.members.length,
+  };
+}
 
-    // Stats cards
-    let h = `<div class="stats-grid">
-      <div class="stat-card"><div class="stat-value expense">${U.fmtMoney(s.total_paid)}</div><div class="stat-label">累计已支付</div></div>
-      <div class="stat-card"><div class="stat-value warn">${U.fmtMoney(s.total_pending)}</div><div class="stat-label">待支付金额</div><div class="stat-sub">${s.pending_count} 笔待处理</div></div>
-      <div class="stat-card"><div class="stat-value">${s.paid_count}</div><div class="stat-label">已支付笔数</div></div>
-      <div class="stat-card"><div class="stat-value success">${s.project_count}</div><div class="stat-label">活跃项目</div><div class="stat-sub">${s.member_count} 位成员</div></div>
-    </div>`;
+function getCategoryBreakdown() {
+  const cm = getCategoryMap();
+  const catTotals = {};
+  state.budgets.filter(b => b.payment_status === 'paid').forEach(b => {
+    const cid = b.category_id || 0;
+    if (!catTotals[cid]) catTotals[cid] = { name: cm[cid] ? cm[cid].name : '未分类', icon: cm[cid] ? cm[cid].icon : '📌', color: cm[cid] ? cm[cid].color : '#B2BEC3', total: 0 };
+    catTotals[cid].total += b.amount;
+  });
+  return Object.values(catTotals).sort((a,b) => b.total - a.total);
+}
 
-    // Charts row
-    h += `<div class="chart-row">
-      <div class="chart-container"><div class="chart-title">🏆 项目支出排行（已支付）</div>`;
+function getProjectRanking() {
+  const pm = getProjectMap();
+  const projTotals = {};
+  state.budgets.filter(b => b.payment_status === 'paid').forEach(b => {
+    const pid = b.project_id || 0;
+    if (!projTotals[pid]) projTotals[pid] = { id: pid, name: pm[pid] ? pm[pid].name : '未归属', icon: pm[pid] ? pm[pid].icon : '📌', color: pm[pid] ? pm[pid].color : '#B2BEC3', total: 0 };
+    projTotals[pid].total += b.amount;
+  });
+  return Object.values(projTotals).sort((a,b) => b.total - a.total);
+}
 
-    if (data.by_project.length === 0) {
-      h += `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">暂无已支付记录</div></div>`;
-    } else {
-      h += `<ul class="rank-list">`;
-      data.by_project.slice(0, 5).forEach((p, i) => {
-        const rank = i + 1;
-        const rc = rank === 1 ? 'gold' : (rank === 2 ? 'silver' : (rank === 3 ? 'bronze' : ''));
-        const maxVal = data.by_project[0].total;
-        h += `<li class="rank-item" onclick="App.selectProject('${p.id}')" style="cursor:pointer;">
-          <span class="rank-num${rc ? ' ' + rc : ''}" style="${!rc ? 'background:#DFE6E9;color:#636E72' : ''}">${rank}</span>
-          <div class="rank-info"><div class="rank-name">${p.icon} ${U.esc(p.name)}</div><div class="rank-bar-wrap"><div class="rank-bar" style="width:${maxVal > 0 ? p.total / maxVal * 100 : 0}%;background:${p.color};"></div></div></div>
-          <span class="rank-amount">${U.fmtMoney(p.total)}</span></li>`;
-      });
-      h += `</ul>`;
-    }
-    h += `</div>`;
+function renderDashboard() {
+  const s = getOverviewStats();
+  const byCategory = getCategoryBreakdown();
+  const byProject = getProjectRanking();
+  const pm = getProjectMap(), cm = getCategoryMap();
 
-    // Category breakdown chart
-    h += `<div class="chart-container"><div class="chart-title">📊 分类支出占比（已支付）</div>`;
-    h += `<canvas id="pieChart" style="width:100%;height:280px;"></canvas></div></div>`;
+  let h = `<div class="stats-grid">
+    <div class="stat-card"><div class="stat-value expense">${U.fmtMoney(s.total_paid)}</div><div class="stat-label">累计已支付</div></div>
+    <div class="stat-card"><div class="stat-value warn">${U.fmtMoney(s.total_pending)}</div><div class="stat-label">待支付金额</div><div class="stat-sub">${s.pending_count} 笔待处理</div></div>
+    <div class="stat-card"><div class="stat-value">${s.paid_count}</div><div class="stat-label">已支付笔数</div></div>
+    <div class="stat-card"><div class="stat-value success">${s.project_count}</div><div class="stat-label">活跃项目</div><div class="stat-sub">${s.member_count} 位成员</div></div>
+  </div>`;
 
-    // Monthly trend bar chart removed per user request
+  h += `<div class="chart-row">
+    <div class="chart-container"><div class="chart-title">🏆 项目支出排行（已支付）</div>`;
+  if (byProject.length === 0) {
+    h += `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">暂无已支付记录</div></div>`;
+  } else {
+    h += `<ul class="rank-list">`;
+    const maxVal = byProject[0].total;
+    byProject.forEach((p, i) => {
+      const rank = i + 1, rc = rank === 1 ? 'gold' : (rank === 2 ? 'silver' : (rank === 3 ? 'bronze' : ''));
+      h += `<li class="rank-item" onclick="App.selectProject('${p.id}')" style="cursor:pointer;">
+        <span class="rank-num${rc ? ' ' + rc : ''}" style="${!rc ? 'background:#DFE6E9;color:#636E72' : ''}">${rank}</span>
+        <div class="rank-info"><div class="rank-name">${U.esc(p.name)}</div><div class="rank-bar-wrap"><div class="rank-bar" style="width:${maxVal > 0 ? p.total / maxVal * 100 : 0}%;background:${p.color};"></div></div></div>
+        <span class="rank-amount">${U.fmtMoney(p.total)}</span></li>`;
+    });
+    h += `</ul>`;
+  }
+  h += `</div>`;
+  h += `<div class="chart-container"><div class="chart-title">📊 分类支出占比（已支付）</div>`;
+  h += `<canvas id="pieChart" style="width:100%;height:280px;"></canvas></div></div>`;
 
-    // Recent records
-    h += `<div class="card"><div class="card-header"><span class="card-title">🕐 最近预算记录</span></div>`;
-    const recent = state.currentViewData.slice(0, 10);
-    if (!recent.length) {
-      h += `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">暂无预算记录</div></div>`;
-    } else {
-      h += `<ul class="recent-list">`;
-      recent.forEach(b => {
-        const cat = cm[b.category_id] || { name: '未分类', icon: '📌' };
-        const proj = pm[b.project_id];
-        const statusCls = b.payment_status;
-        h += `<li class="recent-item" onclick="App.editBudget(${b.id})">
-          <span>${cat.icon}</span><div style="flex:1;min-width:0;"><div style="font-weight:500;">${cat.name}${b.supplier ? ' · ' + U.esc(b.supplier) : ''}</div><div style="font-size:var(--font-size-xs);color:var(--color-text-muted);">${b.budget_month}${proj ? ' · ' + proj.icon + ' ' + U.esc(proj.name) : ''}</div></div>
-          <span class="status-badge ${statusCls}">${U.statusLabel(b.payment_status)}</span>
-          <span style="font-weight:600;color:var(--color-expense);">${U.fmtMoney(b.amount)}</span></li>`;
-      });
-      h += `</ul>`;
-    }
-    h += `</div>`;
-
-    $('#dashboardContent').innerHTML = h;
-
-    // Draw charts after DOM update
-    setTimeout(() => {
-      drawPieChart(data.by_category);
-    }, 100);
-
-  } catch (e) { console.error(e); $('#dashboardContent').innerHTML = `<div class="card"><div class="empty-state"><div class="empty-icon">❌</div><div class="empty-text">加载失败: ${e.message}</div></div></div>`; }
+  const recent = state.budgets.slice(0, 10);
+  h += `<div class="card"><div class="card-header"><span class="card-title">🕐 最近预算记录</span></div>`;
+  if (!recent.length) {
+    h += `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">暂无预算记录</div></div>`;
+  } else {
+    h += `<ul class="recent-list">`;
+    recent.forEach(b => {
+      const cat = cm[b.category_id] || { name: '未分类', icon: '📌' };
+      const proj = pm[b.project_id];
+      h += `<li class="recent-item" onclick="App.editBudget('${b.id}')">
+        <span>${cat.icon}</span><div style="flex:1;min-width:0;"><div style="font-weight:500;">${cat.name}${b.supplier ? ' · ' + U.esc(b.supplier) : ''}</div><div style="font-size:var(--font-size-xs);color:var(--color-text-muted);">${b.budget_month}${proj ? ' · ' + U.esc(proj.name) : ''}</div></div>
+        <span class="status-badge ${b.payment_status}">${U.statusLabel(b.payment_status)}</span>
+        <span style="font-weight:600;color:var(--color-expense);">${U.fmtMoney(b.amount)}</span></li>`;
+    });
+    h += `</ul>`;
+  }
+  h += `</div>`;
+  $('#dashboardContent').innerHTML = h;
+  setTimeout(() => drawPieChart(byCategory), 100);
 }
 
 function drawPieChart(data) {
-  const canvas = $('#pieChart');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
+  const canvas = $('#pieChart'); if (!canvas) return;
+  const ctx = canvas.getContext('2d'), dpr = window.devicePixelRatio || 1;
   const w = canvas.clientWidth, h = canvas.clientHeight || 280;
   canvas.width = w * dpr; canvas.height = h * dpr; ctx.scale(dpr, dpr);
   canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
   ctx.clearRect(0, 0, w, h);
-
   const total = data.reduce((s, d) => s + d.total, 0);
-  if (total === 0) {
-    ctx.fillStyle = '#B2BEC3'; ctx.font = '14px sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText('暂无数据', w / 2, h / 2); return;
-  }
+  if (total === 0) { ctx.fillStyle = '#B2BEC3'; ctx.font = '14px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('暂无数据', w / 2, h / 2); return; }
   const cx = w / 2, cy = h / 2, r = Math.min(w, h) / 2 - 30, ir = r * 0.55;
   let angle = -Math.PI / 2;
   data.forEach(d => {
     const slice = d.total / total * Math.PI * 2;
-    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, angle, angle + slice); ctx.closePath();
-    ctx.fillStyle = d.color; ctx.fill();
-    const mid = angle + slice / 2;
-    const lx = cx + Math.cos(mid) * (r + 18), ly = cy + Math.sin(mid) * (r + 18);
-    ctx.fillStyle = '#636E72'; ctx.font = '11px sans-serif';
-    ctx.textAlign = lx > cx ? 'left' : 'right';
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, angle, angle + slice); ctx.closePath(); ctx.fillStyle = d.color; ctx.fill();
+    const mid = angle + slice / 2, lx = cx + Math.cos(mid) * (r + 18), ly = cy + Math.sin(mid) * (r + 18);
+    ctx.fillStyle = '#636E72'; ctx.font = '11px sans-serif'; ctx.textAlign = lx > cx ? 'left' : 'right';
     const pct = Math.round(d.total / total * 100);
-    if (pct >= 5) ctx.fillText(`${d.icon} ${d.name} ${pct}%`, lx, ly);
+    if (pct >= 5) ctx.fillText(`${d.name} ${pct}%`, lx, ly);
     angle += slice;
   });
   ctx.beginPath(); ctx.arc(cx, cy, ir, 0, Math.PI * 2); ctx.fillStyle = '#FFFFFF'; ctx.fill();
-  ctx.fillStyle = '#1A1A2E'; ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center';
-  ctx.fillText('分类占比', cx, cy - 4);
-  ctx.fillStyle = '#636E72'; ctx.font = '12px sans-serif';
-  ctx.fillText(`总额: ${U.fmtMoney(total)}`, cx, cy + 16);
+  ctx.fillStyle = '#1A1A2E'; ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('分类占比', cx, cy - 4);
+  ctx.fillStyle = '#636E72'; ctx.font = '12px sans-serif'; ctx.fillText(`总额: ${U.fmtMoney(total)}`, cx, cy + 16);
 }
 
-// Bar chart removed per user request
-
 // ==================== BUDGET LIST ====================
-async function renderBudgetList() {
+function filterBudgets(budgets, filters) {
+  return budgets.filter(b => {
+    if (filters.status && b.payment_status !== filters.status) return false;
+    if (filters.month && b.budget_month !== filters.month) return false;
+    if (filters.project_id && String(b.project_id) !== filters.project_id) return false;
+    if (filters.keyword) {
+      const kw = filters.keyword.toLowerCase();
+      if (!(b.supplier || '').toLowerCase().includes(kw) && !(b.note || '').toLowerCase().includes(kw)
+        && !(b.submitter || '').toLowerCase().includes(kw) && !(b.expense_detail || '').toLowerCase().includes(kw))
+        return false;
+    }
+    return true;
+  });
+}
+
+function renderBudgetList() {
   const filters = getFilters();
-  try {
-    const budgets = await Api.getBudgets(filters);
-    if (state.activeTab === 'budgets') state.currentViewData = budgets;
+  let budgets = filterBudgets(state.budgets, filters);
+  if (state.activeProject !== 'all' && !filters.project_id) {
+    budgets = budgets.filter(b => String(b.project_id) === state.activeProject);
+  }
+  const pm = getProjectMap(), cm = getCategoryMap();
+  $('#filterResultCount').textContent = `共 ${budgets.length} 条`;
 
-    const pm = getProjectMap(), cm = getCategoryMap();
-    $('#filterResultCount').textContent = `共 ${budgets.length} 条`;
+  let tags = '';
+  if (filters.status) tags += `<span class="filter-tag" onclick="App.clearFilter('status')">${U.statusLabel(filters.status)} ×</span>`;
+  if (filters.month) tags += `<span class="filter-tag" onclick="App.clearFilter('month')">📅 ${filters.month} ×</span>`;
+  if (filters.project_id) {
+    const p = pm[filters.project_id]; tags += `<span class="filter-tag" onclick="App.clearFilter('project_id')">${p ? U.esc(p.name) : '项目'} ×</span>`;
+  }
+  if (filters.keyword) tags += `<span class="filter-tag" onclick="App.clearFilter('keyword')">🔍 "${filters.keyword}" ×</span>`;
+  if (tags) tags += `<span class="filter-tag" onclick="App.clearAllFilters()" style="background:var(--color-expense-bg);color:var(--color-danger);">清除全部</span>`;
+  $('#filterActiveTags').innerHTML = tags;
 
-    // Active filter tags
-    let tags = '';
-    if (filters.status) tags += `<span class="filter-tag" onclick="App.clearFilter('status')">${U.statusLabel(filters.status)} ×</span>`;
-    if (filters.month) tags += `<span class="filter-tag" onclick="App.clearFilter('month')">📅 ${filters.month} ×</span>`;
-    if (filters.project_id) {
-      const p = pm[filters.project_id];
-      tags += `<span class="filter-tag" onclick="App.clearFilter('project_id')">${p ? p.icon + ' ' + p.name : '项目'} ×</span>`;
-    }
-    if (filters.keyword) tags += `<span class="filter-tag" onclick="App.clearFilter('keyword')">🔍 "${filters.keyword}" ×</span>`;
-    if (tags) tags += `<span class="filter-tag" onclick="App.clearAllFilters()" style="background:var(--color-expense-bg);color:var(--color-danger);">清除全部</span>`;
-    $('#filterActiveTags').innerHTML = tags;
+  if (!budgets.length) {
+    const isFiltered = filters.status || filters.month || filters.project_id || filters.keyword;
+    $('#budgetList').innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">${isFiltered ? '没有符合条件的预算记录' : '暂无预算记录'}</div>${!isFiltered ? '<button class="btn btn-primary btn-sm" onclick="App.showBudgetModal()">+ 新建第一笔预算</button>' : ''}</div>`;
+    return;
+  }
 
-    if (!budgets.length) {
-      const isFiltered = filters.status || filters.month || filters.project_id || filters.keyword;
-      $('#budgetList').innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">${isFiltered ? '没有符合条件的预算记录' : '暂无预算记录'}</div>${!isFiltered ? '<button class="btn btn-primary btn-sm" onclick="App.showBudgetModal()">+ 新建第一笔预算</button>' : ''}</div>`;
-      return;
-    }
+  const groups = {};
+  budgets.forEach(b => { const m = b.budget_month || '未知月份'; if (!groups[m]) groups[m] = []; groups[m].push(b); });
 
-    // Group by month
-    const groups = {};
-    budgets.forEach(b => {
-      const m = b.budget_month || '未知月份';
-      if (!groups[m]) groups[m] = [];
-      groups[m].push(b);
+  let h = '';
+  Object.keys(groups).sort().reverse().forEach(month => {
+    const items = groups[month];
+    const monthTotal = items.reduce((s, b) => s + b.amount, 0);
+    const [y, m] = month.split('-');
+    h += `<div class="budget-date-group"><div class="budget-date-header">${y}年${parseInt(m)}月 <span class="date-total">${U.fmtMoney(monthTotal)}</span></div><ul class="budget-list">`;
+    items.forEach(b => {
+      const cat = cm[b.category_id] || { name: '未分类', icon: '📌' };
+      const proj = pm[b.project_id];
+      const projBadge = proj ? `<span class="proj-badge" style="background:${proj.color}20;color:${proj.color};cursor:pointer;" onclick="event.stopPropagation();App.selectProject('${proj.id}')">${U.esc(proj.name)}</span>` : '<span class="proj-badge" style="background:var(--color-bg);color:var(--color-text-muted);">未归属</span>';
+      h += `<li class="budget-item" style="cursor:pointer;" onclick="App.editBudget('${b.id}')">
+        <span class="item-icon">${cat.icon}</span>
+        <div class="item-info"><div class="item-main"><span>${cat.name}</span><span class="status-badge ${b.payment_status}">${U.statusLabel(b.payment_status)}</span>${projBadge}</div>
+        <div class="item-meta">${b.submitter ? `<span>👤 ${U.esc(b.submitter)}</span>` : ''}${b.supplier ? `<span>🏢 ${U.esc(b.supplier)}</span>` : ''}${b.payer ? `<span>💳 ${U.esc(b.payer)}</span>` : ''}${b.note ? `<span>💬 ${U.esc(b.note)}</span>` : ''}</div></div>
+        ${b.attachment_name ? `<span style="cursor:pointer;opacity:.6;" onclick="event.stopPropagation();App.viewAttachment('${b.id}')" title="查看发票">🧾</span>` : ''}
+        <span class="item-amount">${U.fmtMoney(b.amount)}</span>
+        <div class="item-actions">${b.payment_status === 'pending' ? `<button class="btn-icon" onclick="event.stopPropagation();App.payBudget('${b.id}')" title="标记已支付">✅</button>` : ''}<button class="btn-icon danger" onclick="event.stopPropagation();App.deleteBudget('${b.id}')" title="删除">🗑️</button></div></li>`;
     });
-
-    let h = '';
-    Object.keys(groups).sort().reverse().forEach(month => {
-      const items = groups[month];
-      const monthTotal = items.reduce((s, b) => s + b.amount, 0);
-      const [y, m] = month.split('-');
-      h += `<div class="budget-date-group"><div class="budget-date-header">${y}年${parseInt(m)}月 <span class="date-total">${U.fmtMoney(monthTotal)}</span></div><ul class="budget-list">`;
-
-      items.forEach(b => {
-        const cat = cm[b.category_id] || { name: '未分类', icon: '📌' };
-        const proj = pm[b.project_id];
-        const statusCls = b.payment_status;
-        const projBadge = proj ? `<span class="proj-badge" style="background:${proj.color}20;color:${proj.color};cursor:pointer;" onclick="event.stopPropagation();App.selectProject('${proj.id}')">${proj.icon} ${U.esc(proj.name)}</span>` : '<span class="proj-badge" style="background:var(--color-bg);color:var(--color-text-muted);">未归属</span>';
-        const hasAttach = b.attachment_name;
-
-        h += `<li class="budget-item" style="cursor:pointer;" onclick="App.editBudget(${b.id})">
-          <span class="item-icon">${cat.icon}</span>
-          <div class="item-info">
-            <div class="item-main"><span>${cat.name}</span><span class="status-badge ${statusCls}">${U.statusLabel(b.payment_status)}</span>${projBadge}</div>
-            <div class="item-meta">
-              ${b.submitter ? `<span>👤 ${U.esc(b.submitter)}</span>` : ''}
-              ${b.supplier ? `<span>🏢 ${U.esc(b.supplier)}</span>` : ''}
-              ${b.payer ? `<span>💳 ${U.esc(b.payer)}</span>` : ''}
-              ${b.note ? `<span>💬 ${U.esc(b.note)}</span>` : ''}
-            </div>
-          </div>
-          ${hasAttach ? `<span style="cursor:pointer;opacity:.6;" onclick="event.stopPropagation();window.open(App.getAttachmentUrl(${b.id}))" title="查看发票">🧾</span>` : ''}
-          <span class="item-amount">${U.fmtMoney(b.amount)}</span>
-          <div class="item-actions">
-            ${b.payment_status === 'pending' ? `<button class="btn-icon" onclick="event.stopPropagation();App.payBudget(${b.id})" title="标记已支付">✅</button>` : ''}
-            <button class="btn-icon danger" onclick="event.stopPropagation();App.deleteBudget(${b.id})" title="删除">🗑️</button>
-          </div></li>`;
-      });
-      h += `</ul></div>`;
-    });
-    $('#budgetList').innerHTML = h;
-  } catch (e) { console.error(e); $('#budgetList').innerHTML = `<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-text">加载失败: ${e.message}</div></div>`; }
+    h += `</ul></div>`;
+  });
+  $('#budgetList').innerHTML = h;
 }
 
 function getFilters() {
@@ -758,128 +732,90 @@ function getFilters() {
   if (fm && fm.value !== 'all') f.month = fm.value;
   if (fp && fp.value !== 'all') f.project_id = fp.value;
   if (fk && fk.value.trim()) f.keyword = fk.value.trim();
-  if (state.activeProject !== 'all' && state.activeTab === 'budgets') {
-    // Only filter if no explicit project filter set
-    if (!f.project_id) f.project_id = state.activeProject;
-  }
   return f;
 }
 
 // ==================== PENDING LIST ====================
-async function renderPendingList() {
-  try {
-    const budgets = await Api.getBudgets({ status: 'pending' });
-    state.currentViewData = budgets;
+function renderPendingList() {
+  const budgets = state.budgets.filter(b => b.payment_status === 'pending');
+  const totalPending = budgets.reduce((s, b) => s + b.amount, 0);
+  $('#pendingBadge').textContent = budgets.length;
+  $('#pendingSummary').textContent = `共 ${budgets.length} 笔，合计 ${U.fmtMoney(totalPending)}`;
 
-    const totalPending = budgets.reduce((s, b) => s + b.amount, 0);
-    $('#pendingBadge').textContent = budgets.length;
-    $('#pendingSummary').textContent = `共 ${budgets.length} 笔，合计 ${U.fmtMoney(totalPending)}`;
-
-    if (!budgets.length) {
-      $('#pendingList').innerHTML = `<div class="empty-state"><div class="empty-icon">🎉</div><div class="empty-text">暂无待支付的预算，太棒了！</div></div>`;
-      return;
-    }
-
-    const pm = getProjectMap(), cm = getCategoryMap();
-    // Group by month
-    const groups = {};
-    budgets.forEach(b => {
-      const m = b.budget_month || '未知月份';
-      if (!groups[m]) groups[m] = [];
-      groups[m].push(b);
+  if (!budgets.length) {
+    $('#pendingList').innerHTML = `<div class="empty-state"><div class="empty-icon">🎉</div><div class="empty-text">暂无待支付的预算，太棒了！</div></div>`;
+    return;
+  }
+  const pm = getProjectMap(), cm = getCategoryMap();
+  const groups = {};
+  budgets.forEach(b => { const m = b.budget_month || '未知月份'; if (!groups[m]) groups[m] = []; groups[m].push(b); });
+  let h = '';
+  Object.keys(groups).sort().reverse().forEach(month => {
+    const items = groups[month];
+    const monthTotal = items.reduce((s, b) => s + b.amount, 0);
+    h += `<div class="budget-date-group"><div class="budget-date-header">${month} <span class="date-total">${U.fmtMoney(monthTotal)}</span></div><ul class="budget-list">`;
+    items.forEach(b => {
+      const cat = cm[b.category_id] || { name: '未分类', icon: '📌' };
+      const proj = pm[b.project_id];
+      h += `<li class="budget-item">
+        <span class="item-icon">${cat.icon}</span>
+        <div class="item-info"><div class="item-main"><span>${cat.name}</span>${proj ? `<span class="proj-badge" style="background:${proj.color}20;color:${proj.color};">${U.esc(proj.name)}</span>` : '<span class="proj-badge" style="background:var(--color-bg);color:var(--color-text-muted);">未归属</span>'}</div>
+        <div class="item-meta">${b.submitter ? `<span>👤 ${U.esc(b.submitter)}</span>` : ''}${b.supplier ? `<span>🏢 ${U.esc(b.supplier)}</span>` : ''}${b.expense_detail ? `<span>📋 ${U.esc(b.expense_detail)}</span>` : ''}${b.note ? `<span>💬 ${U.esc(b.note)}</span>` : ''}</div></div>
+        ${b.attachment_name ? `<span style="cursor:pointer;opacity:.6;" onclick="event.stopPropagation();App.viewAttachment('${b.id}')" title="查看发票">🧾</span>` : ''}
+        <span class="item-amount">${U.fmtMoney(b.amount)}</span>
+        <div class="item-actions" style="opacity:1;">
+          <button class="btn btn-success btn-sm" onclick="App.payBudget('${b.id}')" title="确认支付">✅ 支付</button>
+          <button class="btn btn-danger btn-sm" onclick="App.failBudget('${b.id}')" title="支付失败">❌</button></div></li>`;
     });
-
-    let h = '';
-    Object.keys(groups).sort().reverse().forEach(month => {
-      const items = groups[month];
-      const monthTotal = items.reduce((s, b) => s + b.amount, 0);
-      const [y, m] = month.split('-');
-      h += `<div class="budget-date-group"><div class="budget-date-header">${y}年${parseInt(m)}月 <span class="date-total">${U.fmtMoney(monthTotal)}</span></div><ul class="budget-list">`;
-
-      items.forEach(b => {
-        const cat = cm[b.category_id] || { name: '未分类', icon: '📌' };
-        const proj = pm[b.project_id];
-        const hasAttach = b.attachment_name;
-
-        h += `<li class="budget-item">
-          <span class="item-icon">${cat.icon}</span>
-          <div class="item-info">
-            <div class="item-main"><span>${cat.name}</span>${proj ? `<span class="proj-badge" style="background:${proj.color}20;color:${proj.color};">${proj.icon} ${U.esc(proj.name)}</span>` : '<span class="proj-badge" style="background:var(--color-bg);color:var(--color-text-muted);">未归属</span>'}</div>
-            <div class="item-meta">
-              ${b.submitter ? `<span>👤 ${U.esc(b.submitter)}</span>` : ''}
-              ${b.supplier ? `<span>🏢 ${U.esc(b.supplier)}</span>` : ''}
-              ${b.expense_detail ? `<span>📋 ${U.esc(b.expense_detail)}</span>` : ''}
-              ${b.note ? `<span>💬 ${U.esc(b.note)}</span>` : ''}
-            </div>
-          </div>
-          ${hasAttach ? `<span style="cursor:pointer;opacity:.6;" onclick="event.stopPropagation();window.open(App.getAttachmentUrl(${b.id}))" title="查看发票">🧾</span>` : ''}
-          <span class="item-amount">${U.fmtMoney(b.amount)}</span>
-          <div class="item-actions" style="opacity:1;">
-            <button class="btn btn-success btn-sm" onclick="App.payBudget(${b.id})" title="确认支付">✅ 支付</button>
-            <button class="btn btn-danger btn-sm" onclick="App.failBudget(${b.id})" title="支付失败">❌</button>
-          </div></li>`;
-      });
-      h += `</ul></div>`;
-    });
-    $('#pendingList').innerHTML = h;
-  } catch (e) { console.error(e); $('#pendingList').innerHTML = `<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-text">加载失败: ${e.message}</div></div>`; }
+    h += `</ul></div>`;
+  });
+  $('#pendingList').innerHTML = h;
 }
 
 // ==================== SETTINGS ====================
 function renderSettings() {
-  // Members
   let mh = '<table class="data-table"><thead><tr><th>姓名</th><th>角色</th><th>操作</th></tr></thead><tbody>';
   state.members.forEach(m => {
     mh += `<tr><td>${U.esc(m.name)}</td><td><span class="status-badge ${m.role === 'payer' ? 'paid' : 'pending'}">${m.role === 'payer' ? '支付负责人' : '普通成员'}</span></td>
       <td><button class="btn-icon" onclick="App.showMemberModal(${m.id})">✏️</button><button class="btn-icon danger" onclick="App.deleteMember(${m.id})">🗑️</button></td></tr>`;
   });
-  mh += '</tbody></table>';
-  $('#memberList').innerHTML = mh;
+  mh += '</tbody></table>'; $('#memberList').innerHTML = mh;
 
-  // Categories
   let ch = '<table class="data-table"><thead><tr><th>名称</th><th>操作</th></tr></thead><tbody>';
   state.categories.forEach(c => {
     ch += `<tr><td><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${c.color};vertical-align:middle;margin-right:6px;"></span>${U.esc(c.name)}</td>
       <td><button class="btn-icon" onclick="App.showCategoryModal(${c.id})">✏️</button><button class="btn-icon danger" onclick="App.deleteCategory(${c.id})">🗑️</button></td></tr>`;
   });
-  ch += '</tbody></table>';
-  $('#categoryList').innerHTML = ch;
+  ch += '</tbody></table>'; $('#categoryList').innerHTML = ch;
 
-  // Suppliers
   let sh = '<table class="data-table"><thead><tr><th>名称</th><th>联系人</th><th>已签协议</th><th>操作</th></tr></thead><tbody>';
   state.suppliers.forEach(s => {
     sh += `<tr><td>${U.esc(s.name)}</td><td style="color:var(--color-text-muted);font-size:var(--font-size-xs);">${U.esc(s.contact || '-')}</td><td><span class="status-badge ${s.contract_signed ? 'paid' : 'pending'}">${s.contract_signed ? '是' : '否'}</span></td>
       <td><button class="btn-icon" onclick="App.showSupplierModal(${s.id})">✏️</button><button class="btn-icon danger" onclick="App.deleteSupplier(${s.id})">🗑️</button></td></tr>`;
   });
   if (!state.suppliers.length) sh += '<tr><td colspan="4" style="color:var(--color-text-muted);text-align:center;">暂无供应商</td></tr>';
-  sh += '</tbody></table>';
-  $('#supplierList').innerHTML = sh;
+  sh += '</tbody></table>'; $('#supplierList').innerHTML = sh;
 
-  // Data counts
-  Api.getBudgets().then(b => { $('#dataCount').textContent = b.length; }).catch(() => {});
+  $('#dataCount').textContent = state.budgets.length;
   $('#projectCount').textContent = state.projects.length;
   $('#catCount').textContent = state.categories.length;
   $('#memberCount').textContent = state.members.length;
 }
-
 // ==================== MODALS ====================
 function showModal(title, contentHTML, onSave) {
   const ov = document.createElement('div'); ov.className = 'modal-overlay';
   ov.innerHTML = `<div class="modal"><div class="modal-header"><span class="modal-title">${title}</span><button class="modal-close">&times;</button></div><div class="modal-body">${contentHTML}</div><div class="modal-footer"><button class="btn btn-secondary cancel-btn">取消</button><button class="btn btn-primary save-btn">保存</button></div></div>`;
   document.body.appendChild(ov);
-
   const close = () => ov.remove();
   ov.querySelector('.modal-close').onclick = close;
   ov.querySelector('.cancel-btn').onclick = close;
   ov.querySelector('.save-btn').onclick = () => { const r = onSave(ov); if (r !== false) close(); };
   ov.addEventListener('click', (e) => { if (e.target === ov) close(); });
-  const onKey = (e) => { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', onKey); } };
-  document.addEventListener('keydown', onKey);
+  document.addEventListener('keydown', function escKey(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', escKey); } });
 }
 
 function showToast(msg, type = 'success', dur = 2500) {
-  const ct = $('#toastContainer');
-  const t = document.createElement('div');
+  const ct = $('#toastContainer'), t = document.createElement('div');
   t.className = `toast ${type}`;
   const ic = { success: '✅', error: '❌', warning: '⚠️' };
   t.innerHTML = `<span>${ic[type] || 'ℹ️'}</span> <span>${msg}</span>`;
@@ -890,8 +826,6 @@ function showToast(msg, type = 'success', dur = 2500) {
 // ==================== BUDGET MODAL ====================
 function showBudgetModal(budget) {
   const isEdit = !!budget;
-  const members = state.members, projects = state.projects, cats = state.categories;
-
   const defMonth = budget ? budget.budget_month : U.getCurrentMonth();
   const defAmount = budget ? budget.amount : '';
   const defSupplier = budget ? budget.supplier || '' : '';
@@ -900,11 +834,11 @@ function showBudgetModal(budget) {
   const defSubmitter = budget ? budget.submitter || '' : '';
   const defPayer = budget ? budget.payer || '' : '';
   const hasExisting = budget && budget.attachment_name;
-  let pendingFile = null;
+  let pendingFile = null, pendingFileData = null;
 
-  const memberOpts = members.map(m => `<option value="${U.esc(m.name)}" ${(!isEdit && m.role === 'payer' ? '' : '')}>${U.esc(m.name)}${m.role === 'payer' ? ' (支付)' : ''}</option>`).join('');
-  const projOpts = '<option value="">不归属项目</option>' + projects.map(p => `<option value="${p.id}" ${budget && budget.project_id === p.id ? 'selected' : ''}>${p.icon} ${U.esc(p.name)}</option>`).join('');
-  const catOpts = '<option value="">未分类</option>' + cats.map(c => `<option value="${c.id}" ${budget && budget.category_id === c.id ? 'selected' : ''}>${c.icon} ${U.esc(c.name)}</option>`).join('');
+  const memberOpts = state.members.map(m => `<option value="${U.esc(m.name)}">${U.esc(m.name)}${m.role === 'payer' ? ' (支付)' : ''}</option>`).join('');
+  const projOpts = '<option value="">不归属项目</option>' + state.projects.map(p => `<option value="${p.id}" ${budget && budget.project_id === p.id ? 'selected' : ''}>${U.esc(p.name)}</option>`).join('');
+  const catOpts = '<option value="">未分类</option>' + state.categories.map(c => `<option value="${c.id}" ${budget && budget.category_id === c.id ? 'selected' : ''}>${c.icon} ${U.esc(c.name)}</option>`).join('');
 
   let ch = `
     <div class="form-row">
@@ -933,15 +867,7 @@ function showBudgetModal(budget) {
     ch += `<div class="form-group"><label>支付人（可选预设）</label><select class="form-select" id="bdgPayer"><option value="">未指定</option>${memberOpts}</select></div>`;
   }
 
-  if (isEdit) {
-    // Pre-select submitter
-    setTimeout(() => {
-      const sel = $('#bdgSubmitter'); if (sel && defSubmitter) { for (const o of sel.options) { if (o.value === defSubmitter) { o.selected = true; break; } } }
-      const psel = $('#bdgPayer'); if (psel && defPayer) { for (const o of psel.options) { if (o.value === defPayer) { o.selected = true; break; } } }
-    }, 50);
-  }
-
-  showModal(isEdit ? '编辑预算' : '新建预算', ch, async (ov) => {
+  showModal(isEdit ? '编辑预算' : '新建预算', ch, (ov) => {
     const month = ov.querySelector('#bdgMonth').value;
     const amount = parseFloat(ov.querySelector('#bdgAmount').value);
     const category = ov.querySelector('#bdgCategory').value;
@@ -950,63 +876,77 @@ function showBudgetModal(budget) {
     const detail = ov.querySelector('#bdgDetail').value.trim();
     const note = ov.querySelector('#bdgNote').value.trim();
     const submitter = ov.querySelector('#bdgSubmitter').value;
-
     if (!month) { showToast('请选择预算月份', 'warning'); return false; }
     if (isNaN(amount) || amount <= 0) { showToast('请输入有效金额', 'warning'); return false; }
 
-    const fd = new FormData();
-    fd.append('budget_month', month);
-    fd.append('amount', amount);
-    if (project) fd.append('project_id', project);
-    if (category) fd.append('category_id', category);
-    fd.append('supplier', supplier);
-    fd.append('expense_detail', detail);
-    fd.append('note', note);
-    fd.append('submitter', submitter);
-
+    const data = {
+      budget_month: month, amount, supplier, expense_detail: detail, note, submitter,
+      project_id: project ? parseInt(project) : null, category_id: category ? parseInt(category) : null,
+      payment_status: isEdit ? budget.payment_status : 'pending',
+      payer: isEdit ? budget.payer || '' : '',
+      payment_date: isEdit ? budget.payment_date || '' : '',
+      payment_note: isEdit ? budget.payment_note || '' : ''
+    };
     const payerEl = ov.querySelector('#bdgPayer');
-    if (payerEl && payerEl.value) fd.append('payer', payerEl.value);
+    if (payerEl && payerEl.value) data.payer = payerEl.value;
 
-    // Handle attachment
+    // Attachment
     const removeBtn = ov.querySelector('#btnRemoveAttach');
     if (removeBtn && removeBtn.dataset.removed === '1') {
-      fd.append('attachment_path', '');
-      fd.append('attachment_name', '');
-    } else if (pendingFile) {
-      fd.append('attachment', pendingFile);
+      data.attachment_name = ''; data.attachment_data = '';
+    } else if (pendingFile && pendingFileData) {
+      data.attachment_name = pendingFile.name; data.attachment_data = pendingFileData;
+    } else if (isEdit && budget.attachment_data) {
+      data.attachment_data = budget.attachment_data; data.attachment_name = budget.attachment_name;
     }
 
-    try {
-      if (isEdit) {
-        await Api.updateBudget(budget.id, fd);
-        showToast('预算已更新');
-      } else {
-        await Api.createBudget(fd);
-        showToast('预算已保存');
-      }
-      refreshAll();
-    } catch (e) { showToast(e.message, 'error'); }
+    if (isEdit) {
+      Store.update('budgets', budget.id, { ...data, updated_at: new Date().toISOString() });
+      showToast('预算已更新');
+    } else {
+      Store.add('budgets', { ...data, created_at: new Date().toISOString(), updated_at: new Date().toISOString() });
+      showToast('预算已保存');
+    }
+    refreshAll();
   });
 
-  // Setup file upload
+  // Pre-select
+  if (isEdit) {
+    setTimeout(() => {
+      const sel = $('#bdgSubmitter'); if (sel && defSubmitter) { for (const o of sel.options) { if (o.value === defSubmitter) { o.selected = true; break; } } }
+      const psel = $('#bdgPayer'); if (psel && defPayer) { for (const o of psel.options) { if (o.value === defPayer) { o.selected = true; break; } } }
+    }, 50);
+  }
+
+  // File upload
   setTimeout(() => {
     const az = document.querySelector('#attachZone'), fi = document.querySelector('#fileInput');
     const showPreview = (file) => {
       az.classList.add('has-file'); pendingFile = file;
+      const reader = new FileReader();
+      reader.onload = () => { pendingFileData = reader.result; };
+      reader.readAsDataURL(file);
       const isImg = file.type.startsWith('image/');
       az.innerHTML = `<div id="attachPreview">${isImg ? `<img src="${URL.createObjectURL(file)}" alt="预览" style="max-width:100%;max-height:150px;border-radius:var(--radius-sm);display:block;margin-bottom:8px;"/>` : '<span style="font-size:1.5rem;">📄</span>'} <span style="font-size:var(--font-size-sm);">${U.esc(file.name)}</span> <span style="font-size:var(--font-size-xs);color:var(--color-text-muted);">${U.fmtFileSize(file.size)}</span> <button type="button" class="btn btn-sm btn-danger" id="btnRemoveAttach" style="margin-left:8px;">✕ 移除</button></div>`;
-      document.querySelector('#btnRemoveAttach').addEventListener('click', () => { az.classList.remove('has-file'); az.innerHTML = '<div class="attach-icon">📎</div><div class="attach-text">点击或拖拽上传发票（图片/PDF，最大10MB）</div>'; pendingFile = null; });
+      document.querySelector('#btnRemoveAttach').addEventListener('click', () => { az.classList.remove('has-file'); az.innerHTML = '<div class="attach-icon">📎</div><div class="attach-text">点击或拖拽上传发票（图片/PDF，最大10MB）</div>'; pendingFile = null; pendingFileData = null; });
     };
-
     if (az && !hasExisting) {
       az.addEventListener('click', () => fi.click());
       az.addEventListener('dragover', (e) => { e.preventDefault(); });
-      az.addEventListener('drop', (e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) { if (f.size > 10 * 1024 * 1024) { showToast('文件超过10MB限制', 'warning'); return; } showPreview(f); } });
+      az.addEventListener('drop', (e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) { if (f.size > 10*1024*1024) { showToast('文件超过10MB限制', 'warning'); return; } showPreview(f); } });
     }
-    if (fi) fi.addEventListener('change', () => { const f = fi.files[0]; if (f) { if (f.size > 10 * 1024 * 1024) { showToast('文件超过10MB限制', 'warning'); return; } showPreview(f); } });
+    if (fi) fi.addEventListener('change', () => { const f = fi.files[0]; if (f) { if (f.size > 10*1024*1024) { showToast('文件超过10MB限制', 'warning'); return; } showPreview(f); } });
     const rb = document.querySelector('#btnRemoveAttach');
     if (rb) rb.addEventListener('click', () => { az.classList.remove('has-file'); az.innerHTML = '<div class="attach-icon">📎</div><div class="attach-text">点击或拖拽上传发票（图片/PDF，最大10MB）</div>'; pendingFile = null; rb.dataset.removed = '1'; });
   }, 50);
+}
+
+// ==================== VIEW ATTACHMENT ====================
+function viewAttachment(bid) {
+  const b = state.budgets.find(x => x.id === bid);
+  if (!b || !b.attachment_data) { showToast('附件不存在', 'warning'); return; }
+  const win = window.open('', '_blank'); if (!win) return;
+  win.document.write(`<!DOCTYPE html><html><head><title>${b.attachment_name||'附件'}</title><style>body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#1a1a1a}img{max-width:100%;max-height:100vh;object-fit:contain}</style></head><body><img src="${b.attachment_data}" alt="${b.attachment_name||''}"/></body></html>`);
 }
 
 // ==================== PAYMENT ACTIONS ====================
@@ -1014,44 +954,24 @@ function payBudget(bid) {
   const members = state.members;
   const payerOpts = members.filter(m => m.role === 'payer').map(m => `<option value="${U.esc(m.name)}">${U.esc(m.name)}</option>`).join('') || members.map(m => `<option value="${U.esc(m.name)}">${U.esc(m.name)}</option>`).join('');
   const today = new Date().toISOString().split('T')[0];
-
   const ch = `
     <div class="form-group"><label>支付人</label><select class="form-select" id="payPayer"><option value="">选择支付人</option>${payerOpts}</select></div>
     <div class="form-group"><label>支付日期</label><input type="date" class="form-input" id="payDate" value="${today}"/></div>
     <div class="form-group"><label>支付备注（可选）</label><input type="text" class="form-input" id="payNote" placeholder="如：银行转账、支付宝等"/></div>`;
-
-  showModal('确认支付', ch, async (ov) => {
-    const payer = ov.querySelector('#payPayer').value;
-    const date = ov.querySelector('#payDate').value;
-    const note = ov.querySelector('#payNote').value.trim();
+  showModal('确认支付', ch, (ov) => {
+    const payer = ov.querySelector('#payPayer').value, date = ov.querySelector('#payDate').value, note = ov.querySelector('#payNote').value.trim();
     if (!payer) { showToast('请选择支付人', 'warning'); return false; }
-
-    const fd = new FormData();
-    fd.append('payer', payer);
-    fd.append('payment_status', 'paid');
-    fd.append('payment_date', date);
-    fd.append('payment_note', note);
-
-    try {
-      await Api.updateBudget(bid, fd);
-      showToast('已标记为支付完成 ✅');
-      refreshAll();
-    } catch (e) { showToast(e.message, 'error'); }
+    Store.update('budgets', bid, { payer, payment_status: 'paid', payment_date: date, payment_note: note, updated_at: new Date().toISOString() });
+    showToast('已标记为支付完成 ✅'); refreshAll();
   });
 }
 
 function failBudget(bid) {
   const ch = `<div class="form-group"><label>失败原因（可选）</label><input type="text" class="form-input" id="failReason" placeholder="如：供应商信息有误、金额不符等"/></div>`;
-  showModal('标记支付失败', ch, async (ov) => {
+  showModal('标记支付失败', ch, (ov) => {
     const reason = ov.querySelector('#failReason').value.trim();
-    const fd = new FormData();
-    fd.append('payment_status', 'failed');
-    fd.append('payment_note', reason);
-    try {
-      await Api.updateBudget(bid, fd);
-      showToast('已标记为支付失败', 'warning');
-      refreshAll();
-    } catch (e) { showToast(e.message, 'error'); }
+    Store.update('budgets', bid, { payment_status: 'failed', payment_note: reason, updated_at: new Date().toISOString() });
+    showToast('已标记为支付失败', 'warning'); refreshAll();
   });
 }
 
@@ -1061,21 +981,12 @@ function showMemberModal(member) {
   const ch = `
     <div class="form-group"><label>姓名</label><input type="text" class="form-input" id="memName" placeholder="成员姓名" value="${isEdit ? U.esc(member.name) : ''}"/></div>
     <div class="form-group"><label>角色</label><select class="form-select" id="memRole"><option value="member" ${isEdit && member.role === 'member' ? 'selected' : ''}>普通成员（提交预算）</option><option value="payer" ${isEdit && member.role === 'payer' ? 'selected' : ''}>支付负责人（审核支付）</option></select></div>`;
-
-  showModal(isEdit ? '编辑成员' : '添加成员', ch, async (ov) => {
-    const name = ov.querySelector('#memName').value.trim();
-    const role = ov.querySelector('#memRole').value;
+  showModal(isEdit ? '编辑成员' : '添加成员', ch, (ov) => {
+    const name = ov.querySelector('#memName').value.trim(), role = ov.querySelector('#memRole').value;
     if (!name) { showToast('请输入姓名', 'warning'); return false; }
-    try {
-      if (isEdit) {
-        await Api.updateMember(member.id, { name, role });
-      } else {
-        await Api.createMember({ name, role });
-      }
-      showToast(isEdit ? '成员已更新' : '成员已添加');
-      await loadBaseData();
-      renderSettings();
-    } catch (e) { showToast(e.message, 'error'); }
+    if (isEdit) { Store.update('members', member.id, { name, role }); showToast('成员已更新'); }
+    else { Store.add('members', { name, role }); showToast('成员已添加'); }
+    loadBaseData(); renderSettings();
   });
 }
 
@@ -1086,63 +997,37 @@ function showCategoryModal(cat) {
     <div class="form-group"><label>分类名称</label><input type="text" class="form-input" id="catName" placeholder="分类名称" value="${isEdit ? U.esc(cat.name) : ''}"/></div>
     <div class="form-group"><label>图标 (emoji)</label><input type="text" class="form-input" id="catIcon" placeholder="📌" maxlength="2" value="${isEdit ? cat.icon : '📌'}"/></div>
     <div class="form-group"><label>颜色</label><input type="color" class="form-input" id="catColor" value="${isEdit ? cat.color : '#4A90D9'}" style="height:40px;padding:4px;"/></div>`;
-
-  showModal(isEdit ? '编辑分类' : '添加分类', ch, async (ov) => {
-    const name = ov.querySelector('#catName').value.trim();
-    const icon = ov.querySelector('#catIcon').value.trim() || '📌';
-    const color = ov.querySelector('#catColor').value;
+  showModal(isEdit ? '编辑分类' : '添加分类', ch, (ov) => {
+    const name = ov.querySelector('#catName').value.trim(), icon = ov.querySelector('#catIcon').value.trim() || '📌', color = ov.querySelector('#catColor').value;
     if (!name) { showToast('请输入分类名称', 'warning'); return false; }
-    try {
-      if (isEdit) {
-        await Api.updateCategory(cat.id, { name, icon, color });
-      } else {
-        await Api.createCategory({ name, icon, color });
-      }
-      showToast(isEdit ? '分类已更新' : '分类已添加');
-      await loadBaseData();
-      renderSettings();
-      refreshAll();
-    } catch (e) { showToast(e.message, 'error'); }
+    if (isEdit) { Store.update('categories', cat.id, { name, icon, color }); showToast('分类已更新'); }
+    else { Store.add('categories', { name, icon, color }); showToast('分类已添加'); }
+    loadBaseData(); renderSettings(); renderBudgetList();
   });
 }
 
 // ==================== PROJECT MODAL ====================
 function showProjectModal(project) {
   const isEdit = !!project;
-  const groups = state.projectGroups || [];
-  const groupOpts = '<option value="">不归属分组（未分组）</option>' + groups.map(g => `<option value="${g.id}" ${project && project.group_id === g.id ? 'selected' : ''}>${g.icon} ${U.esc(g.name)}</option>`).join('');
-
+  const groupOpts = '<option value="">不归属分组（未分组）</option>' + state.projectGroups.map(g => `<option value="${g.id}" ${project && project.group_id === g.id ? 'selected' : ''}>${U.esc(g.name)}</option>`).join('');
   const ch = `
     <div class="form-group"><label>项目名称</label><input type="text" class="form-input" id="projName" placeholder="项目名称" value="${isEdit ? U.esc(project.name) : ''}" autofocus/></div>
     <div class="form-group"><label>描述（可选）</label><input type="text" class="form-input" id="projDesc" placeholder="简要描述" value="${isEdit ? U.esc(project.description || '') : ''}"/></div>
     <div class="form-group"><label>所属分组</label><select class="form-select" id="projGroup">${groupOpts}</select></div>
     <div class="form-group"><label>图标</label><input type="text" class="form-input" id="projIcon" placeholder="📁" maxlength="2" value="${isEdit ? project.icon : '📁'}"/></div>`;
-
-  showModal(isEdit ? '编辑项目' : '新建项目', ch, async (ov) => {
-    const name = ov.querySelector('#projName').value.trim();
-    const desc = ov.querySelector('#projDesc').value.trim();
-    const groupEl = ov.querySelector('#projGroup');
-    const groupId = groupEl ? (groupEl.value || null) : null;
+  showModal(isEdit ? '编辑项目' : '新建项目', ch, (ov) => {
+    const name = ov.querySelector('#projName').value.trim(), desc = ov.querySelector('#projDesc').value.trim();
     const icon = ov.querySelector('#projIcon').value.trim() || '📁';
+    const groupEl = ov.querySelector('#projGroup');
+    const groupId = groupEl ? (groupEl.value ? parseInt(groupEl.value) : null) : null;
     if (!name) { showToast('请输入项目名称', 'warning'); return false; }
-    try {
-      if (isEdit) {
-        await Api.updateProject(project.id, { name, description: desc, icon, group_id: groupId });
-        showToast('项目已更新');
-      } else {
-        const groupIdCreate = groupEl ? (groupEl.value ? parseInt(groupEl.value) : null) : null;
-        await Api.createProject({ name, description: desc, icon, group_id: groupIdCreate });
-        showToast('项目已创建');
-      }
-      await loadBaseData();
-      renderSidebar();
-      renderSettings();
-      refreshAll();
-    } catch (e) { showToast(e.message, 'error'); }
+    if (isEdit) { Store.update('projects', project.id, { name, description: desc, icon, group_id: groupId }); showToast('项目已更新'); }
+    else { Store.add('projects', { name, description: desc, icon, group_id: groupId, sort_order: 99, color: '#4A90D9' }); showToast('项目已创建'); }
+    loadBaseData(); renderSidebar(); renderSettings(); renderBudgetList();
   });
 }
 
-// ==================== GROUP MODAL & SIDEBAR ACTIONS ====================
+// ==================== GROUP MODAL ====================
 function showGroupModal(groupOrId) {
   let group = groupOrId;
   if (typeof groupOrId === 'number' || (typeof groupOrId === 'string' && !isNaN(groupOrId))) {
@@ -1152,48 +1037,32 @@ function showGroupModal(groupOrId) {
   const ch = `
     <div class="form-group"><label>分组名称</label><input type="text" class="form-input" id="grpName" placeholder="例如：客户项目、内部管理" value="${isEdit ? U.esc(group.name) : ''}" autofocus/></div>
     <div class="form-group"><label>图标</label><input type="text" class="form-input" id="grpIcon" placeholder="📂" maxlength="2" value="${isEdit ? group.icon : '📂'}"/></div>`;
-
-  showModal(isEdit ? '编辑分组' : '新建分组', ch, async (ov) => {
-    const name = ov.querySelector('#grpName').value.trim();
-    const icon = ov.querySelector('#grpIcon').value.trim() || '📂';
+  showModal(isEdit ? '编辑分组' : '新建分组', ch, (ov) => {
+    const name = ov.querySelector('#grpName').value.trim(), icon = ov.querySelector('#grpIcon').value.trim() || '📂';
     if (!name) { showToast('请输入分组名称', 'warning'); return false; }
-    try {
-      if (isEdit) {
-        await Api.updateProjectGroup(group.id, { name, icon });
-        showToast('分组已更新');
-      } else {
-        await Api.createProjectGroup({ name, icon });
-        showToast('分组已创建');
-      }
-      await loadBaseData();
-      renderSidebar();
-      renderSettings();
-    } catch (e) { showToast(e.message, 'error'); }
+    if (isEdit) { Store.update('project_groups', group.id, { name, icon }); showToast('分组已更新'); }
+    else { Store.add('project_groups', { name, icon, sort_order: 99 }); showToast('分组已创建'); }
+    loadBaseData(); renderSidebar(); renderSettings();
   });
 }
 
 function toggleGroup(gid) {
-  if (!state.collapsedGroups) state.collapsedGroups = [];
   const idx = state.collapsedGroups.indexOf(gid);
   if (idx >= 0) state.collapsedGroups.splice(idx, 1);
   else state.collapsedGroups.push(gid);
   renderSidebar();
 }
 
-async function deleteGroup(gid) {
-  const g = state.projectGroups.find(x => x.id === parseInt(gid));
-  if (!g) return;
-  const projCount = state.projects.filter(p => p.group_id === gid).length;
-  if (!confirm(`确定删除分组"${g.name}"？${projCount > 0 ? `该分组下的 ${projCount} 个项目将变为"未分组"。` : '此分组当前为空。'}`)) return;
-  try {
-    await Api.deleteProjectGroup(gid);
-    showToast(`分组"${g.name}"已删除`);
-    await loadBaseData();
-    renderSidebar();
-    renderSettings();
-  } catch (e) { showToast(e.message, 'error'); }
+function deleteGroup(gid) {
+  const g = state.projectGroups.find(x => x.id === parseInt(gid)); if (!g) return;
+  if (!confirm(`删除分组"${g.name}"？其中的项目将变为未分组。`)) return;
+  Store.update('projects', null, { group_id: null }); // update all projects in this group
+  state.projects.filter(p => p.group_id === parseInt(gid)).forEach(p => Store.update('projects', p.id, { group_id: null }));
+  Store.delete('project_groups', parseInt(gid));
+  showToast(`分组已删除`); loadBaseData(); renderSidebar(); renderSettings();
 }
 
+// ==================== SUPPLIER MODAL ====================
 function showSupplierModal(supplierOrId) {
   let supplier = supplierOrId;
   if (typeof supplierOrId === 'number' || (typeof supplierOrId === 'string' && !isNaN(supplierOrId))) {
@@ -1205,204 +1074,114 @@ function showSupplierModal(supplierOrId) {
     <div class="form-group"><label>供应商名称</label><input type="text" class="form-input" id="supName" placeholder="供应商名称" value="${isEdit ? U.esc(supplier.name) : ''}" autofocus/></div>
     <div class="form-group"><label>联系人（可选）</label><input type="text" class="form-input" id="supContact" placeholder="联系人姓名/电话" value="${isEdit ? U.esc(supplier.contact || '') : ''}"/></div>
     <div class="form-group"><label>是否已签协议</label><select class="form-select" id="supContract"><option value="0" ${csVal === 0 ? 'selected' : ''}>否</option><option value="1" ${csVal === 1 ? 'selected' : ''}>是</option></select></div>`;
-
-  showModal(isEdit ? '编辑供应商' : '添加供应商', ch, async (ov) => {
-    const name = ov.querySelector('#supName').value.trim();
-    const contact = ov.querySelector('#supContact').value.trim();
+  showModal(isEdit ? '编辑供应商' : '添加供应商', ch, (ov) => {
+    const name = ov.querySelector('#supName').value.trim(), contact = ov.querySelector('#supContact').value.trim();
     const contractSigned = ov.querySelector('#supContract').value === '1';
     if (!name) { showToast('请输入供应商名称', 'warning'); return false; }
-    try {
-      if (isEdit) {
-        await Api.updateSupplier(supplier.id, { name, contact, contract_signed: contractSigned });
-        showToast('供应商已更新');
-      } else {
-        await Api.createSupplier({ name, contact, contract_signed: contractSigned });
-        showToast('供应商已添加');
-      }
-      await loadBaseData();
-      renderSettings();
-    } catch (e) { showToast(e.message, 'error'); }
+    if (isEdit) { Store.update('suppliers', supplier.id, { name, contact, contract_signed: contractSigned }); showToast('供应商已更新'); }
+    else { Store.add('suppliers', { name, contact, contract_signed: contractSigned }); showToast('供应商已添加'); }
+    loadBaseData(); renderSettings();
   });
 }
 
-async function deleteSupplier(sid) {
-  const s = state.suppliers.find(x => x.id === parseInt(sid));
-  if (!s) return;
-  if (!confirm(`确定删除供应商"${s.name}"？`)) return;
-  try {
-    await Api.deleteSupplier(parseInt(sid));
-    showToast(`供应商"${s.name}"已删除`);
-    await loadBaseData();
-    renderSettings();
-  } catch (e) { showToast(e.message, 'error'); }
+function deleteSupplier(sid) {
+  const s = state.suppliers.find(x => x.id === parseInt(sid)); if (!s) return;
+  if (!confirm(`删除供应商"${s.name}"？`)) return;
+  Store.delete('suppliers', parseInt(sid)); showToast(`供应商已删除`); loadBaseData(); renderSettings();
 }
-
+// ==================== SIDEBAR PROJECT ACTIONS ====================
 function editProjectSidebar(pid) {
   const p = state.projects.find(x => x.id === parseInt(pid));
-  if (p) showProjectModal(p);
-  else showToast('项目不存在', 'error');
+  if (p) showProjectModal(p); else showToast('项目不存在', 'error');
 }
 
-async function deleteProjectSidebar(pid) {
-  const p = state.projects.find(x => x.id === parseInt(pid));
-  if (!p) return;
-  if (!confirm(`确定删除项目"${p.name}"？关联的预算记录将变为"未归属"。`)) return;
-  try {
-    await Api.deleteProject(pid);
-    showToast(`项目"${p.name}"已删除`);
-    if (state.activeProject === String(pid)) state.activeProject = 'all';
-    await loadBaseData();
-    renderSidebar();
-    renderSettings();
-    refreshAll();
-  } catch (e) { showToast(e.message, 'error'); }
+function deleteProjectSidebar(pid) {
+  const p = state.projects.find(x => x.id === parseInt(pid)); if (!p) return;
+  if (!confirm(`删除项目"${p.name}"？关联的预算记录将变为"未归属"。`)) return;
+  Store.delete('projects', parseInt(pid));
+  if (state.activeProject === String(pid)) state.activeProject = 'all';
+  showToast(`项目已删除`); loadBaseData(); renderSidebar(); renderSettings(); refreshCurrentTab();
 }
 
 // ==================== DELETE ACTIONS ====================
-async function deleteBudget(bid) {
-  if (!confirm('确定删除这条预算记录？此操作不可恢复。')) return;
-  try {
-    await Api.deleteBudget(bid);
-    showToast('预算已删除');
-    refreshAll();
-  } catch (e) { showToast(e.message, 'error'); }
+function deleteBudget(bid) {
+  if (!confirm('确定删除这条预算记录？')) return;
+  Store.delete('budgets', bid); showToast('预算已删除'); refreshAll();
 }
 
-async function deleteMember(mid) {
+function deleteMember(mid) {
   const m = state.members.find(x => x.id === parseInt(mid));
-  if (!m || !confirm(`确定删除成员"${m.name}"？`)) return;
-  try { await Api.deleteMember(mid); showToast('成员已删除'); await loadBaseData(); renderSettings(); } catch (e) { showToast(e.message, 'error'); }
+  if (!m || !confirm('删除成员"'+m.name+'"？')) return;
+  Store.delete('members', parseInt(mid)); showToast('成员已删除'); loadBaseData(); renderSettings();
 }
 
-async function deleteCategory(cid) {
+function deleteCategory(cid) {
   const c = state.categories.find(x => x.id === parseInt(cid));
-  if (!c || !confirm(`确定删除分类"${c.name}"？关联预算将变为"未分类"。`)) return;
-  try { await Api.deleteCategory(cid); showToast('分类已删除'); await loadBaseData(); renderSettings(); refreshAll(); } catch (e) { showToast(e.message, 'error'); }
-}
-
-async function deleteProject(pid) {
-  const p = state.projects.find(x => x.id === parseInt(pid));
-  if (!p || !confirm(`确定删除项目"${p.name}"？关联预算将变为"未归属"。`)) return;
-  try {
-    await Api.deleteProject(pid);
-    showToast('项目已删除');
-    if (state.activeProject === String(pid)) state.activeProject = 'all';
-    await loadBaseData();
-    renderSidebar();
-    renderSettings();
-    refreshAll();
-  } catch (e) { showToast(e.message, 'error'); }
+  if (!c || !confirm('删除分类"'+c.name+'"？关联预算将变为"未分类"。')) return;
+  Store.delete('categories', parseInt(cid)); showToast('分类已删除'); loadBaseData(); renderSettings(); refreshAll();
 }
 
 // ==================== EXPORT/IMPORT ====================
-async function exportCSV() {
-  try {
-    const filters = getFilters();
-    const res = await fetch('/api/export/csv', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(filters) });
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = `预算导出_${U.getCurrentMonth()}.csv`; a.click();
-    URL.revokeObjectURL(url);
-    showToast('CSV 导出成功');
-  } catch (e) { showToast('导出失败: ' + e.message, 'error'); }
+function exportCSV() {
+  const filters = getFilters();
+  let budgets = filterBudgets(state.budgets, filters);
+  const pm = getProjectMap(), cm = getCategoryMap();
+  let csv = '﻿日期,月份,分类,项目,金额,供应商,费用明细,备注,提交人,支付人,支付状态,支付日期,支付备注\n';
+  budgets.forEach(b => {
+    const cat = cm[b.category_id] || { name: '未分类' }, proj = pm[b.project_id];
+    const st = U.statusLabel(b.payment_status);
+    csv += [b.created_at?.slice(0,10)||'', b.budget_month, cat.name, proj ? proj.name : '未归属', b.amount, b.supplier||'', b.expense_detail||'', b.note||'', b.submitter||'', b.payer||'', st, b.payment_date||'', b.payment_note||''].join(',') + '\n';
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = `预算导出_${U.getCurrentMonth()}.csv`; a.click(); URL.revokeObjectURL(url);
+  showToast(`已导出 ${budgets.length} 条记录`);
 }
 
-async function exportJSON() {
-  try {
-    const data = await Api.exportJSON();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = `预算备份_${U.getCurrentMonth()}.json`; a.click();
-    URL.revokeObjectURL(url);
-    showToast('JSON 备份导出成功');
-  } catch (e) { showToast('导出失败: ' + e.message, 'error'); }
+function exportJSON() {
+  const data = {
+    version: 2, exported_at: new Date().toISOString(),
+    members: state.members, categories: state.categories,
+    project_groups: state.projectGroups, projects: state.projects,
+    suppliers: state.suppliers, budgets: state.budgets
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = `预算备份_${U.getCurrentMonth()}.json`; a.click(); URL.revokeObjectURL(url);
+  showToast('JSON 备份导出成功');
 }
 
-async function importJSON(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  if (!confirm(`即将导入备份文件"${file.name}"。⚠️ 这将覆盖当前所有数据，确定继续？`)) { event.target.value = ''; return; }
-  try {
-    const result = await Api.importJSON(file);
-    showToast(result.message || '导入成功');
-    await loadBaseData();
-    renderSidebar();
-    refreshAll();
-  } catch (e) { showToast('导入失败: ' + e.message, 'error'); }
+function importJSON(event) {
+  const file = event.target.files[0]; if (!file) return;
+  if (!confirm(`导入备份"${file.name}"将覆盖当前所有数据，确定继续？`)) { event.target.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!data.version) { showToast('备份文件格式不正确', 'error'); return; }
+      Store.saveAll('members', data.members || []);
+      Store.saveAll('categories', data.categories || []);
+      Store.saveAll('project_groups', data.project_groups || []);
+      Store.saveAll('projects', data.projects || []);
+      Store.saveAll('suppliers', data.suppliers || []);
+      Store.saveAll('budgets', data.budgets || []);
+      showToast(`导入成功：${(data.budgets||[]).length} 条预算`); loadBaseData(); renderSidebar(); refreshAll();
+    } catch(e) { showToast('导入失败: ' + e.message, 'error'); }
+  };
+  reader.readAsText(file);
   event.target.value = '';
 }
 
 // ==================== FILTERS ====================
 function clearFilter(type) {
   const map = { status: 'filterStatus', month: 'filterMonth', project_id: 'filterProject', keyword: 'filterKeyword' };
-  const id = map[type];
-  if (id) {
-    const el = $('#' + id);
-    if (el) el.value = 'all';
-  }
+  const id = map[type]; if (id) { const el = $('#' + id); if (el) el.value = 'all'; }
   if (state.activeTab === 'budgets') renderBudgetList();
 }
 
 function clearAllFilters() {
-  $('#filterStatus').value = 'all';
-  $('#filterMonth').value = 'all';
-  $('#filterProject').value = 'all';
-  $('#filterKeyword').value = '';
+  $('#filterStatus').value = 'all'; $('#filterMonth').value = 'all'; $('#filterProject').value = 'all'; $('#filterKeyword').value = '';
   if (state.activeTab === 'budgets') renderBudgetList();
-}
-
-// ==================== CORE ====================
-async function loadBaseData() {
-  try {
-    const [members, categories, projects, groups, suppliers] = await Promise.all([
-      Api.getMembers(), Api.getCategories(), Api.getProjects(), Api.getProjectGroups(), Api.getSuppliers()
-    ]);
-    state.members = members;
-    state.categories = categories;
-    state.projects = projects;
-    state.projectGroups = groups;
-    state.suppliers = suppliers;
-
-    // Populate filter dropdowns
-    const months = await Api._fetch('/stats/overview').then(d => d.available_months).catch(() => []);
-    let mo = '<option value="all">全部月份</option>';
-    months.forEach(m => { mo += `<option value="${m}">${m}</option>`; });
-    if ($('#filterMonth')) $('#filterMonth').innerHTML = mo;
-
-    let po = '<option value="all">全部项目</option>';
-    projects.forEach(p => { po += `<option value="${p.id}">${p.icon} ${U.esc(p.name)}</option>`; });
-    if ($('#filterProject')) $('#filterProject').innerHTML = po;
-
-    // Global month
-    if (!state.globalMonth) {
-      state.globalMonth = months.length > 0 ? months[months.length - 1] : U.getCurrentMonth();
-      $('#globalMonth').value = state.globalMonth;
-    }
-  } catch (e) { console.error('Failed to load base data:', e); }
-}
-
-function selectProject(pid) {
-  state.activeProject = String(pid);
-  renderSidebar();
-  refreshCurrentTab();
-}
-
-function getAttachmentUrl(bid) {
-  return `/api/budgets/${bid}/attachment`;
-}
-
-function editBudget(bid) {
-  // Find budget in current view data or fetch
-  const b = state.currentViewData.find(x => x.id === bid);
-  if (b) {
-    showBudgetModal(b);
-  } else {
-    // Quick fetch
-    Api.getBudgets().then(budgets => {
-      const found = budgets.find(x => x.id === bid);
-      if (found) showBudgetModal(found);
-    }).catch(() => showToast('无法加载预算详情', 'error'));
-  }
 }
 
 // ==================== DRAG & DROP ====================
@@ -1414,348 +1193,217 @@ function clearDragIndicators() {
   });
 }
 
+function applyReorder(srcId, targetGroupId, insertBeforeId) {
+  // Collect all projects from DOM, ordered, then save
+  const allProjects = state.projects;
+  const srcProject = allProjects.find(p => p.id === srcId);
+  if (!srcProject) return;
 
-async function applyReorder(srcId, targetGroupId, insertBeforeId) {
-  const items = [];
-  const seenIds = new Set();
+  // Update src project's group
+  srcProject.group_id = targetGroupId;
 
-  // Helper: add items from a group, optionally inserting srcId at a position
-  function addItems(gid, insertBefore) {
-    const sg = gid ? document.getElementById('group_' + gid) :
-      document.querySelector('#sidebarProjectList');
-    if (!sg) return;
-    // Get all project items directly in this container (not nested)
-    let els;
-    if (gid) {
-      els = Array.from(sg.querySelectorAll(':scope > .sidebar-item[draggable]'));
-    } else {
-      // For ungrouped, items are direct children of sidebarProjectList that are NOT in a group
-      els = Array.from(document.querySelectorAll('#sidebarProjectList > .sidebar-item[draggable]:not(.in-group)'));
-    }
-    let idx = 0;
-    for (const el of els) {
-      const eid = parseInt(el.dataset.project);
-      if (eid === srcId) continue; // skip, will be inserted
-      if (insertBefore && eid === insertBefore && !seenIds.has(srcId)) {
-        items.push({ id: srcId, group_id: gid, sort_order: items.length });
-        seenIds.add(srcId);
+  // Now re-sort each group based on DOM order
+  const domGroups = {};
+  const allItems = document.querySelectorAll('#sidebarProjectList .sidebar-item[draggable]:not(.drop-zone)');
+  allItems.forEach((el, i) => {
+    const pid = parseInt(el.dataset.project);
+    const gid = el.closest('.sidebar-group') ? parseInt(el.closest('.sidebar-group').dataset.group) : null;
+    if (!domGroups[gid]) domGroups[gid] = [];
+    domGroups[gid].push({ id: pid, group_id: gid, sort_order: domGroups[gid].length });
+  });
+
+  // Build final reorder list
+  let order = 0;
+  const updates = [];
+  for (const [gidKey, items] of Object.entries(domGroups)) {
+    const gid = gidKey === 'null' ? null : parseInt(gidKey);
+    items.forEach(item => {
+      const proj = allProjects.find(p => p.id === item.id);
+      if (proj) {
+        updates.push({ id: proj.id, group_id: gid, sort_order: order++ });
+        proj.group_id = gid;
+        proj.sort_order = order;
       }
-      if (!seenIds.has(eid)) {
-        items.push({ id: eid, group_id: gid, sort_order: items.length });
-        seenIds.add(eid);
-      }
-    }
+    });
   }
 
-  // Determine which groups are affected
-  const srcEl = document.querySelector(`.sidebar-item[data-project="${srcId}"]`);
-  const oldGroupId = srcEl ? (srcEl.closest('.sidebar-group') ? parseInt(srcEl.closest('.sidebar-group').dataset.group || '0') || null : null) : null;
-
-  // Collect all groups
-  const allGroupIds = new Set();
-  state.projectGroups.forEach(g => allGroupIds.add(g.id));
-  allGroupIds.add(null); // ungrouped
-
-  for (const gid of allGroupIds) {
-    if (gid === targetGroupId) {
-      addItems(gid, insertBeforeId);
-    } else if (gid === oldGroupId && oldGroupId !== targetGroupId) {
-      addItems(gid, null); // src removed from old group
-    } else {
-      addItems(gid, null);
-    }
-  }
-
-  // If src not yet inserted (e.g., empty group), append to target
-  if (!seenIds.has(srcId)) {
-    items.push({ id: srcId, group_id: targetGroupId, sort_order: items.filter(i => i.group_id === targetGroupId).length });
-  }
-
-  try {
-    await fetch('/api/projects/reorder', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(items) });
-  } catch (e) { showToast('排序失败', 'error'); }
+  Store.saveAll('projects', allProjects);
+  loadBaseData(); renderSidebar();
 }
 
 function setupDragDrop() {
   document.addEventListener('dragstart', (e) => {
-    // Check for group header drag first
     const gh = e.target.closest('.sidebar-group-header[draggable]');
     if (gh && gh.dataset.gtype === 'group') {
-      dragSrcId = parseInt(gh.dataset.gid);
-      dragSrcEl = gh;
+      dragSrcId = parseInt(gh.dataset.gid); dragSrcEl = gh;
       dragSrcEl.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', 'group:' + dragSrcId);
+      e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', 'group:' + dragSrcId);
       return;
     }
-    // Project item drag
     const item = e.target.closest('.sidebar-item[draggable]');
     if (!item || !item.dataset.project || item.dataset.empty) { e.preventDefault(); return; }
-    dragSrcId = parseInt(item.dataset.project);
-    dragSrcEl = item;
-    item.classList.add('dragging');
-    item.style.opacity = '0.35';
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', 'proj:' + dragSrcId);
+    dragSrcId = parseInt(item.dataset.project); dragSrcEl = item;
+    item.classList.add('dragging'); item.style.opacity = '0.35';
+    e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', 'proj:' + dragSrcId);
   });
 
   document.addEventListener('dragend', () => {
     if (dragSrcEl) { dragSrcEl.classList.remove('dragging'); if (dragSrcEl.style) dragSrcEl.style.opacity = ''; }
-    clearDragIndicators();
-    dragSrcId = null; dragSrcEl = null;
+    clearDragIndicators(); dragSrcId = null; dragSrcEl = null;
   });
 
   document.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    if (!dragSrcId) return;
+    e.preventDefault(); if (!dragSrcId) return;
     e.dataTransfer.dropEffect = 'move';
-
-    const data = e.dataTransfer.types.includes('text/plain') ? '' : '';
-    // Determine drag type from source element
     const isGroupDrag = dragSrcEl && dragSrcEl.dataset.gtype === 'group';
 
     if (isGroupDrag) {
-      // Group drag: only highlight above/below other group headers
       const gh = e.target.closest('.sidebar-group-header[draggable]');
       if (gh && parseInt(gh.dataset.gid) !== dragSrcId) {
-        const rect = gh.getBoundingClientRect();
-        const above = e.clientY < rect.top + rect.height / 2;
-        clearDragIndicators();
-        gh.classList.add(above ? 'drop-target-above' : 'drop-target-below');
-        return;
+        const rect = gh.getBoundingClientRect(), above = e.clientY < rect.top + rect.height / 2;
+        clearDragIndicators(); gh.classList.add(above ? 'drop-target-above' : 'drop-target-below'); return;
       }
-      clearDragIndicators();
-      return;
+      clearDragIndicators(); return;
     }
 
-    // Project drag (existing logic)
+    // Project drag
     const gh2 = e.target.closest('.sidebar-group-header');
-    if (gh2) {
-      const sg = gh2.closest('.sidebar-group');
-      clearDragIndicators();
-      if (sg) sg.classList.add('drop-target');
-      return;
-    }
-
+    if (gh2) { const sg = gh2.closest('.sidebar-group'); clearDragIndicators(); if (sg) sg.classList.add('drop-target'); return; }
     const dz = e.target.closest('.sidebar-item.drop-zone');
-    if (dz && dz.dataset.empty === '1') {
-      clearDragIndicators();
-      dz.classList.add('drop-target-above');
-      return;
-    }
-
+    if (dz && dz.dataset.empty === '1') { clearDragIndicators(); dz.classList.add('drop-target-above'); return; }
     const item = e.target.closest('.sidebar-item[draggable]');
     if (item && !item.dataset.empty && parseInt(item.dataset.project) !== dragSrcId) {
-      const rect = item.getBoundingClientRect();
-      const above = e.clientY < rect.top + rect.height / 2;
-      clearDragIndicators();
-      item.classList.add(above ? 'drop-target-above' : 'drop-target-below');
-      return;
+      const rect = item.getBoundingClientRect(), above = e.clientY < rect.top + rect.height / 2;
+      clearDragIndicators(); item.classList.add(above ? 'drop-target-above' : 'drop-target-below'); return;
     }
-
     const sgFallback = e.target.closest('.sidebar-group');
-    if (sgFallback) {
-      const hasItems = sgFallback.querySelector('.sidebar-item[draggable]:not(.drop-zone)');
-      if (!hasItems || e.target === sgFallback || !e.target.closest('.sidebar-item')) {
-        clearDragIndicators();
-        sgFallback.classList.add('drop-target');
-        return;
-      }
-    }
-
+    if (sgFallback) { clearDragIndicators(); sgFallback.classList.add('drop-target'); return; }
     clearDragIndicators();
   });
 
-  document.addEventListener('drop', async (e) => {
-    e.preventDefault();
-    if (!dragSrcId) return;
+  document.addEventListener('drop', (e) => {
+    e.preventDefault(); if (!dragSrcId) return;
     clearDragIndicators();
-
     const isGroupDrag = dragSrcEl && dragSrcEl.dataset.gtype === 'group';
 
-    // --- GROUP DROP: reorder groups ---
     if (isGroupDrag) {
       const gh = e.target.closest('.sidebar-group-header[draggable]');
       if (gh && parseInt(gh.dataset.gid) !== dragSrcId) {
-        const rect = gh.getBoundingClientRect();
-        const above = e.clientY < rect.top + rect.height / 2;
-        // Collect all group headers in DOM order
+        const rect = gh.getBoundingClientRect(), above = e.clientY < rect.top + rect.height / 2;
         const allHeaders = Array.from(document.querySelectorAll('.sidebar-group-header[draggable]'));
-        const reorder = [];
-        let inserted = false;
+        const reorder = []; let inserted = false;
         for (const h of allHeaders) {
           const gid = parseInt(h.dataset.gid);
           if (gid === dragSrcId) continue;
-          if (!inserted && gid === parseInt(gh.dataset.gid) && above) {
-            reorder.push({ id: dragSrcId, sort_order: reorder.length });
-            inserted = true;
-          }
-          reorder.push({ id: gid, sort_order: reorder.length });
-          if (!inserted && gid === parseInt(gh.dataset.gid) && !above) {
-            reorder.push({ id: dragSrcId, sort_order: reorder.length });
-            inserted = true;
-          }
+          if (!inserted && gid === parseInt(gh.dataset.gid) && above) { reorder.push(dragSrcId); inserted = true; }
+          reorder.push(gid);
+          if (!inserted && gid === parseInt(gh.dataset.gid) && !above) { reorder.push(dragSrcId); inserted = true; }
         }
-        if (!inserted) reorder.push({ id: dragSrcId, sort_order: reorder.length });
-        try {
-          await fetch('/api/project-groups/reorder', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reorder) });
-          await loadBaseData(); renderSidebar();
-        } catch (e) { showToast('排序失败', 'error'); }
+        if (!inserted) reorder.push(dragSrcId);
+        const groups = Store.getAll('project_groups');
+        reorder.forEach((gid, i) => { const g = groups.find(x => x.id === gid); if (g) { g.sort_order = i; } });
+        Store.saveAll('project_groups', groups);
+        loadBaseData(); renderSidebar();
       }
-      dragSrcId = null; dragSrcEl = null;
-      return;
+      dragSrcId = null; dragSrcEl = null; return;
     }
 
-    // --- PROJECT DROP (existing logic) ---
+    // Project drop
     let targetGroupId = null;
-    let insertBeforeId = null;
-
     const gh3 = e.target.closest('.sidebar-group-header');
-    if (gh3) {
-      const sg = gh3.closest('.sidebar-group');
-      targetGroupId = sg && sg.dataset.group ? parseInt(sg.dataset.group) : null;
-      await applyReorder(dragSrcId, targetGroupId, null);
-      await loadBaseData(); renderSidebar();
-      return;
-    }
-
+    if (gh3) { targetGroupId = parseInt(gh3.closest('.sidebar-group').dataset.group); applyReorder(dragSrcId, targetGroupId, null); return; }
     const dz = e.target.closest('.sidebar-item.drop-zone');
-    if (dz && dz.dataset.empty === '1') {
-      targetGroupId = dz.dataset.group ? parseInt(dz.dataset.group) : null;
-      await applyReorder(dragSrcId, targetGroupId, null);
-      await loadBaseData(); renderSidebar();
-      return;
-    }
-
+    if (dz && dz.dataset.empty === '1') { targetGroupId = parseInt(dz.dataset.group); applyReorder(dragSrcId, targetGroupId, null); return; }
     const item = e.target.closest('.sidebar-item[draggable]');
-    if (item && !item.dataset.empty && parseInt(item.dataset.project) !== dragSrcId) {
-      const rect = item.getBoundingClientRect();
-      const above = e.clientY < rect.top + rect.height / 2;
-      const targetPid = parseInt(item.dataset.project);
-      const sg = item.closest('.sidebar-group');
-      targetGroupId = sg && sg.dataset.group ? parseInt(sg.dataset.group) : null;
-      insertBeforeId = above ? targetPid : null;
-      if (!above) {
-        const siblings = item.parentElement.querySelectorAll(':scope > .sidebar-item[draggable]');
-        let found = false;
-        for (const s of siblings) {
-          if (found) { insertBeforeId = parseInt(s.dataset.project); break; }
-          if (parseInt(s.dataset.project) === targetPid) found = true;
-        }
-      }
-      await applyReorder(dragSrcId, targetGroupId, insertBeforeId);
-      await loadBaseData(); renderSidebar();
-      return;
+    if (item && !item.dataset.empty) {
+      const sg = item.closest('.sidebar-group'); targetGroupId = sg ? parseInt(sg.dataset.group) : null;
+      applyReorder(dragSrcId, targetGroupId, parseInt(item.dataset.project)); return;
     }
-
     const sgFallback = e.target.closest('.sidebar-group');
-    if (sgFallback && sgFallback.dataset.group) {
-      targetGroupId = parseInt(sgFallback.dataset.group);
-      await applyReorder(dragSrcId, targetGroupId, null);
-      await loadBaseData(); renderSidebar();
-      return;
-    }
-
-    targetGroupId = null;
-    await applyReorder(dragSrcId, targetGroupId, null);
-    await loadBaseData(); renderSidebar();
+    if (sgFallback) { targetGroupId = parseInt(sgFallback.dataset.group); applyReorder(dragSrcId, targetGroupId, null); return; }
+    applyReorder(dragSrcId, null, null);
   });
 }
 
-// Make public methods accessible
-const publicApi = {
-  selectProject,
-  showBudgetModal: (b) => showBudgetModal(b),
-  editBudget: (bid) => editBudget(bid),
-  payBudget: (bid) => payBudget(bid),
-  failBudget: (bid) => failBudget(bid),
-  deleteBudget: (bid) => deleteBudget(bid),
-  showMemberModal: (m) => showMemberModal(m),
-  deleteMember: (id) => deleteMember(id),
-  showCategoryModal: (c) => showCategoryModal(c),
-  deleteCategory: (id) => deleteCategory(id),
-  showProjectModal: (p) => showProjectModal(p),
-  deleteProject: (id) => deleteProject(id),
-  showGroupModal: (g) => showGroupModal(g),
-  toggleGroup: (gid) => toggleGroup(gid),
-  deleteGroup: (gid) => deleteGroup(gid),
-  editProjectSidebar: (pid) => editProjectSidebar(pid),
-  deleteProjectSidebar: (pid) => deleteProjectSidebar(pid),
-  showSupplierModal: (s) => showSupplierModal(s),
-  deleteSupplier: (id) => deleteSupplier(id),
-  clearFilter,
-  clearAllFilters,
-  exportCSV,
-  exportJSON,
-  importJSON,
-  getAttachmentUrl,
-};
+// ==================== CORE ====================
+function selectProject(pid) { state.activeProject = String(pid); renderSidebar(); refreshCurrentTab(); }
 
-async function refreshCurrentTab() {
+function editBudget(bid) {
+  const b = state.budgets.find(x => x.id === bid);
+  if (b) showBudgetModal(b);
+  else showToast('无法加载预算详情', 'error');
+}
+
+function refreshAll() {
+  loadBaseData(); renderSidebar(); refreshCurrentTab();
+}
+
+function refreshCurrentTab() {
   const tab = state.activeTab;
   const titles = { dashboard: '📊 概览', budgets: '📝 支出管理', pending: '💳 预算记录', settings: '⚙️ 设置' };
   $('#pageTitle').textContent = titles[tab] || '';
-
   switch (tab) {
-    case 'dashboard': await renderDashboard(); break;
-    case 'budgets': await renderBudgetList(); break;
-    case 'pending': await renderPendingList(); break;
+    case 'dashboard': renderDashboard(); break;
+    case 'budgets': renderBudgetList(); break;
+    case 'pending': renderPendingList(); break;
     case 'settings': renderSettings(); break;
   }
 }
 
-async function refreshAll() {
-  await loadBaseData();
-  renderSidebar();
-  await refreshCurrentTab();
-}
+// ==================== PUBLIC API ====================
+const publicApi = {
+  selectProject, showBudgetModal: (b) => showBudgetModal(b),
+  editBudget: (bid) => editBudget(bid),
+  payBudget: (bid) => payBudget(bid), failBudget: (bid) => failBudget(bid),
+  deleteBudget: (bid) => deleteBudget(bid),
+  showMemberModal: (m) => showMemberModal(m), deleteMember: (id) => deleteMember(id),
+  showCategoryModal: (c) => showCategoryModal(c), deleteCategory: (id) => deleteCategory(id),
+  showProjectModal: (p) => showProjectModal(p), deleteProject: (id) => deleteProjectSidebar(id),
+  showGroupModal: (g) => showGroupModal(g), toggleGroup: (gid) => toggleGroup(gid),
+  deleteGroup: (gid) => deleteGroup(gid),
+  editProjectSidebar: (pid) => editProjectSidebar(pid),
+  deleteProjectSidebar: (pid) => deleteProjectSidebar(pid),
+  showSupplierModal: (s) => showSupplierModal(s), deleteSupplier: (id) => deleteSupplier(id),
+  clearFilter, clearAllFilters,
+  exportCSV, exportJSON, importJSON,
+  viewAttachment: (bid) => viewAttachment(bid),
+};
 
 // ==================== INIT ====================
-async function init() {
-  await loadBaseData();
+function init() {
+  seedDefaults();
+  loadBaseData();
+  setupDragDrop();
+  renderSidebar();
 
-  // Tab switching
   $$('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       $$('.tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       $$('.tab-content').forEach(c => c.classList.remove('active'));
-      const tabId = 'tab-' + btn.dataset.tab;
-      const el = $('#' + tabId);
-      if (el) el.classList.add('active');
-      state.activeTab = btn.dataset.tab;
-      refreshCurrentTab();
+      const el = $('#tab-' + btn.dataset.tab); if (el) el.classList.add('active');
+      state.activeTab = btn.dataset.tab; refreshCurrentTab();
     });
   });
 
-  // Global month change
   $('#globalMonth').addEventListener('change', () => {
     state.globalMonth = $('#globalMonth').value;
     if (state.activeTab === 'dashboard') renderDashboard();
     if (state.activeTab === 'budgets') renderBudgetList();
+    const mc = state.budgets.filter(b => b.budget_month === state.globalMonth).length;
+    $('#sidebarAllCount').textContent = mc;
   });
 
-  // Filter changes
-  const filterEls = ['#filterStatus', '#filterMonth', '#filterProject'];
-  filterEls.forEach(sel => {
-    const el = $(sel);
-    if (el) el.addEventListener('change', () => { if (state.activeTab === 'budgets') renderBudgetList(); });
+  ['#filterStatus','#filterMonth','#filterProject'].forEach(sel => {
+    const el = $(sel); if (el) el.addEventListener('change', () => { if (state.activeTab === 'budgets') renderBudgetList(); });
   });
   const kwEl = $('#filterKeyword');
   if (kwEl) kwEl.addEventListener('input', U.debounce(() => { if (state.activeTab === 'budgets') renderBudgetList(); }, 300));
 
-  // Setup drag-and-drop for sidebar
-  setupDragDrop();
-
-  // Refresh sidebar periodically for badge counts
-  renderSidebar();
-
-  // Initial render
-  await refreshCurrentTab();
+  refreshCurrentTab();
 }
 
 document.addEventListener('DOMContentLoaded', init);
-
 return publicApi;
 })();
 </script>

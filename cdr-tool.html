@@ -68,13 +68,13 @@ textarea#input-sequence:focus{outline:none;border-color:var(--primary);box-shado
 </style>
 </head>
 <body>
-<div class="app-header"><div class="container"><h1>抗体可变区CDR标注</h1><div class="subtitle">对抗体可变区进行CDR和FR区域的标注 — 支持IMGT、Kabat、Chothia、Martin编号方案</div></div></div>
+<div class="app-header"><div class="container"><h1>抗体可变区CDR标注</h1><div class="subtitle">对抗体可变区进行CDR和FR区域的标注 — 支持 Kabat、IMGT、AbM、Chothia、Contact 五种方案</div></div></div>
 
 <div class="container">
 <div class="card">
 <div class="card-header"><h2>🔬 CDR 标注工具</h2></div>
 <div class="card-body">
-<p style="margin-bottom:16px;color:#555;line-height:1.7;">对抗体可变区进行CDR和FR区域的标注；选择<strong>编号系统</strong>（IMGT, Chothia, Kabat, Martin）和<strong>标注方案</strong>（Chothia, Kabat, IMGT及Contact）。注意：<span style="color:var(--danger)">Kabat编号方案与Contact定义方案不兼容</span>。</p>
+<p style="margin-bottom:16px;color:#555;line-height:1.7;">对抗体可变区进行CDR和FR区域的标注；<strong>编号方案</strong>与<strong>定义方案</strong>均支持 Kabat、IMGT、AbM、Chothia、Contact 五种，可按需组合。注意：<span style="color:var(--danger)">Kabat编号方案与Contact定义方案不兼容</span>。</p>
 
 <form id="main_form" onsubmit="return false;">
 <div class="form-group">
@@ -86,18 +86,20 @@ textarea#input-sequence:focus{outline:none;border-color:var(--primary);box-shado
 <div class="form-group">
 <label>2. 选择编号方案 (Numbering Scheme):</label>
 <div class="radio-group" id="numscheme-group">
-<label><input type="radio" name="numscheme" value="IMGT"> IMGT</label>
 <label><input type="radio" name="numscheme" value="Kabat" checked> Kabat</label>
+<label><input type="radio" name="numscheme" value="IMGT"> IMGT</label>
+<label><input type="radio" name="numscheme" value="AbM"> AbM</label>
 <label><input type="radio" name="numscheme" value="Chothia"> Chothia</label>
-<label><input type="radio" name="numscheme" value="Martin"> Martin (扩展版Chothia)</label>
+<label><input type="radio" name="numscheme" value="Contact"> Contact</label>
 </div>
 </div>
 
 <div class="form-group">
 <label>3. 选择定义方案 (Definition Scheme):</label>
 <div class="radio-group" id="defscheme-group">
-<label><input type="radio" name="defscheme" value="IMGT"> IMGT</label>
 <label><input type="radio" name="defscheme" value="Kabat" checked> Kabat</label>
+<label><input type="radio" name="defscheme" value="IMGT"> IMGT</label>
+<label><input type="radio" name="defscheme" value="AbM"> AbM</label>
 <label><input type="radio" name="defscheme" value="Chothia"> Chothia</label>
 <label><input type="radio" name="defscheme" value="Contact"> Contact</label>
 </div>
@@ -323,7 +325,7 @@ const CDR_DEFS = {
       {name:'FR4',start:97,end:107}
     ]
   },
-  Martin: {  // AbM - 扩展Chothia
+  AbM: {  // AbM - 扩展Chothia (Martin)
     H: [
       {name:'FR1',start:1,end:25},
       {name:'CDR-H1',start:26,end:35.9},

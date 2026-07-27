@@ -120,7 +120,11 @@ def main():
 
     fr_seq_to_id = {}
     for lb, ct, fn, sc, seq in fr_raw:
-        if seq not in vseq_to_id and seq not in cdr_seq_to_id and seq not in fr_seq_to_id:
+        if seq in vseq_to_id:
+            fr_seq_to_id[seq] = vseq_to_id[seq]
+        elif seq in cdr_seq_to_id:
+            fr_seq_to_id[seq] = cdr_seq_to_id[seq]
+        elif seq not in fr_seq_to_id:
             fr_seq_to_id[seq] = nid
             nid += 1
 
@@ -155,7 +159,13 @@ def main():
                 if k not in seen:
                     srcs.append(f'{lb} ({sc})')
                     seen.add(k)
-        all_unique.append((sid, ftype, seq, ', '.join(srcs)))
+        fr_desc = ', '.join(srcs)
+        existing = [e for e in all_unique if e[0] == sid]
+        if existing:
+            existing[0] = (sid, existing[0][1], existing[0][2],
+                           existing[0][3] + f'; [{ftype}] {fr_desc}')
+        else:
+            all_unique.append((sid, ftype, seq, fr_desc))
 
     all_unique.sort(key=lambda x: x[0])
 

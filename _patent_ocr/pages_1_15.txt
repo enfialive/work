@@ -1,0 +1,974 @@
+--- Page 1 ---
+(12) INTERNATIONAL APPLICATION PUBLISHED UNDER THE PATENT COOPERATION TREATY (PCT)
+
+=
+<
++
++
+xe
+a
+ise)
+=
+>
+Ss
+a
+S
+a
+S
+
+(19) World Intellectual Property )
+Organization IAN A
+International Bureau = (10) International Publication Number
+(43) International Publication Date = WO 2026/139844 Al
+02 July 2026 (02.07.2026) WIPO! PCT
+61) International Patent Classification: Basel (CH), SPANKA, Carsten Alfred Werner; Novar-
+CO7D 277/56 (2006.01) CO7D 413/10 (2006.01) tis Pharma AG, Lichtstrasse 35, 4056 Basel (CH). STAUF-
+CO7D 333/38 (2006.01) CO7D 413/14 (2006.01) FER, Frédéric; Novartis Pharma AG, Lichtstrasse 35, 4056
+CO7D 403/06 (2006.01) CO7D 417/14 (2006.01) Basel (CH), VON MATT, Peter Josef; Fichtlirain 38, 4105
+CO7D 403/14 (2006.01) CO7D 471/04 (2006.01) Bicl-Benken (CH)
+CO7D 409/04 (2006.01) C07C 237/38 (2006.01) F vce othoruiee ot fap ovops
+Co7D 10906 (2006.01) AGP. 17/06 (2006.01) (81) Designated States (unless otherwise indicated for every
+CO7D 409210 (200601) _-AGIK-3181 (200601) kind of national protection available): AE, AG, AL, AM,
+CO7D 499/14 (2006.01) AO, AT, AU, AZ, BA, BB, BG, BH, BN, BR, BW, BY, BZ,
+CA, CH, CL, CN, CO, CR, CU, CV, CZ, DE, DJ, DK, DM,
+(21) International Application Number: DO, DZ, EC, EE, EG, ES, FI, GB, GD, GE, GH, GM, GT,
+PCT/IB2025/063307 HN, HR, HU, ID, IL, IN, IQ, IR, IS, IT, IM, JO, JP, KE, KG,
+22) International Filing Date: KH, KN, KP, KR, KW, KZ, LA, LC, LK, LR, LS, LU, LY,
+(22) International Filing eed er 2025 (22.12.2025 MA, MD, MG, MK, MN, MU, MW. MX, MY, MZ, NA,
+ecember 2025 (22.12.2025) NG, NI, NO, NZ, OM, PA, PE, PG, PH, PL, PT, QA, RO,
+(25) Filing Language: English RS, RU, RW, SA, SC, SD, SE, SG, SK, SL, ST, SV, SY, TH,
+TJ, TM, TN, TR, TT, TZ, UA, UG, US, UY, UZ, VC, VN,
+(26) Publication Language: English We. ZA. 7M. ZW. UA. UG, US, UY, UZ, VC
+30) Priority Data: . , oo ovomy
+63738637 24 December 2024 24.12.2024) Us 4) Designated States (uiless otherwise indicated, for every
+
+(71) Applicant: NOVARTIS AG [CH/CH]; Lichtstrasse 35,
+4056 Basel (CH).
+
+(72) Inventors: BEHNKE, Dirk, Novartis Pharma AG, Licht-
+strasse 35, 4056 Basel (CH), BUSSENAULT, Alex;
+Novartis Pharma AG, Lichtstrasse 35, 4056 Basel
+(CH). D'ALESSANDRO, Pier Luca, Novartis Phar-
+
+ma AG, Lichtstrasse 35, 4056 Basel (CH). DOUMAM-
+POUOM-METOUL, Lionel; Novartis Pharma AG, Licht-
+strasse 35, 4056 Basel (CH), FISCHER, Christian; Novar-
+
+tis Pharma AG, Lichtstrasse 35, 4056 Basel (CH). FURET,
+Pascal; 19 Rue de la forét, 68800 Thann (FR). JEULIN,
+Ingrid Karen Jennifer, Novartis Pharma AG, Lichtstrasse
+35, 4056 Basel (CH). MACKAY, Angela Claire; Novar-
+tis Pharma AG, Lichtstrasse 35, 4056 Basel (CH). MARC-
+HAND, Jean-Rémy Thierry; Novartis Pharma AG, Licht-
+strasse 35, 4056 Basek (CH). PATORA-KOMISARSKA,
+Krystyna; Novartis Pharma AG, Lichtstrasse 35, 4056
+
+kind of regional protection available): ARIPO (BW, CV,
+GH, GM, KE, LR, LS, MU, MW, MZ, NA, RW, SC, SD,
+SL, ST, SZ, TZ, UG, ZM, ZW), Eurasian (AM, AZ, BY,
+KG, KZ, RU, TJ, TM), European (AL, AT, BE, BG, CH,
+CY, CZ, DE, DK, EE, ES, FI, FR, GB, GR, HR, HU, IE, IS,
+IT, LT, LU, LV, MC, ME, MK, MT, NL, NO, PL, PT, RO,
+RS, SE, SL, SK, SM, TR), OAPI (BF, BJ, CF, CG, CI, CM,
+GA, GN, GQ, GW, KM, ML, MR, NE, SN, TD, TG).
+
+Declarations under Rule 4.17:
+
+as to applicant's entitlement to apply for and be granted a
+patent (Rule 4.17(ii))
+
+as to the applicant's entitlement to claim the priority of the
+earlier application (Rule 4.17(iii))
+
+Published:
+with international search report (Art. 21(3))
+
+(54) Tit
+
+°
+Re
+Rt Re
+NO
+N Re
+
+«a J
+
+N A
+
+L Re
+
+: AROMATIC CARBOXAMIDE COMPOUNDS AND METHODS OF USING THEREOF
+
+(57) Abstract: The present disclosure relates to compound of For-
+mula (I) or a pharmaceutically acceptable salt, hydrate, solvate,
+stereoisomer, or tautomer thereof, wherein the variable are as de-
+fined herein, The invention further provides modulators or inhibitors
+of STATS activity, processes for their preparation, pharmaceutical
+compositions, and medicaments containing them, and their use in
+diseases and disorders mediated by IL~4 and/or IL-13.
+
+
+--- Page 2 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+WO 2026/139844 PCT/IB2025/063307
+AROMATIC CARBOXAMIDE COMPOUNDS AND METHODS OF USING THEREOF
+
+FIELD OF THE INVENTION
+
+The present disclosure relates to aromatic carboxamide compounds. The present disclosure
+also relates to processes for the preparation of said compounds, pharmaceutical compositions
+comprising said compounds, and use of said compounds in the treatment of conditions,
+diseases and disorders mediated by IL-4 and/or IL-13.
+
+BACKGROUND OF THE INVENTION
+
+Cytokines are proteins made in response to pathogens and other antigens that regulate and
+mediate inflammatory and immune responses. Exemplary cytokines are Interleukin 4 (IL-4) and
+Interleukin 13 (IL-13). IL-4 and IL-13 cytokines are key drivers of so-called type 2 immune
+responses which are found to be dysregulated in a number of skin, respiratory and
+gastrointestinal inflammatory conditions and disorders. The signal from either cytokine is
+intracellularly integrated via the Janus kinase (JAK)-mediated phosphorylation of the signal
+transducer and activator of transcription (STAT) protein family member 6 (STATS), which, in
+turn, regulates a signal-specific gene expression program. Biologic (antibody-based)
+antagonists acting either directly on IL-13 or on the IL-4 receptor alpha subunit shared by both
+cytokines [Review: Carla Tubau et al. Immunotherapy 2021 13:327:344] as well as small
+molecule inhibitors of Janus kinases [Review: Donal P McLornan et. al. Lancet 2021 398:803-
+16] have been described.
+
+There is a need to provide new and/or alternative treatments for IL-4 and/or IL-13 mediated
+
+diseases and/or conditions such as atopic dermatitis (AD).
+
+SUMMARY OF THE DISCLOSURE
+
+In the context of the present disclosure, modulation or inhibition of STAT6 activity is
+considered as a meaningful therapeutic strategy for treating type 2 driven inflammatory
+diseases. This applies to diseases and/or conditions mediated by IL-4 and/or IL-13 such as
+atopic dermatitis (AD). Additional indications include but are not limited to asthma, chronic
+rhinosinusitis with nasal polyposis (CRSWNS), eosinophilic esophagitis (EoE), prurigo nodularis
+(PN), chronic prurigo (CPG), chronic spontaneous urticaria (CSU), chronic pruritus, bullous
+pemphigoid (BP), chronic obstructive pulmonary disease (COPD), ulcerative colitis (UC),
+eosinophilic gastroenteritis and food allergy. Both systemic as well as organ-restricted inhibition
+or modulation of STAT6 activity is considered to be of high therapeutic value.
+
+The present disclosure provides compounds of Formula (I), or a pharmaceutically
+acceptable salt thereof, as defined herein below. The compounds of Formula (I) modulate
+type 2 immune responses which are found to be dysregulated in a number of skin, respiratory
+and gastrointestinal inflammatory conditions and disorders. The present disclosure relates to
+compounds of Formula (I), and pharmaceutically acceptable salts thereof, as herein defined,
+which are STAT6 modulators or STAT6 inhibitors. Accordingly, compounds of the present
+
+
+--- Page 3 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+WO 2026/139844 PCT/IB2025/063307
+disclosure may therefore be useful in the treatment of atopic dermatitis and other diseases
+and/or disorders that are susceptible to modulation or inhibition of STAT6 activity.
+
+In a first aspect of the disclosure, the compounds of Formula (I) are described:
+
+°
+Rab
+Ré RS
+nm
+SN Re
+Rt | x
+Ny ZA
+l, 3
+R’ R ()
+
+or a pharmaceutically acceptable salt, hydrate, solvate, stereoisomer, or tautomer thereof,
+wherein:
+
+X is N or CR", wherein R'* is selected from the group consisting of hydrogen, halo, CN,
+NOz, C1-Caalkyl, C1-Csalkoxy, -S(O)o.2(C1-Cs)alkyl and NR“4R"§, and wherein R" and R"° are
+each independently selected from the group consisting of hydrogen, C:-Csalkyl and
+C3-Cgcycloalkyl;
+
+ring B is 1,3-phenylene, or ring B is a monocyclic 5-membered heteroarylene;
+
+R'is C1-Csalkylcarbonyl or C:-Csalkoxycarbonyl and R? and R° are hydrogen;
+
+alternatively, R' is C:-Csalkylcarbonyl, C:-Csalkoxycarbonyl, C:-Csalkyl-NH-carbonyl,
+C1-Caalkyl-N(C1-Csalkyl)-carbonyl or -S(O)2(C1-Cs)alkyl, and R? and R°, together with the
+nitrogen and carbon atoms that they each are attached to and the neighboring carbon atom,
+form a 6-membered heterocycloalkyl, which optionally comprises one further heteroatomic ring
+member selected from the group consisting of O, NH and N(C1-Csalkyl), and is optionally
+substituted with R'?, wherein R‘? is selected from the group consisting of C:-Csalkyl,
+C1-C3alkoxyC:-Csalkyl and C;-Cshydroxyalkyl;
+
+alternatively, R° is hydrogen, and R' and R?, together with the nitrogen they are attached to,
+form an unsubstituted, monocyclic 5-membered heteroaryl, or a monocyclic 5-membered
+heterocycloalkyl (i) that is substituted with one or two oxo and is optionally substituted with
+phenyl or with up to three C;-Czalkyl, and (ii) that optionally fuses with a second ring to form a
+fused bicyclic 9-membered ring;
+
+R‘ is hydrogen, C1-Csalkyl, C:-Csalkoxy or halo, wherein each of said C;-Csalkyl and C:-
+Csalkoxy is unsubstituted or is substituted with one or more substituents each independently
+selected from the group consisting of halo, hydroxy and C:-Csalkoxy;
+
+R* is hydrogen, unsubstituted C-Csalkyl or halo;
+
+RS is -CHR®CH2R’ or -CHR®CH(OH)R’ and R° is hydrogen, wherein R’ is hydroxy,
+hydroxyphenyl or bicyclic Cs-Czcyloalkyl optionally substituted with hydroxy, and R® is C:-Csalkyl
+or C1-Czalkyl-NH-carbonyl;
+
+
+--- Page 4 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+WO 2026/139844 PCT/IB2025/063307
+
+alternatively, R® and R°, together with the nitrogen they are attached to, form a monocyclic
+C4-Ceheterocycloalkyl comprising one or two nitrogen heteroatoms and being substituted with
+oxo and being optionally substituted with up to three further substituents being R®, R'° and R"',
+wherein each of R°, R'° and R"' is independently selected from the group consisting of
+C1-Csalkyl, C:-Cshydroxyalkyl, C1-Csfluoroalkyl, C:-CsalkoxyC1-Csalkyl, C:-Csalkoxy, benzyl
+substituted with hydroxy, and bicyclic Cs-C7cycloalkyl(Co-:alkyl) substituted with hydroxy.
+
+In another aspect, the invention provides a compound of Formula (|), or a stereoisomer or
+pharmaceutically acceptable salt thereof for use as a medicament.
+
+In another aspect, the disclosure provides a composition, in particular, a pharmaceutical
+composition, which comprises (e.g. a therapeutically effective amount of) a compound of
+Formula (I), or a stereoisomer or pharmaceutically acceptable salt thereof, and one or more
+pharmaceutically acceptable carriers.
+
+In another aspect, the disclosure provides a combination, in particular a pharmaceutical
+combination, which comprises (e.g. a therapeutically effective amount of) a compound of
+Formula (I), or a stereoisomer or pharmaceutically acceptable salt thereof, and one or more
+therapeutic agents.
+
+In another aspect, the disclosure provides compounds of Formula (I), or a stereoisomer or
+pharmaceutically acceptable salt thereof, for use in methods of treating, preventing, or
+ameliorating a condition, disease, or disorder treatable by modulating (e.g. inhibiting) STATS.
+
+In another aspect, the invention provides a use of a compound of Formula (I), or a
+stereoisomer or pharmaceutically acceptable salt thereof in the manufacture of a medicament
+for treating, preventing, or ameliorating a condition, disease, or disorder treatable by modulating
+(eg. inhibiting) STATS.
+
+In another aspect, the disclosure provides a compound of Formula (I), or a stereoisomer or
+pharmaceutically acceptable salt thereof, for use in the treatment, or prevention of a
+STAT6-dependent disease or disorder such as atopic dermatitis or a related condition.
+
+DETAILED DESCRIPTION OF THE INVENTION
+
+The present disclosure relates to compounds of Formula (I) or a stereoisomer or
+pharmaceutically acceptable salt thereof, and to their use in the treatment of conditions,
+diseases and disorders mediated by IL-4 and/or IL-13. Such conditions, diseases and disorders
+are susceptible to STAT6 modulation or inhibition. Hence the present disclosure relates to
+compounds which are modulators or inhibitors of STAT6 activity.
+
+In a first aspect of the disclosure, the compounds of Formula (I) are described:
+
+
+--- Page 5 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+WO 2026/139844 PCT/IB2025/063307
+
+O°
+Rib
+Ré RS
+Nm
+WN Re
+| Xx
+ZA
+2 3
+R R ()
+
+or pharmaceutically acceptable salts, hydrates, solvates, stereoisomers, and tautomers
+thereof, wherein X, ring B and R' through R° are as described herein.
+
+The details of the disclosure are set forth in the accompanying description below. Although
+methods and materials similar or equivalent to those described herein can be used in the
+practice or testing of the present disclosure, illustrative methods and materials are now
+described. Other features, objects, and advantages of the disclosure will be apparent from the
+description and from the claims. In the specification and the appended claims, the singular
+forms also include the plural unless the context clearly dictates otherwise. Unless defined
+otherwise, all technical and scientific terms used herein have the same meaning as commonly
+understood by one of ordinary skill in the art to which this disclosure belongs. All patents and
+publications cited in this specification are incorporated herein by reference in their entireties.
+
+Definition of Terms and Conventions Used
+
+Terms not specifically defined herein should be given the meanings that would be given to
+them by one of skill in the art in light of the disclosure and the context. As used in the
+specification and appended claims, however, unless specified to the contrary, the following
+terms have the meaning indicated and the following conventions are adhered to.
+
+A. Chemical Nomenclature, Terms, and Conventions
+
+In the groups, radicals, or moieties defined below, the number of carbon atoms is often
+specified preceding the group, for example, C:-Cioalkyl means an alkyl group or radical having
+1 to 10 carbon atoms. In general, for groups comprising two or more subgroups, the last-named
+group is the radical attachment point, for example, “alkylaryl” means a monovalent radical of the
+formula alkyl-aryl-, while “arylalkyl” means a monovalent radical of the formula aryl-alkyl-.
+Furthermore, the use of a term designating a monovalent radical where a divalent radical is
+appropriate shall be construed to designate the respective divalent radical and vice versa.
+Unless otherwise specified, conventional definitions of terms control and conventional stable
+atom valences are presumed and achieved in all formulas and groups. The articles “a” and “an”
+refer to one or more than one (e.g., to at least one) of the grammatical object of the article. By
+way of example, “an element” means one element or more than one element.
+
+The term “and/or” means either “and” or “or” unless indicated otherwise.
+
+-4.
+
+
+--- Page 6 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+WO 2026/139844 PCT/IB2025/063307
+
+The term “optionally substituted” means that a given chemical moiety (e.g., an alkyl group)
+can (but is not required to) be bonded to other substituents (e.g., heteroatoms). For instance, an
+alkyl group that is optionally substituted can be a fully saturated alkyl chain (e.g., a pure
+hydrocarbon). Alternatively, the same optionally substituted alkyl group can have substituents
+different from hydrogen. For instance, it can, at any point along the chain be bonded to a
+halogen atom, a hydroxyl group, or any other substituent described herein. Thus, the term
+“optionally substituted” means that a given chemical moiety has the potential to contain other
+functional groups, but does not necessarily have any further functional groups. Suitable
+substituents used in the optional substitution of the described groups include, without limitation,
+halo, oxo, hydroxy, C:-Csalkyl, C:-Cshydroxyalkyl, C1-Csfluoroalkyl, C:-CsalkoxyC1-Csalkyl,
+benzyl and phenyl. The substituents can themselves be optionally substituted. “Optionally
+substituted” as used herein also refers to substituted or unsubstituted whose meaning is
+described below.
+
+The term “substituted” means that the specified group or moiety bears one or more suitable
+substituents wherein the substituents may connect to the specified group or moiety at one or
+more positions. For example, an aryl substituted with a cycloalkyl may indicate that the
+cycloalkyl connects to one atom of the aryl with a bond or by fusing with the aryl and sharing
+two or more common atoms.
+
+The term “unsubstituted” means that the specified group bears no substituents.
+
+Unless otherwise specifically defined, “aryl” means a cyclic, aromatic hydrocarbon group
+having 1 to 3 aromatic rings, including monocyclic or bicyclic groups such as phenyl, biphenyl,
+or naphthyl. When containing two aromatic rings (bicyclic, etc.), the aromatic rings of the aryl
+group are optionally joined at a single point (e.g., biphenyl), or fused (e.g., naphthyl). The aryl
+group is optionally substituted by one or more substituents, e.g., 1 to 5 substituents, at any point
+of attachment. Exemplary substituents include, but are not limited to, -H, -halogen, -CN, -O-(C1-
+Ce)alkyl, (C1-Ce)alkyl, -O-(C2-Ce)alkenyl, -O-(C2-Ce)alkynyl, (C2-Ce)alkenyl, (C2-Ce)alkynyl, -
+
+OH, -OP(O)(OH)z, -OC(O)(Ci-Ce)alkyl, -C(O)(C1-Ce)alkyl, -OC(O)O(C:-Ce) alkyl, NH2, NH((C:-
+Ce)alkyl), N((C1-Ce)alkyl)2, -S(O)z-(C1-Ce)alkyl, -S(O)NH(C:-Ce)alkyl, and -S(O)N((C:-Ce)alkyl)2.
+The substituents are themselves optionally substituted. Furthermore, when containing two fused
+rings, the aryl groups optionally have an unsaturated or partially saturated ring fused with a fully
+saturated ring. Exemplary ring systems of these aryl groups include, but are not limited to,
+phenyl, biphenyl, naphthyl, anthracenyl, phenalenyl, phenanthrenyl, indanyl, indenyl,
+tetrahydronaphthalenyl, tetrahydrobenzoannulenyl, and the like.
+
+An “arylene’ is a divalent aryl such as phenylene. Phenylene is an example of 6-membered
+monocyclic arylene. The phenylene group has three structural isomers: paraphenylene,
+metaphenylene (i.e. 1,3-phenylene), and ortho-phenylene.
+
+Unless otherwise specifically defined, “heteroaryl” means a monocyclic aromatic radical of 5
+to 24 ring atoms or a polycyclic aromatic radical, each containing one or more ring heteroatoms
+
+
+--- Page 7 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+WO 2026/139844 PCT/IB2025/063307
+selected from N, O, or S, the remaining ring atoms being C. Heteroaryl as herein defined also
+means a bicyclic heteroaromatic group wherein the heteroatom is selected from N, O, or S. The
+aromatic radical is optionally substituted independently with one or more substituents described
+herein. Examples include, but are not limited to, furyl, thienyl, pyrrolyl, pyridyl, pyrazolyl,
+pyrimidinyl, imidazolyl, isoxazolyl, oxazolyl, oxadiazolyl, pyrazinyl, indolyl, thiophen-2-yl,
+quinolyl, benzopyranyl, isothiazolyl, thiazolyl, thiadiazole, indazole, benzimidazolyl, thieno[3,2-
+b]thiophene, triazolyl, triazinyl, imidazo[1,2-b]pyrazolyl, furo[2,3-c]pyridinyl, imidazo[1,2-
+alpyridinyl, indazolyl, pyrrolo[2,3-c]pyridinyl, pyrrolo[3,2-c]pyridinyl, pyrazolo[3,4-c]pyridinyl,
+thieno[3,2-c]pyridinyl, thieno[2,3-c]pyridinyl, thieno[2,3-b]pyridinyl, benzothiazolyl, indolyl,
+indolinyl, indolinonyl, dihydrobenzothiophenyl, dihydrobenzofuranyl, benzofuran, chromanyl,
+thiochromanyl, tetrahydroquinolinyl, dihydrobenzothiazine, dihydrobenzoxanyl, quinolinyl,
+isoquinolinyl, 1,6-naphthyridinyl, benzo[de]isoquinolinyl, pyrido[4,3-b][1,6]naphthyridinyl,
+thieno[2,3-b]pyrazinyl, quinazolinyl, tetrazolo[1 ,5-a]pyridinyl, [1,2,4]triazolo[4,3-a]pyridinyl,
+isoindolyl, pyrrolo[2,3-b]pyridinyl, pyrrolo[3,4-b]pyridinyl, pyrrolo[3,2-b]pyridinyl, imidazo[5,4-
+b]pyridinyl, pyrrolo[1,2-a]pyrimidinyl, tetrahydropyrrolo[1,2-a]pyrimidinyl, 3,4-dihydro-2H-1A2-
+pyrrolo[2,1-b]pyrimidine, dibenzo[b,d]thiophene, pyridin-2-one, furo[3,2-c]pyridinyl, furo[2,3-
+ce]pyridinyl, 1H-pyrido[3,4-b][1 ,4]thiazinyl, benzooxazolyl, benzoisoxazolyl, furo[2,3-b]pyridinyl,
+benzothiophenyl, 1,5-naphthyridinyl, furo[3,2-b]pyridine, [1,2,4]triazolo[],5-a]pyridinyl,
+benzo[1,2,3]triazolyl, imidazo[1,2-a]pyrimidinyl, [1,2,4]triazolo[4,3-b]pyridazinyl,
+benzo[c][1,2,5]thiadiazolyl, benzo[c][1,2,5]oxadiazole, 1,3-dihydro-2H-benzo[d]imidazol-2-one,
+3,4-dihydro-2H-pyrazolo[1,5-b][1,2]Joxazinyl, 4,5,6,7-tetrahydropyrazolo[1,5-a]pyridinyl,
+thiazolo[5,4 d]thiazolyl, imidazo[2, 1-b][1,3,4]thiadiazoly|, thieno[2,3-b]pyrrolyl, 3H-indolyl, and
+derivatives thereof. Furthermore, when containing two fused rings the heteroaryl groups herein
+defined may have an unsaturated or partially saturated ring fused with a fully saturated ring.
+Exemplary ring systems of these heteroaryl groups include indolinyl, indolinonyl,
+dihydrobenzothiophenyl, dihydrobenzofuranyl, chromanyl, thiochromanyl, tetrahydroquinolinyl,
+dihydrobenzothiazine,3,4-dihydro-IH-isoquinolinyl, 2,3-dihydrobenzofuran, indolinyl, indolyl, and
+dihydrobenzoxanyl.
+
+“Monocyclic 5-membered heteroaryl” means a monocyclic heteroaryl of 5 ring atoms,
+containing one or more ring heteroatoms selected from N, O, or S, the remaining ring atoms
+being C. Examples include, but are not limited to thiophenyl, pyrazolyl, thiazolyl and imidazolyl.
+
+A “heteroarylene” is a divalent heteroaryl as herein defined. A heteroaryl may be monocyclic
+or polycyclic. “Monocyclic 5-membered heteroarylene” is a divalent monocyclic aromatic radical
+of 5 ring atoms, containing one or more ring heteroatoms selected from N, O, or S, the
+remaining ring atoms being C. Divalent thiophenyl, pyrazolyl, thiazolyl and imidazolyl are
+exemplary monocyclic 5-membered heteroarylenes. Thiophene-2,4-diyl is an exemplary
+divalent thiophenyl. Thiazol-2,4-diyl is an exemplary divalent thiazolyl.
+
+
+--- Page 8 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+WO 2026/139844 PCT/IB2025/063307
+
+A fused bicyclic ring means a monovalent or divalent radical comprising two rings, wherein
+the two rings share one edge. The fused bicyclic ring is optionally substituted by one or more
+substituents, e.g., 1 to 5 substituents, at any point of attachment. A fused bicyclic ring may be a
+fused bicyclic aryl, arylene, heteroaryl or heteroarylene. A “fused bicyclic 9-membered ring” has
+9 ring atoms that may or may not contain one or more ring heteroatoms selected from N, O, or
+S, the remaining ring atoms being C. A fused bicyclic 9- membered ring may contain a
+heteroaromatic ring that fuses with a second ring. Furthermore, a fused bicyclic 9-membered
+ring may be a monovalent or divalent radical. Thereby, conventional stable valences are
+presumed and achieved in all formulas and groups. By way of example, if a fused bicyclic
+9-membered ring comprises a monocyclic 5-membered heteroarylene that fuses with a second
+ring, such fused bicyclic 9-membered ring is a divalent radical containing one or more ring
+heteroatoms selected from N, O, or S, the remaining ring atoms being C. Examples of fused
+bicyclic 9-membered rings include, but are not limited to divalent pyrrolo[1,2-a]pyrimidine and
+monovalent 2,3-dihydrothieno[3,4-b][1,4]dioxine.
+
+Halogen or “halo” mean fluorine, chlorine, bromine, or iodine.
+
+“Alkyl” means a straight or branched chain saturated hydrocarbon containing 1-12 carbon
+atoms. Examples of a C;-Cealkyl group include, but are not limited to, methyl, ethyl, propyl,
+butyl, pentyl, hexyl, isopropyl, isobutyl, sec-butyl, tert-butyl, isopentyl, neopentyl, and isohexyl.
+Terms such as " C;-Csalkyl" are to be construed accordingly.
+
+“Alkoxy” means a straight or branched chain saturated hydrocarbon containing 1-12 carbon
+atoms containing a terminal “O” in the chain, e.g., -O(alkyl). Examples of alkoxy groups include,
+without limitation, methoxy, ethoxy, propoxy, butoxy, t-butoxy, or pentoxy groups. Terms such
+as "C1-Csalkoxy" are to be construed accordingly. Examples of a C:-Csalkoxy group include, but
+are not limited to, methoxy, ethoxy and propoxy.
+
+“Cycloalkyl” means a monocyclic or polycyclic saturated carbon ring containing 3-18 carbon
+atoms. Examples of cycloalkyl groups include, without limitations, cyclopropyl, cyclobutyl,
+cyclopentyl, cyclohexyl, cycloheptanyl, cyclooctanyl, norboranyl, norborenyl,
+bicyclo[2.2.2]octanyl, or bicyclo[2.2.2]octenyl and derivatives thereof. A Cs-Cgcycloalkyl is a
+cycloalkyl group containing from 3 to 8 carbon atoms. A cycloalkyl group can be fused (e.g.,
+decalin) or bridged (e.g., norbomane). Terms such as "bicyclic Cs-C7cycloalkyl" are to be
+construed accordingly. Examples of a bicyclic Cs-C7cycloalkyl group include, but are not limited
+to, bridged bicyclic Cs-C7cycloalkyl such as bicyclo[1.1.1]pentan-1-yl. As used herein, the term
+“bicyclic Cs-C7cycloalkyl(Co-1alkyl)” refers to a bicyclic Cs-C7cycloalkyl, and which is attached to
+the rest of the molecule by a single bond or by Cialkyl such as -CH>z- (i.e. methylene).
+
+“Heterocycloalkyl” means a saturated or unsaturated nonaromatic, mono- or polycyclic ring
+containing carbon and at least one heteroatom selected from oxygen, nitrogen, or sulfur (O, N,
+or S) and wherein there is no delocalized n electrons (aromaticity) shared among the ring
+carbon or heteroatoms. The heterocycloalkyl ring structure may be substituted by one or more
+
+
+--- Page 9 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+WO 2026/139844 PCT/IB2025/063307
+substituents. The substituents can themselves be optionally substituted. Examples of
+heterocycloalkyl rings include, but are not limited to, oxetanyl, azetadinyl, tetrahydrofuranyl,
+tetrahydropyranyl, pyrrolidinyl, oxazolinyl, oxazolidinyl, thiazolinyl, thiazolidinyl, pyranyl,
+thiopyranyl, tetrahydropyranyl, dioxalinyl, piperidinyl, morpholinyl, thiomorpholinyl,
+thiomorpholinyl S-oxide, thiomorpholinyl S-dioxide, piperazinyl, azepinyl, oxepinyl, diazepinyl,
+tropanyl, oxazolidinonyl, 1,4-dioxanyl, dihydrofuranyl, 1,3-dioxolanyl, imidazolidinyl, imidazolinyl,
+dithiolanyl, and homotropanyl. Terms such as "monocyclic C4-Ceheterocycloalkyl" are to be
+construed accordingly. Examples of a monocyclic C4-Ceheterocycloalky| include, but are not
+limited to, piperazine.
+
+“Hydroxyalkyl” means an alkyl group substituted with one or more -OH groups. Examples of
+hydroxyalkyl groups include -CH2-OH, -CH2CH2-OH, and -CH(OH)-CHs. Terms such as "C1-Cs
+hydroxyalkyl" are to be construed accordingly.
+
+“Haloalkyl’ means an alkyl group substituted with one or more halogens. Examples of
+haloalkyl groups include, but are not limited to, trifluoromethyl, difluoromethyl, pentafluoroethyl,
+trichloromethyl, etc. Terms such as " C;-Csfluoroalkyl" are to be construed accordingly.
+Examples of a C;-Cafluoroalkyl include, but are not limited to, trifluoromethyl! and trifluoroethyl.
+
+“AlkoxyC;-Czalkyl” means a C;-Csalkyl group substituted with one or more alkoxy group.
+Terms such as “C;-Csalkoxy C:-Csalkyl” are to be construed accordingly.
+
+“Haloalkoxy” means an alkoxy group substituted with one or more halogens. Examples of
+haloalkyl groups include, but are not limited to, trifluoromethoxy, difluoromethoxy,
+pentafluoroethoxy, trichloromethoxy, etc.
+
+“C1-Csalkylcarbonyl” refers to -C(O)( C1-Cs)alkyl.
+
+“C,-Csalkoxycarbonyl” refers to -C(O)O(C:-Cs)alkyl.
+
+“C,-Caalkyl-NH-carbonyl” means -C(O)NH(C;-Ca)alkyl. Terms such as C;-Czalkyl-N(C;-
+Csalkyl)-carbonyl are to be construed accordingly.
+
+“Cyano” means a substituent having a carbon atom joined to a nitrogen atom by a triple
+bond, e.g., C=N.
+
+“-S(O)o.2(C1-Cs)alkyl” means a substituent selected from the group consisting of -S-( C:-
+Ca)alkyl, -S(O)( C1-Ca)alkyl and -S(O)2(C1-Cs)alkyl.
+
+B. Salt, Derivative and Solvate Terms and Conventions
+
+The terms “salt” or “salts” refers to an acid addition or base addition salt of a compound of
+the present disclosure. “Salts” include in particular “pharmaceutical acceptable salts”. The term
+“pharmaceutically acceptable salts” refers to salts that retain the biological effectiveness and
+properties of the compounds of this disclosure and, which typically are not biologically or
+otherwise undesirable. In many cases, the compounds of the present disclosure are capable of
+forming acid and/or base salts by virtue of the presence of amino and/or carboxyl groups or
+groups similar thereto. When both a basic group and an acid group are present in the same
+molecule, the compounds of the present disclosure may also form internal salts, e.g.,
+
+-8-
+
+
+--- Page 10 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+WO 2026/139844 PCT/IB2025/063307
+zwitterionic molecules.
+
+Pharmaceutically acceptable acid addition salts can be formed with inorganic acids and
+organic acids.
+
+Inorganic acids from which salts can be derived include, for example, hydrochloric acid,
+hydrobromic acid, sulfuric acid, nitric acid, phosphoric acid, and the like.
+
+Organic acids from which salts can be derived include, for example, acetic acid, propionic
+acid, glycolic acid, oxalic acid, maleic acid, malonic acid, succinic acid, fumaric acid, tartaric
+acid, citric acid, benzoic acid, mandelic acid, methanesulfonic acid, ethanesulfonic acid,
+toluenesulfonic acid, sulfosalicylic acid, and the like.
+
+Pharmaceutically acceptable base addition salts can be formed with inorganic and organic
+bases.
+
+Inorganic bases from which salts can be derived include, for example, ammonium salts and
+metals from columns | to XII of the periodic table. In certain embodiments, the salts are derived
+from sodium, potassium, ammonium, calcium, magnesium, iron, silver, zinc, and copper;
+particularly suitable salts include ammonium, potassium, sodium, calcium and magnesium salts.
+
+Organic bases from which salts can be derived include, for example, primary, secondary,
+and tertiary amines, substituted amines including naturally occurring substituted amines, cyclic
+amines, basic ion exchange resins, and the like. Certain organic amines include
+isopropylamine, benzathine, cholinate, diethanolamine, diethylamine, lysine, meglumine,
+piperazine and tromethamine.
+
+In another aspect, the present disclosure provides compounds of the present disclosure in
+acetate, ascorbate, adipate, aspartate, benzoate, besylate, bromide/hydrobromide,
+bicarbonate/carbonate, bisulfate/sulfate, camphorsulfonate, caprate, chloride/hydrochloride,
+chlortheophyllonate, citrate, ethandisulfonate, fumarate, gluceptate, gluconate, glucuronate,
+glutamate, glutarate, glycolate, hippurate, hydroiodide/iodide, isethionate, lactate, lactobionate,
+laurylsulfate, malate, maleate, malonate, mandelate, mesylate, methylsulphate, mucate,
+naphthoate, napsylate, nicotinate, nitrate, octadecanoate, oleate, oxalate, palmitate, pamoate,
+phosphate/hydrogen phosphate/dihydrogen phosphate, polygalacturonate, propionate,
+sebacate, stearate, succinate, sulfosalicylate, sulfate, tartrate, tosylate trifenatate,
+trifluoroacetate or xinafoate salt form.
+
+“Solvate” means a complex of variable stoichiometry formed by a solute, for example, a
+compound of Formula (I) and solvent, for example, water, ethanol, or acetic acid. This physical
+association may involve varying degrees of ionic and covalent bonding, including hydrogen
+bonding. In certain instances, the solvate will be capable of isolation, for example, when one or
+more solvent molecules are incorporated in the crystal lattice of the crystalline solid. In general,
+such solvents selected for the purpose of the disclosure do not interfere with the biological
+activity of the solute. Solvates encompasses both solution-phase and isolatable solvates.
+Representative solvates include hydrates, ethanolates, methanolates, and the like.
+
+
+--- Page 11 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+WO 2026/139844 PCT/IB2025/063307
+
+“Hydrate” means a solvate wherein the solvent molecule(s) is/are water.
+
+The compounds of the present disclosure as discussed below include the free base or acid
+thereof, their salts, solvates, and may include oxidized sulfur atoms or quaternized nitrogen
+atoms in their structure, although not explicitly stated or shown, particularly the pharmaceutically
+acceptable forms thereof. Such forms, particularly the pharmaceutically acceptable forms, are
+intended to be embraced by the appended claims.
+
+C. Isomer Terms and Conventions.
+
+“Isomers” means compounds having the same number and kind of atoms, and hence the
+same molecular weight, but differing with respect to the arrangement or configuration of the
+atoms in space. The term includes stereoisomers and geometric isomers.
+
+“Stereoisomer” or “optical isomer’ means a stable isomer that has at least one chiral atom or
+restricted rotation giving rise to perpendicular dissymmetric planes (e.g., certain biphenyls,
+allenes, and spiro compounds) and can rotate plane-polarized light. Because asymmetric
+centers and other chemical structures exist in the compounds of the disclosure which may give
+rise to stereoisomerism, the disclosure contemplates stereoisomers and mixtures thereof. The
+compounds of the disclosure and their salts include asymmetric carbon atoms and may
+therefore exist as single stereoisomers, racemates, and as mixtures of enantiomers and
+diastereomers. Typically, such compounds will be prepared as a racemic mixture. If desired,
+however, such compounds can be prepared or isolated as pure stereoisomers, i.e., as individual
+enantiomers or diastereomers, or as stereoisomer-enriched mixtures. As discussed in more
+detail below, individual stereoisomers of compounds are prepared by synthesis from optically
+active starting materials containing the desired chiral centers or by preparation of mixtures of
+enantiomeric products followed by separation or resolution, such as conversion to a mixture of
+diastereomers followed by separation or recrystallization, chromatographic techniques, use of
+chiral resolving agents, or direct separation of the enantiomers on chiral chromatographic
+columns. Starting compounds of particular stereochemistry are either commercially available or
+are made by the methods described below and resolved by techniques well-known in the art.
+
+“Enantiomers” means a pair of stereoisomers that are non-superimposable mirror images of
+each other.
+
+“Diastereoisomers” or “diastereomers” mean optical isomers which are not mirror images of
+each other.
+
+“Racemic mixture” or “racemate” mean a mixture containing equal parts of individual
+enantiomers.
+
+“Non-racemic mixture” means a mixture containing unequal parts of individual enantiomers.
+
+“Geometrical isomer” means a stable isomer which results from restricted freedom of
+rotation about double bonds (e.g., cis-2-butene and trans-2-butene) or in a cyclic structure (e.g.,
+cis-1,3-dichlorocyclobutane and trans-1,3-dichlorocyclobutane). Because carbon-carbon double
+(olefinic) bonds, C=N double bonds, cyclic structures, and the like may be present in the
+
+-10-
+
+
+--- Page 12 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+WO 2026/139844 PCT/IB2025/063307
+compounds of the disclosure, the disclosure contemplates each of the various stable geometric
+isomers and mixtures thereof resulting from the arrangement of substituents around these
+double bonds and in these cyclic structures. The substituents and the isomers are designated
+using the cis/trans convention or using the E or Z system, wherein the term “E” means higher
+order substituents on opposite sides of the double bond, and the term “Z” means higher order
+substituents on the same side of the double bond. A thorough discussion of E and Z isomerism
+is provided in J. March, Advanced Organic Chemistry: Reactions, Mechanisms, and Structure,
+4th ed., John Wiley & Sons, 1992, which is hereby incorporated by reference in its entirety.
+Several of the following examples represent single E isomers, single Z isomers, and mixtures of
+E/Z isomers. Determination of the E and Z isomers can be done by analytical methods such as
+x-ray crystallography, 'H NMR, and C NMR.
+
+Some of the compounds of the disclosure can exist in more than one tautomeric form. As
+mentioned above, the compounds of the disclosure include all such tautomers.
+
+It is well-known in the art that the biological and pharmacological activity of a compound is
+sensitive to the stereochemistry of the compound. Thus, for example, enantiomers often exhibit
+strikingly different biological activity including differences in pharmacokinetic properties,
+including metabolism, protein binding, and the like, and pharmacological properties, including
+the type of activity displayed, the degree of activity, toxicity, and the like.
+
+Thus, although the racemic form of drug may be used, it is often less effective than
+administering an equal amount of enantiomerically pure drug; indeed, in some cases, one
+enantiomer may be pharmacologically inactive and would merely serve as a simple diluent.
+Furthermore, the pharmacological activities of enantiomers may have distinct biological activity.
+Indeed, some purified enantiomers have advantages over their racemates, as it has been
+reported that purified individual isomers have faster transdermal penetration rates compared to
+the racemic mixture.
+
+Thus, if one enantiomer is pharmacologically more active, less toxic, or has a preferred
+disposition in the body than the other enantiomer, it would be therapeutically more beneficial to
+administer that enantiomer preferentially. In this way, the patient undergoing treatment would be
+exposed to a lower total dose of the drug and to a lower dose of an enantiomer that is possibly
+toxic or an inhibitor of the other enantiomer.
+
+Preparation of pure enantiomers or mixtures of desired enantiomeric excess (ee) or
+enantiomeric purity are accomplished by one or more of the many methods of (a) separation or
+resolution of enantiomers, or (b) enantioselective synthesis known to those of skill in the art, or
+a combination thereof. These resolution methods generally rely on chiral recognition and
+include, for example, chromatography using chiral stationary phases, enantioselective host-
+guest complexation, resolution or synthesis using chiral auxiliaries, enantioselective synthesis,
+enzymatic and nonenzymatic kinetic resolution, or spontaneous enantioselective crystallization.
+Such methods are disclosed generally in Chiral Separation Techniques: A Practical Approach
+
+-11-
+
+
+--- Page 13 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+WO 2026/139844 PCT/IB2025/063307
+(2nd Ed.), G. Subramanian (ed.), Wiley-VCH, 2000; T.E. Beesley and R.P.W. Scott, Chiral
+Chromatography, John Wiley & Sons, 1999; and Satinder Ahuja, Chiral Separations by
+Chromatography, Am. Chem. Soc., 2000. Furthermore, there are equally well-known methods
+for the quantitation of enantiomeric excess or purity, for example, GC, HPLC, CE, or NMR, and
+assignment of absolute configuration and conformation, for example, CD ORD, X-ray
+crystallography, or NMR.
+
+In general, all tautomeric forms and isomeric forms and mixtures, whether individual
+geometric isomers or stereoisomers or racemic or non-racemic mixtures, of a chemical structure
+or compound is intended, unless the specific stereochemistry or isomeric form is specifically
+indicated in the compound name or structure.
+
+D. Pharmaceutical Administration and Treatment Terms and Conventions
+
+A “patient” or “subject” is a mammal, e.g., a human, mouse, rat, guinea pig, dog, cat, horse,
+cow, pig, or nonhuman primate, such as a monkey, chimpanzee, baboon or, rhesus. In certain
+embodiments, the subject is a primate. In yet other embodiments, the subject is a human.
+
+An “effective amount” or “therapeutically effective amount” when used in connection with a
+compound means an amount of a compound of the present disclosure that (i) treats or prevents
+the particular disease, condition, or disorder, (ii) attenuates, ameliorates, or eliminates one or
+more symptoms of the particular disease, condition, or disorder, or (iii) prevents or delays the
+onset of one or more symptoms of the particular disease, condition, or disorder described
+herein.
+
+The terms “pharmaceutically effective amount” or “therapeutically effective amount” means
+an amount of a compound according to the disclosure which, when administered to a patient in
+need thereof, is sufficient to effect treatment for disease-states, conditions, or disorders for
+which the compounds have utility. Such an amount would be sufficient to elicit the biological or
+medical response of a tissue, system, or patient that is sought by a researcher or clinician. The
+amount of a compound of according to the disclosure which constitutes a therapeutically
+effective amount will vary depending on such factors as the compound and its biological activity,
+the composition used for administration, the time of administration, the route of administration,
+the rate of excretion of the compound, the duration of treatment, the type of disease-state or
+disorder being treated and its severity, drugs used in combination with or coincidentally with the
+compounds of the disclosure, and the age, body weight, general health, sex, and diet of the
+patient. Such a therapeutically effective amount can be determined routinely by one of ordinary
+skill in the art having regard to their own knowledge, the prior art, and this disclosure.
+
+As used herein, the term “pharmaceutical composition” refers to a compound of the
+disclosure, or a pharmaceutically acceptable salt, hydrate, solvate, stereoisomer, or tautomer
+thereof, together with at least one pharmaceutically acceptable carrier, in a form suitable for oral
+or parenteral administration.
+
+-12-
+
+
+--- Page 14 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+WO 2026/139844 PCT/IB2025/063307
+
+“Carrier’ encompasses carriers, excipients, and diluents and means a material, composition
+or vehicle, such as a liquid or solid filler, diluent, excipient, solvent or encapsulating material,
+involved in carrying or transporting a pharmaceutical agent from one organ, or portion of the
+body, to another organ, or portion of the body of a subject.
+
+A subject is “in need of” a treatment if such subject would benefit biologically, medically, or
+in quality of life from such treatment (preferably, a human).
+
+As used herein, the term “inhibit”, “inhibition”, or “inhibiting” refers to the reduction or
+suppression of a given condition, symptom, or disorder, or disease, or a significant decrease in
+the baseline activity of a biological activity or process.
+
+As used herein, the term “treat”, “treating”, or “treatment” of any disease or disorder refers to
+alleviating or ameliorating the disease or disorder (i.e., slowing or arresting the development of
+the disease or at least one of the clinical symptoms thereof); or alleviating or ameliorating at
+least one physical parameter or biomarker associated with the disease or disorder, including
+those which may not be discernible to the patient.
+
+As used herein, the term “prevent”, “preventing", or “prevention” of any disease or disorder
+refers to the prophylactic treatment of the disease or disorder; or delaying the onset or
+progression of the disease or disorder.
+
+“Pharmaceutically acceptable” means that the substance or composition must be compatible
+chemically and/or toxicologically, with the other ingredients comprising a formulation, and/or the
+mammal being treated therewith.
+
+“Disorder” means, and is used interchangeably with, the terms disease, condition, or illness,
+unless otherwise indicated.
+
+“Administer”, “administering”, or “administration” means either directly administering a
+disclosed compound or pharmaceutically acceptable salt of the disclosed compound or a
+composition to a subject, or administering a pharmaceutically acceptable salt of the compound
+or composition to the subject, which can form an equivalent amount of active compound within
+the subject's body.
+
+A compound of the present disclosure”, “compounds of the disclosure”, “compound of the
+invention’, and equivalent expressions (unless specifically identified otherwise), refer to
+compounds of Formula (I) and subformulae thereof as described herein, including, the salts
+particularly the pharmaceutically acceptable salts, and the solvates and hydrates thereof, where
+the context so permits, as well as all stereoisomers (including diastereoisomers and
+enantiomers), rotamers, tautomers, and isotopically labelled compounds (including deuterium
+substitutions) thereof, as well as polymorphs thereof. For example, the term “compound of the
+invention” refers to a compound having Formula (I) or any sub-formula thereof, such as Formula
+(la), (II), (la’) (Ila), (IIb), (Ic), (Id), (III), (Illa), (IIIb), (Ile), (Illd), (Ile), (IP), (IV), (IVa), (IVb),
+(IVc), (IVd), (IVe), (V), (Va), (Vb), (Ve), (Vd), (Ve), (VI), (Via), (VIb), (Vic), (Vid), (Vie), (VII),
+(Villa), (VIllb), (VIlIc), (VIIld), (IXa), (Xb), (Xe), (Xd), (Xe), (Xf) and (IXg). In general, the
+
+-13-
+
+
+--- Page 15 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+WO 2026/139844 PCT/IB2025/063307
+compounds of the disclosure are understood to include the stable compounds thereof and
+exclude unstable compounds, even if an unstable compound might be considered to be literally
+embraced by the compound formula. Similarly, reference to intermediates, whether or not they
+themselves are claimed, is meant to embrace their salts and solvates, where the context so
+permits.
+
+“Stable compound” or “stable structure” means a compound that is sufficiently robust to
+survive isolation to a useful degree of purity from a reaction mixture, and formulation into an
+efficacious therapeutic or diagnostic agent. For example, a compound which would have a
+“dangling valency” or is a carbanion is not a compound contemplated by the disclosure.
+
+In a specific embodiment, the term “about” or “approximately” means within 20%, preferably
+within 10%, and more preferably within 5% of a given value or range.
+
+The yield of each of the reactions described herein is expressed as a percentage of the
+theoretical yield.
+
+“STAT6’ refers to the Signal Transducer and Activator of Transcription 6 protein, which is
+encoded by the gene of the same name. STAT6 is a member of the STAT family of transcription
+factors, which, in response to cytokine or growth factor signaling, are phosphorylated by
+kinase(s) associated with the respective cytokine’s or growth factor’s receptor, receptors or
+receptor complex. Upon phosphorylation, STAT proteins form dimers which translocate to the
+cell’s nucleus and act as transcriptional activators of specific target genes. In the context of the
+present invention and unless indicated differently, the term “STAT6” refers to any kind of
+STATE, including phosphorylated STAT6 (pSTAT6) and dimers thereof.
+
+“STAT6-dependent disease or disorder’ means any disease or disorder which is directly or
+indirectly affected by the modulation (e.g. inhibition) of STAT6 activity such as modulation of
+STAT6 phosphorylation, and/or the modulation of STAT6 capability to dimerize, translocate to
+the nucleus and/or to activate transcription. Thereby, the term STAT6 is to be understood
+broadly and includes phosphorylated STAT6 (pSTAT6) and dimers thereof. Indeed, in at least
+some STAT6-dependent diseases or disorders, pSTAT6 or dimers thereof are upregulated. An
+exemplary STAT6-dependent disease or disorder that is susceptible to STAT6 modulation is
+atopic dermatitis (AD).
+
+In a number of skin, respiratory and gastrointestinal inflammatory conditions and disorders,
+IL-4 and/or IL-13 cytokines are key drivers. The term “IL-4 and/or IL-13 mediated disease or
+condition” means any disease or disorder which is directly or indirectly affected by the
+modulation of IL-4 and/or IL-13 activity. This includes diseases and disorders which are affected
+by the modulation of the cytokines themselves or by the modulation of their respective receptors
+(or receptor complexes), including the IL-4 receptor alpha subunit utilized/engaged by both
+cytokines, or by modulation of the receptor-associated (Janus) kinases (JAKs). IL-4 and/or IL-13
+mediated diseases or conditions are susceptible to STAT6 modulation. Therefore, the terms “IL-
+
+-14-
+
+

@@ -24,6 +24,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **`projectexpense.html`** — 项目支出管理工具。带侧边栏的多项目管理界面，支持按月份记录和查看支出。纯前端，使用 localStorage 存储数据。
 - **`calendar-todo.html`** — 日历待办工具。以日历视图管理待办事项，支持周视图切换。纯前端，使用 localStorage 存储数据。
 - **`timeline-tool.html`** — 药物研发全景时间线工具。双轨时间线展示药物研发关键节点。纯前端，无外部依赖。
+- **`rental-ledger.html`** — 澳洲非居民房东记账本。按澳洲财年（7月-6月）记录租金收入与各类支出（税、保险、维修、Council Rate、水电、地税等），支持Dashboard概览、收支记录管理、税务汇总导出。预设ATO对齐分类。纯前端，使用 localStorage 存储数据。
 
 ### 专利 OA 答复 (`OA/`)
 

@@ -1,0 +1,1176 @@
+--- Page 100 ---
+10
+
+15
+
+20
+
+25
+
+WO 2026/139844 PCT/IB2025/063307
+2.26 (m, 3H), 1.95-2.07 (m, 1H), 1.23-1.40 (m, 1H), 1.00-1.08 (m, 3H), 0.88-0.94 (m, 1H); MS
+(ESI): m/z = 427.3 [M+H]*.
+
+Example 19: 1-(4-(2-((S)-2-ethyl-4-methyl-3-oxopiperazine-1-carbonyl)-4-methylthiazol-5-
+yl)phenyl)-5-methylimidazolidine-2,4-dione, trifluoroacetate (mixture of diastereomers)
+
+Prepared using intermediate 3-22 and intermediate 2-3
+
+Slightly yellow powder: uPLC retention time 0.72 min (Method A); ‘H-NMR (400 MHz,
+DMSO-de): 5 ppm 11.29 (s, 1H), 7.66 (d, 2H), 7.59 (d, 2H), 6.03-5.51 (m, 1H), 4.94 (q, 1H),
+4.80 — 4.43 (m, 1H), 3.76-3.34 (m, 2H), 2.87 (s, 3H), 2.51 (s, 3H), 2.03-1.83 (m, 2H), 1.35 (d,
+3H), 0.92 (q, 3H); MS (ESI): m/z = 456.0 [M+H]*.
+
+Example 20: (R)-4-(5-(1-acetyl-1,2,3,4-tetrahydroquinolin-6-yl)-4-methylthiazole-2-carbonyl)-3-
+ethyl-1-methylpiperazin-2-one or (S)-4-(5-(1-acetyl-1,2,3,4-tetrahydroquinolin-6-yl)-4-
+methylthiazole-2-carbonyl)-3-ethyl-1-methylpiperazin-2-one (single enantiomer, peak 2)
+
+Prepared using intermediate 3-14 and 1-methyl-3-ethyl-piperazin-2-one (CAS: 1214796-54-9)
+The desired product was obtained as racemate which was separated into its enantiomers by
+chiral SFC. The eutomer eluted last (peak 2): SFC, column: Chiralpak IB 5um 100x4.6mm,
+modifier: 40% MeOQH+0.05%NHs, flow: 3mL/min, ABPR 1800psi, 40°C; Peak 1: tr= 1.37
+min, >99% ee; Peak 2: tr= 1.84 min, >99% ee.
+Colorless solid: uPLC retention time 0.88 min (Method C); ‘H-NMR (400 MHz, DMSO-de) 5
+7.65 (s, 1H), 7.34 (d, 2H), 6.23-4.38 (m, 2H), 3.94-3.43 (m, 5H), 2.86 (s, 3H), 2.77 (t, 2H), 2.21
+(s, 3H), 2.13-1.77 (m, 4H), 0.91 (q, 3H); MS (ESI): m/z = 441.4 [M+H]’.
+
+Example 21: (R)-4-(5-(4-acetyl-3,4-dihydro-2H-benzo[b][1 ,4]oxazin-7-yl)-4-methylthiazole-2-
+carbonyl)-3-ethyl-1-methylpiperazin-2-one or (S)-4-(5-(4-acetyl-3,4-dihydro-2H-
+benzo[b][1,4]oxazin-7-yl)-4-methylthiazole-2-carbonyl)-3-ethyl-1-methylpiperazin-2-one (single
+enantiomer, peak 2)
+
+-99-
+
+
+--- Page 101 ---
+10
+
+15
+
+20
+
+25
+
+WO 2026/139844 PCT/IB2025/063307
+Prepared using intermediate 3-15 and 1-methyl-3-ethyl-piperazin-2-one (CAS: 1214796-54-9)
+
+The desired product was obtained as racemate which was separated into its enantiomers by
+chiral SFC. The eutomer eluted last: column: Chiralpak IB 5um 100x4.6mm, modifier: 40%
+MeOH, flow: 3mL/Min ABPR 1800psi 40°C; peak 1: tr= 1.45min, >99% ee; peak 2: tr= 1.89
+min, >99% ee.
+
+Colorless solid: uPLC retention time 0.82 min (Method A); 'H-NMR (400 MHz, DMSO) 5
+8.01 (br s, 1H), 7.17- 6.97 (m, 2H), 5.97 (t, 0.36H), 5.54 (d, 0.53H), 4.77 (dd, 0.54H), 4.55-4.38
+(m, 0.4H), 4.31 (t, 2H), 3.90 (t, 2H), 3.74-3.61 (m, 0.59H), 3.60-3.43 (m, 1.18H), 3.29 (s, 1H),
+2.86 (s, 3H), 2.51 (s, 3H), 2.28 (s, 3H), 2.07-1.78 (m, 2H), 0.91 (dt, 3H); MS (ESI): m/z = 443.3
+[M+H]".
+
+Example 22: (S)-4-(5-((R)-4-acetyl-2-methyl-3,4-dihydro-2H-benzo[b][1,4]oxazin-7-yl)-4-
+methylthiazole-2-carbonyl)-3-(methoxymethyl)-1-methylpiperazin-2-one
+
+OMe
+
+Prepared using intermediate 3-16 and intermediate 2-6
+
+Colorless powder: uPLC retention time 0.82 min (Method A); 'H-NMR (400 MHz, DMSO-de)
+5 8.12 (d, 1H), 7.06 (d, 2H), 6.02 (s, 0.5H), 5.61 (d, 0.5H), 4.86 (s, 0.5H), 4.52 (d, 0.5H), 4.39 (t,
+1H), 4.18 (s, 1H), 4.01 (h, 1H), 3.86 (t, 1H), 3.79-3.62 (m, 1H), 3.53 (dd, 1.5H), 3.32 (d, 1H),
+3.25 (s, 2.5H), 3.18 (s, 1.5H), 2.90 (s, 3H), 2.49 (s, 3H), 2.29 (s, 3H), 1.33 (d, 3H); MS/ESI: m/z
+= 473.2 [M+H]*.
+
+Example 23: (S)-3-ethyl-1-methyl-4-(1-methyl-5-(4-((S)-2-oxo-4-phenylpyrrolidin-1-yl)phenyl)-
+1H-pyrazole-3-carbonyl)piperazin-2-one or (S)-3-ethyl-1-methyl-4-(1-methyl-5-(4-((R)-2-0xo-4-
+phenylpyrrolidin-1-yl)phenyl)-1H-pyrazole-3-carbonyl)piperazin-2-one (single diastereomer,
+peak 1)
+
+ot ootde oid:
+
+Prepared using intermediate 3-18 and intermediate 2-3
+
+The desired product was obtained as a mixture of 2 diastereomers which were separated by
+chiral SFC. The most potent diastereomer eluted first (peak 1): column: Chiralpak IH 5um
+100x4.6mm, eluent: 25% MeOH+0.05%NHs, flow: 3mL/min, ABPR 1800psi, 40°C; peak 1: tr=
+1.85 min, >99% ee; Peak 2 : t= 2.29 min, >99% ee.
+
+-100-
+
+
+--- Page 102 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+WO 2026/139844 PCT/IB2025/063307
+
+Colorless solid: uPLC retention time 0.92 min (Method A); 'H NMR (600 MHz, DMSO-de) 5
+7.84 (d, 2H), 7.60 (d, 2H), 7.44-7.40 (m, 2H), 7.37 (t, 2H), 7.31-7.24 (m, 1H), 6.76 (s, 1H),
+5.49-5.42 (m, 0.5H), 4.95 (d, 1H), 4.86-4.79 (m, 1H), 4.51 (d, 0.5H), 4.27 (dd, 1H), 3.95-3.87
+(m, 4H), 3.75 (p, 1H), 3.64-3.54 (m, 1H), 3.48 (td, 1H), 3.31-3.19 (m, 2H), 2.94 (dd, 1H), 2.86
+(s, 3H), 2.76 (dd, 1H), 2.00-1.77 (m, 2H), 0.90 (t, 3H); MS (ESI): m/z = 486.4 [M+H]’.
+
+Example 24: (R)-4-(5-(4-acetyl-3,4-dihydro-2H-benzo[b]|[1 ,4]oxazin-7-yl)-1-methyl-1H-pyrazole-
+3-carbonyl)-3-ethyl-1-methylpiperazin-2-one or (S)-4-(5-(4-acetyl-3,4-dihydro-2H-
+
+benzo[b][1 ,4]oxazin-7-yl)-1-methyl-1H-pyrazole-3-carbonyl)-3-ethyl-1-methylpiperazin-2-one
+(single enantiomer, peak 2)
+
+° ° a ° °
+me “a i NN 9 or ms Qa iq ne
+o / =~ oN « / -_ LON
+
+Prepared using intermediate 3-19 and rac-3-ethyl-1-methyl-piperazin-2-one [CAS 1214796-54-
+9]
+
+The desired product was obtained as racemate which was separated into its enantiomers by
+chiral SFC. The eutomer eluted last (peak 2): column: Chiralpak IB 5um 100x4.6mm, modifier:
+35% MeOH+0.05%NHs, flow: 3mL/min, ABPR 1800psi, 40°C; peak 1: tr= 1.43 min, 99% ee;
+peak 2: tr= 1.85 min, 99% ee.
+
+Colorless solid (23 mg, 41%), uPLC retention time 0.60 min (Method A); ‘H-NMR (400 MHz,
+DMSO-de) 5 7.12-7.04 (m, 2H), 6.73 (s, 1H), 5.47-5.35 (m, 0.5H), 4.92 (d, 1H), 4.86-4.76 (m,
+4H), 4.49 (d, 0.5H), 4.34 (t, 2H), 3.95-3.83 (m, 5H), 3.64-3.53 (m, 1H), 3.34-3.18 (m, 2H), 2.85
+(s, 3H), 2.28 (s, 3H), 2.02—1.74 (m, 2H), 0.89 (t, 3H); MS (ESI): m/z = 426.3 [M+H]*.
+
+Example 25: (S)-3-(4-(3-(2-ethyl-4-methyl-3-oxopiperazine- 1-carbonyl)-1-methyl-1H-pyrazol-5-
+yl)phenyl)-1,3-dihydro-2H-imidazo[4,5-b]pyridin-2-one
+
+HN P °
+A N%sp
+
+Prepared using intermediate 3-23 and intermediate 2-3
+
+Off-white solid: uPLC retention time 0.60 min (Method A); 'H NMR (400 MHz, DMSO-de): 5
+ppm 11.47 (s, 1H), 7.97 (dd, 1H), 7.89-7.85 (m, 2H), 7.78-7.73 (m, 2H), 7.43 (dd, 1H), 7.13
+(dd, 1H), 6.85 (s, 1H), 5.53-4.44 (m, 2H), 3.98 (s, 3H), 3.62 (t, 1H), 3.54-3.37 (m, 1H), 3.26 (d,
+1H), 2.87 (s, 3H), 2.02-1.80 (m, 2H), 0.91 (t, 3H); MS/ESI: m/z = 460.4 [M+H]’.
+
+Example 26: Methyl (R)-2-methyl-7-(1-methyl-3-((S)-3-oxo-2-(2,2,2-trifluoroethyl) piperazine-1-
+carbonyl)-1H-pyrazol-5-yl)-2,3-dihydro-4H-benzo[b][1,4]oxazine-4-carboxylate or Methyl (R)-2-
+
+-101-
+
+
+--- Page 103 ---
+WO 2026/139844 PCT/IB2025/063307
+methyl-7-(1-methyl-3-((R)-3-oxo-2-(2,2,2-trifluoroethyl) piperazine-1-carbonyl)-1H-pyrazol-5-yl)-
+2,3-dihydro-4H-benzo[b][1 ,4Joxazine-4-carboxylate (single diastereomer, peak 1)
+
+MeO__O
+
+[Pd(dppf)Cl
+G MeO. Beping | (app 2]
+
+: ° at
+DIPEA ne KOAc
+SS Br DCM & Dioxane “ Bo
+O Br 6.
+
+MeO, O
+
+Step1 Step 2
+CF, Meo_,0
+HN
+
+Br. CO.H
+
+aa ; (UNH be Pp crs
+
+in weo0 wo ~ HK
+[Pa(PPhs)4], K2COs N HATU, NMM, DMF 7 ie °
+
+IH
+
+i : be Meo_0
+Dioxane /Hz0 5:1 w Oy so 2. Chiral Separation ~ and
+= N
+Step 3 7 Step 4 w fe) _CF,
+wr SO @ ?
+N
+= @\Z0
+/
+Oe
+
+Diastereomer A (peak 1)
+and
+
+Diastereomer B (peak 2)
+
+Step 1: Methyl (R)-7-bromo-2-methyl-2,3-dihydro-4H-benzo[b][1,4]oxazine-4-carboxylate
+5 To a stirred solution of (R)-7-bromo-2-methyl-3,4-dihydro-2H-benzo[b][1,4]oxazine (1.0 g,
+
+4.38 mmol, 1.0 eq) (G. Zhou et al., ACS Med. Chem. Lett. 2014, 5, 544-549, CAS 1245708-21-
+7). in DCM (40.00 mL) at 0°C was added DIPEA (1.42 g, 1.91 mL, 10.96 mmol, 2.5 eq) and
+methyl chloroformate (829 mg, 0.68 mL, 8.77 mmol, 2.0 eq). After 5 min at 0°C, the ice bath
+was removed and stirring was continued at RT for 1.5h. The reaction mixture was quenched
+
+10 __ with saturated aqueous solution of NaHCO; (50 mL) and extracted twice with EtOAc (50 mL).
+The combined organic layers were washed with brine, dried over NazSO., and evaporated to
+dryness. The crude product was purified by flash column chromatography on silica gel (40g
+cartridge, EtOAc / cyclohexane gradient) to afford the title compound as a yellow oil: uPLC
+retention time: 1.23 min: MS (ESI): m/z = 286.0 / 288.0 [M+H]".
+
+15 Step 2: Methyl (R)-2-methyl-7-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)-2,3-dihydro-4H-
+benzo[b][1,4]oxazine-4-carboxylate (intermediate 1-8)
+
+To a solution of methyl (R)-7-bromo-2-methyl-2,3-dihydro-4H-benzo[b][1,4]oxazine-4-
+carboxylate (0.5 g, 1.75 mmol, 1.0 eq) in 1,4-dioxane (10mL) was added 4,4,4',4',5,5,5',5'-
+octamethyl-2,2'-bi(1,3,2-dioxaborolane) (888 mg, 3.50 mmol, 2.0 eq), potassium acetate (515
+
+20 ~=mg, 5.24 mmol, 3.0 eq), and Pd(dppf)Cl2z (128 mg, 0.17 mmol, 0.1 eq). After purging with argon,
+the reaction mixture was stirred at 100°C for 3h. Then, DCM (50 mL) was added and washed
+
+-102-
+
+
+--- Page 104 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+WO 2026/139844 PCT/IB2025/063307
+with water (20ml). The organic phase was dried (phase separator) and evaporated. Flash
+chromatography of the crude material on silica gel (50 g cartridge, EtOAc / cyclohexane
+gradient) afforded the desired material as a yellow oil: uPLC retention time: 1.26 min; MS (ESI):
+m/z = 334.2 [M+H]*, 351.2 [M+NH,]*, 356.2 [M+Na]*.
+
+Step 3: (R)-5-(4-(methoxycarbonyl)-2-methyl-3,4-dihydro-2H-benzo[b][1 ,4]Joxazin-7-yl)-1-methyl-
+1H-pyrazole-3-carboxylic acid (intermediate 3-20)
+
+Under Ar, to a solution of 5-bromo-1-methyl-1H-pyrazole-3-carboxylic acid (100 mg, 0.49
+mmol, 1 eq) in dioxane/water 5:1 (24 mL) was added methyl (R)-2-methyl-7-(4,4,5,5-
+tetramethyl-1,3,2-dioxaborolan-2-yl)-2,3-dihydro-4H-benzo[b][1,4]oxazine-4-carboxylate
+(intermediate 1-8, 179 mg, 0.54 mmol, 1.1 eq), K2CO3 (202 mg, 1.46 mmol, 3.0 eq) and
+Pd(PPhs) (8.5 mg, 7.32 mol, 1.5 mol%). The reaction mixture was stirred at 100 °C for 1 hour.
+Additional 5-bromo-1-methyl-1H-pyrazole-3-carboxylic acid (100 mg, 0.49 mmol, 1 eq, 488
+umol) was added and the stirring at 100 °C was continued for 1h. Then, the reaction mixture
+was diluted with water (10 mL) and EtOAc (30 mL). As the phases did not separate the mixture
+was acidified to pH 1 with 6M HCl followed by extraction with DCM (2x 50 mL). The combined
+organic phases were dried (phase separator) and evaporated under vacuum. The crude product
+was purified by flash chromatography on silica gel (25 g cartridge, MeOH / DCM gradient)
+followed by preparative HPLC (column: XBridge Cis OBD, 5um, 30x100 mm; eluents A: H2O0+
+0.2%FA, B: ACN, gradient: 5% to 50% B in 10min, flow: 50 mL/min). Freeze drying of the
+product containing fractions afforded a colorless solid: uPLC retention time: 0.71 min; MS (ESI):
+m/z = 332.2 [M+H].
+
+Step 4: Methyl (R)-2-methyl-7-(1-methyl-3-((S)-3-oxo-2-(2,2,2-trifluoroethyl) piperazine-1-
+carbonyl)-1H-pyrazol-5-yl)-2,3-dihydro-4H-benzo[b][1,4]oxazine-4-carboxylate or Methyl (R)-2-
+methyl-7-(1-methyl-3-((R)-3-oxo-2-(2,2,2-trifluoroethyl) piperazine-1-carbonyl)-1H-pyrazol-5-yl)-
+2,3-dihydro-4H-benzo[b][1 ,4]oxazine-4-carboxylate (single diastereomer, peak 1)
+
+To a solution of (R)-5-(4-(methoxycarbonyl)-2-methyl-3,4-dihydro-2H-benzo[b][1 ,4]-oxazin-7-
+yl)-1-methyl-1H-pyrazole-3-carboxylic acid (40 mg, 0.12 mmol, 1 eq) in DMF (1 mL) was added
+3-(2,2,2-trifluoroethyl) piperazin-2-one (Enamine EN300-6436106, CAS# 1246548-79-7, 26.4
+mg, 0.14 mmol, 1.2 eq), HATU (55 mg, 0.14 mmol, 1.2 eq), and 4-methylmorpholin (24.4 mg, 27
+uL, 0.24 mmol, 2.0 eq). The reaction mixture was stirred at RT for 1 hour. Additional 3-(2,2,2-
+trifluoroethyl)piperazin-2-one (26.4 mg, 0.14 mmol, 1.2 eq) was added and stirring was
+continued at RT for 2h. Then, the reaction mixture was diluted with EtOAc (30 mL) and washed
+with saturated aqueous NaHCOs (10 mL) and saturated aqueous NH,Cl (10 mL) solution. The
+organic phase was dried (phase separator) and concentrated under vacuum. The residue was
+purified by flash chromatography on silica gel (MeOH / DCM gradient) to afford a colorless oil
+(45 mg, 86 umol, 71%); uPLC retention time: 0.86 min (method A); MS (ESI): m/z = 496.2
+[M+H]*.
+
+-103-
+
+
+--- Page 105 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+WO 2026/139844 PCT/IB2025/063307
+
+The diastereomeric mixture obtained was separated by chiral SFC: column: Chiralpak AD 5
+ym 30x250 mm, modifier 35% IPA + 0.05% NHs, flow: 90 mL/min, BPR pressure: 100 bar.
+
+Diastereomer A (peak 1, eutomer): colorless solid; uPLC retention time 0.86 min (Method
+A); chiral analytical SFC: column: Chiralpak AD 5um 100x4.6mm, modifier: 35% i-
+PrOH+0.05%NHs, flow: 3mL/min, ABPR 1800psi, 40°C; ta= 1.25 min, >99% ee. H-NMR (400
+MHz, DMSO-de) 6 8.21-8.37 (m, 1H), 7.94 (br d, 1H), 7.02-7.15 (m, 2H), 6.74 (s, 1H), 6.07 (br s,
+0.2H), 5.21 (dd, 0.8H), 5.05 (br d, 0.8H), 4.52 (br d, 0.2H), 4.35 (cm, 1H), 4.19 (dd, 1H), 3.90 (s,
+3H), 3.77 (s, 3H), 3.59 (cm, 0.8H), 3.15-3.40 (m, 3.2H), 3.07 (cm, 1H), 2.76 (cm, 1H), 1.32 (d,
+3H); MS (ESI): m/z = 496.3 [M+H]".
+
+Diastereomer B (peak 2, distomer): colorless solid; uPLC retention time 0.87 min (Method
+A); chiral analytical SFC: column: Chiralpak AD 5um 100x4.6mm, modifier: 35% i-
+PrOH+0.05%NHs, flow: 3mL/min, ABPR 1800psi, 40°C; ta= 2.21 min, >99% ee. 'H NMR (400
+MHz, DMSO-de) 5 8.23-8.37 (m, 1H), 7.94 (br d, 1H), 7.04-7.14 (m, 2H), 6.73 (s, 1H), 6.06 (br d,
+0.2H), 5.21 (dd, 0.8H), 5.06 (br d, 0.8H), 4.52 (br d, 0.2H), 4.34 (cm, 1H), 4.19 (dd, 1H), 3.89 (s,
+3H), 3.76 (s, 3H), 3.58 (cm, 0.8H), 3.15-3.42 (m, 3.2H), 3.07 (cm, 1H), 2.76 (cm, 1H), 1.32 (d,
+3H); MS (ESI): m/z = 496 [M+H].
+
+Example 27: (S)-N-(4-(4-(2-ethyl-4-methy|-3-oxopiperazine- 1-carbonyl)-2-methyl-1H-imidazol-1-
+yl)phenyl)acetamide
+
+Prepared using intermediate 3-24 and intermediate 2-3
+
+Colorless solid: uPLC retention time 0.45 min (Method A); H-NMR (600 MHz, DMSO-de) 5
+10.18 (s, 1H), 7.75 (s, 1H), 7.74-7.71 (m, 2H), 7.44-7.39 (m, 2H), 6.08 (s, 0.33H), 5.54 (d,
+0.67H), 4.83 (s, 0.67H), 4.50 (s, 0.33H), 3.63-3.38 (m, 2H), 3.31-3.07 (m, 1H), 2.85 (s, 3H),
+2.28 (s, 3H), 2.08 (s, 3H), 1.98-1.73 (m, 2H), 0.89 (m, 3H); MS (ESI): m/z = 384.3 [M+H]*.
+
+Example 28: (S)-4'-acetamido-N-(3-(4-hydroxyphenyl)-1-(methylamino)-1-oxopropan-2-yl)-[1,1'-
+biphenyl]-3-carboxamide
+
+oO OH
+4
+
+HN
+Cue
+°
+ie)
+HN
+“~
+
+Prepared using intermediate 3-21 and intermediate 2-1
+Colorless solid: uPLC retention time 0.61 min (Method A); ‘H-NMR (400 MHz, DMSO-de) 5
+10.06 (s, 1H), 9.12 (s, 1H), 8.63 (d, 1H), 8.05 (s, 1H), 7.92-8.01 (m, 1H), 7.77 (d, 1H), 7.66-7.74
+
+-104-
+
+
+--- Page 106 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+WO 2026/139844 PCT/IB2025/063307
+(m, 5H), 7.49 (t, 1H), 7.11 (m, 2 H), 6.61 (m, 2H), 4.54 - 4.64 (m, 1H), 3.00 (dd, 1H), 2.86 (dd,
+4H), 2.60 (d, 3H), 2.07 (s, 3H), 1.19-1.29 (m, 1H); MS/ESI: m/z = 432.4 [M + HI’.
+
+Examples 36 — 55 prepared via Route B
+
+Example 36: (S)-5-(4-(1H-pyrazol-1-yl)phenyl)-4-chloro-N-(3-(4-hydroxyphenyl)-1-
+ree eee ee
+
+oH
+Qe
+°
+Pd(PPhs)l
+SAn
+HATU, DIPEA, DMF VJo#
+
+KPO, dioxane:Hz0 4:1
+
+Intermediate 1-1 Step
+
+Step 1: (S)-5-bromo-4-chloro-N-(3-(4-hydroxyphenyl)-1-(methylamino)-1-oxopropan-2-
+yl)thiophene-2-carboxamide
+
+To a solution of (S)-2-amino-3-(4-hydroxyphenyl)-N-methylpropanamide (intermediate 1-1,
+50 mg, 0.26 mmol) in DMF (6 mL) were added 5-bromo-4-chlorothiophene-2-carboxylic acid
+(62.2 mg, 0.26 mmol), DIPEA (0.14 mL, 0.77 mmol), and HATU (147 mg, 0.39 mmol) at room
+temperature. The resulting yellow solution was stirred at room temperature for 15 min. H2O was
+added and extracted with DCM. The DCM phase was separated, dried over NazSO, and
+evaporated. The residue was purified by flash chromatography (6%-100% EtOAc/cyclohexane)
+to afford the product as a yellow solid: uPLC retention time 0.94 min (Method A); MS (ESI): m/z
+= 417.0/419.0 [M+H]*.
+
+Step 2: (S)-5-(4-(1H-pyrazol-1-yl)phenyl)-4-chloro-N-(3-(4-hydroxyphenyl)-1-(methylamino)-1-
+oxopropan-2-yl)thiophene-2-carboxamide
+
+To a solution of (S)-5-bromo-4-chloro-N-(3-(4-hydroxyphenyl)-1-(methylamino)-1-
+oxopropan-2-yl)thiophene-2-carboxamide (35 mg, 84 jumol) in dioxane:H2O 4:1) (2 mL) were
+added (4-(1H-pyrazol-1-yl)phenyl)boronic acid (18.9 mg, 0.1 mmol), KsPO4 (71.1 mg, 0.34
+mmol) and tetrakis(triphenylphosphine)palladium (9.7 mg, 8.4 ymol) under argon. The reaction
+mixture was stirred at room temperature for 1h. H2O was added and extracted with DCM. The
+DCM phase was separated, dried over Na2SO, and evaporated. The residue was purified by
+flash chromatography (2%-15% MeOH/DCM) to afford the product as a colorless solid: uPLC
+retention time 0.99 min (Method A); 'H NMR (400 MHz, DMSO-ds) 5 9.17 (s, 1H), 8.79 (d, 1H),
+8.58 (d, 1H), 8.04 (q, 1H), 7.96-8.01 (m, 3H), 7.77-7.81 (m, 3H), 7.08 (cm, 2 H), 6.63 (cm, 2H),
+6.58 (dd, 1H), 4.51 (ddd, 1H), 2.98 (dd, 1H), 2.80 (dd, 1H), 2.60 (d, 3H); MS (ESI): m/z =
+481.3/483.2 [M+H]*.
+
+The following examples can be prepared by the procedure used for example 36 using the
+appropriate building blocks:
+
+-105-
+
+
+--- Page 107 ---
+10
+
+15
+
+20
+
+25
+
+WO 2026/139844 PCT/IB2025/063307
+Example 37: (S)-5-(4-(1H-1,2,4-triazol-1-yl)phenyl)-4-chloro-N-(3-(4-hydroxyphenyl)-1-
+(methylamino)-1-oxopropan-2-yl)thiophene-2-carboxamide
+
+OH
+
+[e}
+N=
+
+s.
+by \_!
+
+N
+H (S)
+
+HN
+Nn
+
+cl
+
+Prepared using 1-[4-(tetramethyl-1,3,2-dioxaborolan-2-yl)phenyl]-1H-1,2,4-triazole (CAS:
+1384951-86-3), 5-bromo-4-chlorothiophene-2-carboxylic acid (CAS: 123418-69-9), and
+intermediate 2-1
+
+Colorless solid: uPLC retention time 0.81 min (Method A); 'H NMR (600 MHz, DMSO-de) 5
+9.39 (s, 1H), 9.19 (s, 1H), 8.84 (d, 1H), 8.29 (s, 1H), 8.07 (q, 1H), 8.04 — 7.97 (m, 3H), 7.85 (d
+2H), 7.09 (d, 2H), 6.63 (d, 2H), 4.51 (cm, 1H), 2.98 (dd, 1H), 2.80 (dd, 1H), 2.60 (d, 3H); MS
+(ESI): m/z = 482.2/484.2 [M+H]*.
+
+Example 38: (S)-5-(4-acetyl-3,4-dihydro-2H-benzo[b][1,4]oxazin-7-yl)-N-(3-(4-hydroxyphenyl)-1-
+(methylamino)-1-oxopropan-2-yl)-4-methylthiophene-2-carboxamide
+OH
+
+2 °
+
+As
+CQ"
+Prepared using intermediate 1-2, 5-bromo-4-methylthiophene-2-carboxylic acid (CAS: 54796-
+53-1), and intermediate 2-1
+
+Colorless powder: uPLC retention time 0.74 min (Method A); ‘H-NMR (400 MHz, DMSO-d.)
+5 9.12 (s, 1H), 8.50 (d, 1H), 7.96 (d, 1H), 7.71 (s, 1H), 7.10 — 7.03 (m, 2H), 7.02 - 6.94 (m, 2H),
+6.66 — 6.59 (m, 2H), 4.54 — 4.43 (m, 1H), 4.29 (t, 2H), 3.88 (t, 2H), 2.95 (dd, 1H), 2.88 - 2.76
+(m, 1H), 2.59 (d, 3H), 2.27 (d, 6H), one aromatic proton not visible (very broad signal); MS
+(ESI): m/z = 494.4 [M+H]’.
+
+2r
+
+N N
+H (Ss)
+
+Example 39: (S)-3-ethyl-1-methyl-4-(4-methyl-5-((R)-2-methyl-4-(methylsulfony|)-3,4-dihydro-
+2H-benzo[b][1,4]oxazin-7-yl)thiophene-2-carbonyl) piperazin-2-one
+
+N |
+
+Prepared using intermediate 1-9, 5-bromo-4-methylthiophene-2-carboxylic acid (CAS: 54796-
+53-1), and intermediate 2-3
+
+-106-
+
+
+--- Page 108 ---
+10
+
+15
+
+20
+
+25
+
+WO 2026/139844 PCT/IB2025/063307
+
+Colorless solid: uPLC retention time 0.87 min (Method A); H-NMR (600 MHz, DMSO-de) 5
+7.68 (d, 1H), 7.38 (s, 1H), 7.07 (dd, 1H), 7.03 (d, 1H), 4.69 (s, 1H), 4.38 — 4.26 (m, 2H), 4.13
+(dd, 1H), 3.77 — 3.56 (m, 1H), 3.50 (td, 1H), 3.28 — 3.21 (m, 2H), 3.19 (s, 3H), 2.86 (s, 3H), 2.30
+(s, 3H), 1.99 — 1.80 (m, 2H), 1.36 (d, 3H), 0.91 (t, 3H); MS (ESI): m/z = 492.3 [M+H]’.
+
+Example 40: (S)-4-(5-(1-acetyl-5-fluoro-1,2,3,4-tetrahydroquinolin-6-yl)-4-methylthiophene-2-
+carbonyl)-3-ethyl-1-methylpiperazin-2-one
+
+~< 9
+
+Prepared using intermediate 1-3, 5-bromo-4-methylthiophene-2-carboxylic acid (CAS: 54796-
+53-1), and intermediate 2-3
+
+Off white oil: UPLC retention time 0.86 min (Method A); ‘H-NMR (400 MHz, DMSO) 6 7.63 -
+7.46 (m, 1H), 7.45 — 7.34 (m, 1H), 7.26 (t, 1H), 4.80 — 4.60 (m, 1H), 4.40 — 4.22 (m, 1H), 3.79 -
+3.71 (m, 2H), 3.71 — 3.56 (m, 1H), 3.56 (s, 1H), 3.29 — 3.23 (m, 1H), 2.87 (s, 3H), 2.83 - 2.74
+(m, 2H), 2.24 (s, 3H), 2.16 (d, 3H), 2.02 - 1.77 (m, 4H), 0.91 (t, 3H); MS (ESI): m/z = 458.1
+[M+H]’.
+
+Example 41: (S)-4-(5-(5-acetyl-5,6,7,8-tetrahydro-1,5-naphthyridin-2-yl)-4-methylthiophene-2-
+carbonyl)-3-ethyl-1-methylpiperazin-2-one
+
+mA i L
+= § 0
+
+Prepared using intermediate 1-14, 5-bromo-4-methylthiophene-2-carboxylic acid (CAS: 54796-
+53-1), and intermediate 2-3
+
+Colorless solid: uPLC retention time 0.71 min (Method A); ‘H-NMR (600 MHz, CDCI3) 5
+7.40 (d, 1H), 7.26 (s, 1H), 7.17 (s, 1H), 5.43 — 5.23 (m, OH), 5.03 (d, 1H), 4.64 (d, 1H), 3.81 (s,
+2H), 3.72 — 3.36 (m, 2H), 3.20 (d, 1H), 3.00 (d, 5H), 2.47 (s, 3H), 2.34 (s, 3H), 2.11 (dp, 3H),
+1.92 (dq, 1H), 1.04 (t, 3H); MS (ESI): m/z = 441.1 [M+H]’.
+Example 42: (S)-4-(5-((R)-4-acetyl-2-ethyl-3,4-dihydro-2H-benzo[b][1,4]oxazin-7-yl)-4-
+methylthiophene-2-carbonyl)-3-ethyl- 1-methylpiperazin-2-one or (S)-4-(5-((S)-4-acetyl-2-ethyl-
+3,4-dihydro-2H-benzo[b][1 ,4Joxazin-7-yl)-4-methylthiophene-2-carbonyl)-3-ethyl-1-
+methylpiperazin-2-one (single diastereomer, Peak 1)
+
+-107-
+
+
+--- Page 109 ---
+10
+
+15
+
+20
+
+25
+
+WO 2026/139844 PCT/IB2025/063307
+
+Prepared using intermediate 1-4, 5-bromo-4-methylthiophene-2-carboxylic acid (CAS: 54796-
+53-1), and intermediate 2-3
+
+The desired product was obtained as a mixture of 2 diastereomers which were separated by
+chiral SFC. The most potent diastereomer eluted first (peak 1): column: Chiralpak IH 5um
+100x4.6mm, modifier: 40% MeOH+0.05%NHs, flow 3mL/min, ABPR 1800psi, 40°C; Peak 1: ta=
+1.5 min, 99.5% ee, Peak 2: tr= 2.4 min, 99.5% ee.
+
+Colorless powder (12.00 mg, 16.0 %). UPLC retention time 0.95 min (Method A); ‘H-NMR
+(600 MHz, DMSO) 6 8.09 (br s, 1H), 7.38 (s, 1H), 7.04 — 6.98 (m, 2H), 4.70 (br s, 1H), 4.32 (d,
+1H), 4.20 — 4.14 (m, 1H), 3.64 (br s, 1H), 3.50 (td, 1H), 3.45 — 3.30 (m, 1H), 3.28 — 3.23 (m, 1H),
+2.86 (s, 3H), 2.30 (s, 3H), 2.28 (s, 3H), 1.94 (ddd, 1H), 1.86 (dt, 1H), 1.65 (m, 2H), 1.01 (t, 3H),
+0.91 (t, 3H); MS (ESI): m/z = 470.3 [M+H]*.
+
+Example 43: (S)-4-(5-(1-acetyl-2,3-dihydro-1H-pyrido[2,3-b][1 ,4]oxazin-6-yl)-4-methylthiophene-
+2-carbonyl)-3-ethyl-1-methylpiperazin-2-one
+
+Prepared using intermediate 1-15, 5-bromo-4-methylthiophene-2-carboxylic acid (CAS: 54796-
+53-1), and intermediate 2-3
+
+Colorless solid: uPLC retention time 0.58 min (Method A); 1H-NMR (400 MHz, DMSO) 5
+9.01 —7.90 (m, 1H), 7.41 — 7.27 (m, 2H), 4.74 — 4.60 (m, 1H), 4.42 (dd, 2H), 4.33 — 4.21 (m,
+1H), 3.92 (dd, 2H), 3.71 — 3.55 (m, 1H), 3.49 (td, 1H), 3.29 — 3.19 (m, 1H), 2.86 (s, 3H), 2.46 (s,
+3H), 2.28 (s, 3H), 2.01 — 1.76 (m, 2H), 0.90 (t, 3H); MS (ESI): m/z = 443.3 [M+H]*.
+Example 44: (R)-N-(1-hydroxypropan-2-yl)-4-methyl-5-(4-(2-oxo-2,3-dihydro-1H-imidazo[4,5-
+b]pyridin-1-yl)phenyl)thiazole-2-carboxamide
+
+Prepared using intermediate 1-11, methyl 5-bromo-4-methyl-1,3-thiazole-2-carboxylate (CAS:
+79247-79-3), and D-alaninol (CAS: 35320-23-1)
+
+-108-
+
+
+--- Page 110 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+WO 2026/139844 PCT/IB2025/063307
+
+Colorless solid: uPLC retention time 0.70 min (Method A); ‘H-NMR (400 MHz, DMSO-de) 5
+11.91 (br s, 1H), 8.39 (d, 1H), 8.02 (dd, 1H), 7.73 (cm, 4H), 7.46 (dd, 1H), 7.05 (dd, 1H), 4.83 (t,
+1H), 4.01 (cm, 1H), 3.59-3.37 (m, 2H), 2.56 (s, 3H), 1.16 (d, 3H); MS (ESI): m/z = 410.1 [M+H]*.
+
+Example 45: (3S,6S)-4-(5-((R)-4-acetyl-2-methyl-3,4-dihydro-2H-benzo[b][1,4]oxazin-7-yl)-4-
+methylthiazole-2-carbonyl)-3-ethyl-6-methylpiperazin-2-one or (3S,6R)-4-(5-((R)-4-acetyl-2-
+methyl-3,4-dihydro-2H-benzo[b][1,4]oxazin-7-yl)-4-methylthiazole-2-carbonyl)-3-ethyl-6-
+methylpiperazin-2-one (single diastereomer, Peak 2)
+
+Prepared using intermediate 1-7, methyl 5-bromo-4-methyl-1,3-thiazole-2-carboxylate (CAS:
+79247-79-3), and intermediate 2-4
+
+The desired product was obtained as a mixture of 2 diastereomers which were separated by
+chiral SFC. The more potent diastereomer eluted second (Peak 2): column: Chiralpak IB 5um
+100x4.6mm, modifier: 45% iPrOH+0.05%NHs, flow: 3mL/min ABPR 1800psi, 40°C; peak 1: tr=
+1.28 min, >99% ee; peak 2 : tr= 1.98 min, >99% ee.
+
+Colorless solid: uPLC retention time 0.90 min (Method A); H-NMR (DMSO-de): 5 8.07 (br d,
+1H), 7.03-7.08 (m, 3H), 5.90-5.94 (m, 1H), 5.53-5.57 (m, 1H), 4.72 (dd, 1H), 4.49 (br dd, 1H),
+4.30 - 4.43 (m, 1H), 4.10-4.27 (br s, 1H), 3.38-3.64 (m, 1H), 3.06-3.15 (m, 1H), 2.77-2.86 (m,
+1H), 2.29 (s, 3H), 1.79-2.03 (m, 2H), 1.33 (d, 3H), 1.05-1.15 (m, 3H), 0.85-0.97 (m, 3H); MS
+(ESI): m/z = 457.3 [M+H]’.
+
+Example 46: Methyl (R)-7-(2-((2S,5S)-2-ethyl-5-methyl-3-oxopiperazine-1-carbonyl)-4-
+methylthiazol-5-yl)-2-methyl-2,3-dihydro-4H-benzo[b][1,4]oxazine-4-carboxylate or Methyl (R)-7-
+(2-((28,5R)-2-ethyl-5-methyl-3-oxopiperazine-1-carbonyl)-4-methylthiazol-5-yl)-2-methyl-2,3-
+dihydro-4H-benzo[b][1,4]oxazine-4-carboxylate (single diastereomer, Peak 2)
+
+none ° Meo-d" °
+SAN ‘s) © or sn (s) °
+
+Prepared using intermediate 1-8, methyl 5-bromo-4-methyl-1,3-thiazole-2-carboxylate (CAS:
+79247-79-3), and intermediate 2-4
+
+The desired product was obtained as a mixture of 2 diastereomers which were separated by
+chiral SFC. The more potent diastereomer eluted second (Peak 2): column: Chiralpak IB 5um
+100x4.6mm, modifier: 35% iPrOH+0.05%NHs, flow: 3mL/min ABPR 1800psi, 40°C; Peak 1: tr=
+1.54 min, >99% ee; Peak 2 : tr= 2.46 min, >99% ee.
+
+-109-
+
+
+--- Page 111 ---
+10
+
+15
+
+20
+
+25
+
+WO 2026/139844 PCT/IB2025/063307
+
+Colorless solid: uPLC retention time 1.06 min (Method A); ‘H-NMR (DMSO-de): 5 8.08 (br d,
+1H), 7.94 (br d, 1H), 7.08 (dd, 1H), 7.04 (d, 1H), 5.90-5.96 (m, 0.5H), 5.52-5.60 (m, 0.5H), 4.73
+(dd, 0.5H), 4.50 (br dd, 0.5H), 4.30-4.39 (m, 1H), 4.20 (dd, 1H), 3.78 (s, 3H), 3.46-3.66 (m, 1H),
+3.26-3.32 (m, 1H), 3.06-3.17 (m, 0.5H), 2.78-2.90 (m, 0.5H), 2.49-2.52 (m, 3H), 1.80-2.06 (m,
+4H), 1.33 (d, 3H), 1.01-1.27 (m, 3H), 0.87-0.96 (m, 3H) ; MS (ESI): m/z = 473.4 [M+H]*.
+
+Example 47: Methyl (R)-7-(3-((S)-2-ethyl-4-methyl-3-oxopiperazine-1-carbonyl)-1-methyl-1H-
+pyrazol-5-yl)-2-methyl-2,3-dihydro-4H-benzo[b][1,4]oxazine-4-carboxylate
+
+o °
+and wh 5
+
+Prepared using intermediate 1-8, 5-bromo-1-methyl-1H-pyrazole-3-carboxylic acid (CAS:
+1222174-93-7), and intermediate 2-3
+
+Colorless solid: uPLC retention time 0.82 min (Method A); ‘H-NMR (400 MHz, DMSO-d.) 5
+7.94 (d, 1H), 7.15-6.99 (m, 2H), 6.72 (s, 1H), 5.53-5.33 (m, 0.5H), 4.93 (d, 1H), 4.85-4.77 (m,
+1H), 4.50 (d, 0.5H), 4.34 (dat, 1H), 4.19 (dd, 1H), 3.90 (s, 3H), 3.77 (s, 3H), 3.65-3.38 (m, 2H),
+3.29 (dd, 2H), 2.85 (s, 3H), 2.03-1.71 (m, 2H), 1.32 (d, 3H), 0.90 (t, 3H); MS (ESI): m/z = 456.3
+[M+H]".
+Example 48: (S)-3-ethyl-1-methyl-4-(1-methyl-5-((R)-2-methyl-4-(methylsulfonyl)-3,4-dihydro-
+2H-benzo[b][1,4]oxazin-7-yl)-1H-pyrazole-3-carbonyl)piperazin-2-one
+
+Prepared using intermediate 1-9, 5-bromo-1-methyl-1H-pyrazole-3-carboxylic acid (CAS:
+1222174-93-7), and intermediate 2-3
+
+Colorless solid: uPLC retention time 0.70 min (Method A); ‘H-NMR (400 MHz, DMSO-de) 5
+7.71 (d, 1H), 7.18-7.06 (m, 2H), 6.73 (s, 1H), 5.41 (s, 0.5H), 4.93 (d, 1H), 4.81 (s, 1H), 4.50 (d,
+0.5H), 4.41-4.29 (m, 1H), 4.15 (dd, 1H), 3.91 (s, 3H), 3.54 (dt, 2H), 3.28-3.21 (m, 2H), 3.20 (s,
+3H), 2.86 (s, 3H), 2.02—1.77 (m, 2H), 1.36 (d, 3H), 0.90 (t, 3H); MS (ESI): m/z = 476.2 [M+H]*.
+
+Example 49: (S)-1-(4-(3-(2-ethyl-4-methyl-3-oxopiperazine- 1-carbonyl)-1-methyl-1H-pyrazol-5-
+yl)phenyl)-1,3-dihydro-2H-imidazo[4,5-b]pyridin-2-one, trifluoroacetate
+
+,
+
+-110-
+
+
+--- Page 112 ---
+10
+
+15
+
+20
+
+25
+
+WO 2026/139844 PCT/IB2025/063307
+Prepared using intermediate 1-11, 5-bromo-1-methyl-1H-pyrazole-3-carboxylic acid (CAS:
+1222174-93-7), and intermediate 2-3
+
+Off-white powder: uPLC retention time 0.61 min (Method A); ‘H-NMR (400 MHz, DMSO-de):
+3 ppm 11.92 (s, 1H), 8.02 (dd, 1H), 7.82-7.70 (m, 4H), 7.44 (dd, 1H), 7.06 (dd, 1H), 6.85 (s,
+1H), 5.47-4.46 (m, 2H), 3.98 (s, 3H), 3.71-3.18 (m, 3H), 2.87 (s, 3H), 2.03-1.77 (m, 2H), 0.92
+(t, 3H); MS/ESI: m/z = 460.1 [M+H]*.
+
+Example 50: Methyl! (R)-7-(3-((2S,5S)-2-ethyl-5-methyl-3-oxopiperazine-1-carbonyl)-1-methyl-
+1H-pyrazol-5-yl)-2-methyl-2,3-dihydro-4H-benzo[b][1,4]oxazine-4-carboxylate or Methyl (R)-7-
+(3-((2S,5R)-2-ethyl-5-methyl-3-oxopiperazine- 1-carbonyl)-1-methyl-1H-pyrazol-5-yl)-2-methyl-
+2,3-dihydro-4H-benzo[b][1 ,4]oxazine-4-carboxylate (single diastereomer, peak 1)
+
+°
+Meo ° Meo
+N%s) N%s)
+w, GG ¢ Le \@ NH
+
+Prepared using intermediate 1-8, 5-bromo-1-methyl-1H-pyrazole-3-carboxylic acid (CAS:
+1222174-93-7), and intermediate 2-4
+
+Chiral separation: SFC, column: Chiralpak AD 5um 100x4.6mm, modifier: 40%
+iPrOH+0.05%NHs, flow: 3mL/min, ABPR 1800psi, 40°C; Peak 1: tp= 1.31 min, >99% ee; Peak 2
+: tr= 1.95 min, >99% ee.
+
+Colorless solid: uPLC retention time 0.85 min (Method A); 'H NMR (DMSO-d): 5 8.00 (s,
+1H), 7.91 - 7.99 (m, 1H), 7.10 (d, 1H), 7.08 (s, 1H), 6.72 (s, 1H), 5.33-5.36 (m, 0.5H), 4.89-4.94
+(m, 0.5H), 4.75-4.78 (m, 0.5H), 4.51-4.55 (m, 0.5H), 4.30-4.38 (m, 1H), 4.19 (dd, 1H), 3.90 (s,
+3H), 3.77 (s, 3H), 3.43-3.65 (m, 1H), 3.26-3.37 (m, 0.5H), 3.00-3.07 (m, 0.5H), 2.67-2.73 (m,
+0.5H), 1.75-1.99 (m, 1.5H), 1.32 (d, 3H), 1.01-1.12 (m, 3H), 0.90 (t, 3H); MS/ESI: m/z = 456.2
+[M+H]’.
+
+Example 51: (R)-4-(5-((R)-4-acetyl-2-methy|-3,4-dihydro-2H-benzo[b][1,4]oxazin-7-yl)-1-methy|-
+1H-pyrazole-3-carbonyl)-1-methyl-3-(2,2,2-trifluoroethyl) piperazin-2-one or (S)-4-(5-((R)-4-
+acetyl-2-methyl-3,4-dihydro-2H-benzo[b][1,4]oxazin-7-yl)-1-methyl-1H-pyrazole-3-carbonyl)-1-
+methyl-3-(2,2,2-trifluoroethyl)piperazin-2-one (single diastereomer, peak 2)
+
+° CF;
+toatie or + ai ea
+/
+
+Prepared using intermediate 1-7, 5-bromo-1-methyl-1H-pyrazole-3-carboxylic acid (CAS:
+1222174-93-7), and 1-methyl-3-(2,2,2-trifluoroethyl)piperazin-2-one (CAS: 2352083-67-9)
+
+-111-
+
+
+--- Page 113 ---
+10
+
+15
+
+20
+
+25
+
+WO 2026/139844 PCT/IB2025/063307
+
+The desired product was obtained as a mixture of 2 diastereomers which were separated by
+chiral SFC. The more potent diastereomer eluted second (Peak 2): column: Chiralpak IB 5um
+100x4.6mm, modifier: 30% i-PrOH+0.05%NHs, flow: 3mL/min, ABPR 1800psi, 40°C; Peak 1:
+tr= 2.32 min, >99% ee; Peak 2: tr= 2.84 min, >99% ee.
+
+Colorless solid (9 mg, 36%), uPLC retention time 0.73 min (Method A); 'H NMR (400 MHz,
+DMSO-de) 5 8.53-7.50 (m, 2H), 7.08 (d, 2H), 6.75 (s, 1H), 5.27 (d, 1H), 5.11 (d, 1H), 4.40 (ddt,
+1H), 4.19 (s, 1H), 3.90 (d, 3H), 3.78-3.67 (m, 1H), 3.51 (td, 1H), 3.32-3.22 (m, 1H), 3.09 (at,
+1H), 2.89 (s, 3H), 2.75 (t, 1H), 2.29 (s, 3H), 1.33 (d, 3H), 1.23 (s, 1H); MS (ESI): m/z = 494.1
+[M+H]".
+
+Example 52: (S)-4-(5-((R)-4-acetyl-2-methyl-3,4-dihydro-2H-benzo[b][1,4]oxazin-7-yl)-1-ethyl-
+1H-pyrazole-3-carbonyl)-3-ethyl-1-methylpiperazin-2-one
+
+Prepared using intermediate 1-7, 5-bromo-1-ethyl-1H-pyrazole-3-carboxylic acid (CAS:
+2385950-17-2), and intermediate 2-3
+
+Colorless solid: uPLC retention time 0.75 min (Method A); ‘H-NMR (400 MHz, DMSO-d.) 5
+7.01 (d, 2H), 6.68 (s, 1H), 5.45 (s, 0.5H), 4.91 (d, 1H), 4.87-4.74 (m, 1H), 4.50 (d, 0.5H), 4.45-
+4.33 (m, 1H), 4.18 (q, 3H), 3.64-3.49 (m, 2H), 3.30-3.18 (m, 2H), 2.86 (s, 3H), 2.29 (s, 3H),
+2.03-+1.75 (m, 2H), 1.34 (t, 6H), 0.91 (t, 3H); MS (ESI) m/z = 454.2 [M+H]’.
+
+Example 53: Methyl (R)-7-(1-ethyl-3-((S)-2-ethyl-4-methyl-3-oxopiperazine-1-carbonyl)-1H-
+pyrazol-5-yl)-2-methyl-2,3-dihydro-4H-benzo[b][1,4]oxazine-4-carboxylate
+
+Prepared using intermediate 1-8, 5-bromo-1-ethyl-1H-pyrazole-3-carboxylic acid (CAS:
+2385950-17-2), and intermediate 2-3
+
+Colorless solid: uPLC retention time 0.90 min (Method A); 'H NMR (600 MHz, DMSO-de) 5
+7.95 (Ss, 1H), 7.09-6.94 (m, 2H), 6.67 (s, 1H), 5.45 (s, 0.5H), 4.92 (d, 1H), 4.85-4.75 (m, 1H),
+4.50 (d, 0.5H), 4.39-4.29 (m, 1H), 4.19 (t, 3H), 3.77 (s, 3H), 3.63-3.39 (m, 2H), 3.32-3.20 (m,
+3H), 2.85 (s, 3H), 2.01-1.75 (m, 2H), 1.39-1.27 (m, 6H), 0.96-0.85 (m, 3H), MS (ESI): m/z =
+470.2 [M+H]*.
+
+-112-
+
+
+--- Page 114 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+WO 2026/139844 PCT/IB2025/063307
+Example 54: Methyl (R)-7-(1-ethyl-3-((2S,5S)-2-ethyl-5-methyl-3-oxopiperazine- 1-carbonyl)-1H-
+pyrazol-5-yl)-2-methyl-2,3-dihydro-4H-benzo[b][1,4]oxazine-4-carboxylate or Methyl (R)-7-(1-
+ethyl-3-((2S,5R)-2-ethyl-5-methyl-3-oxopiperazine- 1-carbonyl)-1H-pyrazol-5-yl)-2-methyl-2,3-
+dihydro-4H-benzo[b][1,4]oxazine-4-carboxylate (single diastereomer, peak 1)
+
+° ° ° °
+“orks on “otk
+
+Prepared using intermediate 1-8, 5-bromo-1-ethyl-1H-pyrazole-3-carboxylic acid (CAS:
+2385950- 17-2), and intermediate 2-4
+
+The desired product was obtained as a mixture of 2 diastereomers which were separated by
+chiral SFC. The more potent diastereomer eluted first (Peak 1): column: Chiralpak AD 5um
+100x4.6mm, modifier: 40% iPrOH+0.05%NHs, flow: 3mL/min, ABPR 1800psi, 40°C; peak 1: tr=
+1.16 min, >99% ee; peak 2 : tr= 1.64 min, >99%.
+
+Colorless solid: uPLC retention time 0.93 min (Method A); 'H-NMR (DMSO-de): 5 8.01 (s,
+1H), 7.92-7.99 (m, 1H), 7.03 (br d, 1H), 7.00 (s, 1H), 6.67 (s, 1H), 5.35-5.39 (m, 0.5H), 4.87—
+4.92 (m, 0.5H), 4.73-4.77 (m, 0.5H), 4.51— 4.56 (m, 0.5H), 4.28-4.38 (m, 1H), 4.14-4.22 (m,
+3H), 3.77 (s, 3H), 3.54-3.64 (m, 0.5H), 3.45-3.50 (m, 0.5H), 3.33 (s, 2H), 3.27 - 3.32 (m, 2H),
+3.00 — 3.06 (m, 0.5H), 2.67-2.73 (m, 0.5H), 1.75-1.99 (m, 2H), 1.30-1.36 (m, 6H), 1.02-1.19 (m,
+3H), 0.91 (br t, 3H); MS/ESI: m/z = 470.1 [M+H]*.
+
+Example 55: (S)-4-(3-((R)-4-acetyl-2-methylI-3,4-dihydro-2H-benzo[b][1 ,4]oxazin-7-yl)-2-
+
+fluorobenzoyl)-3-ethyl-1-methylpiperazin-2-one
+fe)
+ON
+
+Prepared using intermediate 1-7, 3-bromo-2-fluoro-benzoic acid (CAS: 161957-56-8), and
+intermediate 2-3
+
+Off-white powder (contains residual TFA, 80%): uPLC retention time 0.76 min (Method A);
+H-NMR (DMSO-de): 5 8.61-7.65 (m, 1H), 7.63 (td, 1H), 7.52-7.32 (m, 2H), 7.16-6.98 (m, 2H),
+4.88-4.77 (m, 1H), 4.56 (dd, 1H), 4.39 (ddt, 1H), 3.76-3.07 (m, 5H), 2.86 (d, 3H), 2.29 (s, 3H),
+2.04—1.68 (m, 2H), 1.33 (d, 3H), 0.84 (dt, 3H); MS/ESI: m/z = 454.1 [M+H]’.
+
+Example 67: (S)-4-(5-((R)-1-acetyl-3-(hydroxymethyl)-1,2,3,4-tetrahydroquinolin-6-yl)-4-
+methylthiophene-2-carbonyl)-3-ethyl- 1-methylpiperazin-2-one or (S)-4-(5-((S)-1-acetyl-3-
+(hydroxymethyl)-1,2,3,4-tetrahydroquinolin-6-yl)-4-methylthio-phene-2-carbonyl)-3-ethyl-1-
+methylpiperazin-2-one (single diastereomer, peak 1)
+
+-113-
+
+
+--- Page 115 ---
+10
+
+15
+
+20
+
+WO 2026/139844 PCT/IB2025/063307
+
+i iS
+Ss. fe}
+N
+Br. (Ss)
+|
+
+re} CONS
+
+Oo.
+( e ——_Raereneel spike
+
+ie) Cs2CO3
+
+TBDMSO. TBDMSO.
+
+Step1
+p f°)
+{ O
+s ] N%s)
+(R) \ ONS
+HO.
+and
+THF
+
+9 °
+Step 2 ( Ss Nay?
+(s) \ LONG
+
+1M TBAF in THF Chiral Separation
+
+Step 1: (3S)-4-(5-(1-acetyl-3-(((tert-butyldimethylsilyl)oxy)methyl)-1,2,3,4-tetrahydroquinolin-6-
+yl)-4-methylthiophene-2-carbonyl)-3-ethyl-1-methylpiperazin-2-one
+
+A solution of 1-(3-(((tert-butyldimethylsilyl)oxy)methyl)-6-(4,4,5,5-tetramethyl-1,3,2-
+dioxaborolan-2-yl)-3,4-dihydroquinolin-1(2H)-yl)ethan-1-one (intermediate 1-10, 85 mg, 0.17
+mmol), (S)-4-(5-bromo-4-methylthiophene-2-carbonyl)-3-ethyl-1-methylpiperazin-2-one (85 mg,
+0.23 mmol), and Pd(dtbpf)Clz (16 mg, 24 umol) in THF (2 mL) was purged with argon. Then,
+2.4M Cs2CQOs in H2O (0.16 mL, 0.39 mmol) was added and the reaction mixture was stirred at
+50°C for 3h. After cooling the reaction mixture was taken up in EtOAc (60 mL), washed once
+with brine (20 mL), dried over NazSOa, and evaporated to dryness. Purification by flash
+chromatography (0-100% EtOAc/cyclohexane) afforded the title compound: uPLC retention time
+4.37 min (Method A); (ESI): m/z = 584.5 [M+H]’.
+
+Step 2: (3S)-4-(5-(1-acetyl-3-(hydroxymethyl)-1,2,3,4-tetrahydroquinolin-6-yl)-4-
+methylthiophene-2-carbonyl)-3-ethyl-1-methylpiperazin-2-one
+
+To a solution of (3S)-4-(5-(1-acetyl-3-(((tert-butyldimethylsilyl)oxy)methyl)-1,2,3,4-
+tetrahydroquinolin-6-yl)-4-methylthiophene-2-carbonyl)-3-ethyl-1-methylpiperazin-2-one (79 mg,
+0.14 mmol) in dry THF (2 mL) was added 1M TBAF (1.08 mL, 1.08 mmol) and the obtained
+solution was stirred at rt for 1h. The reaction was quenched by adding sat. NaHCOs (aq.) and
+extracted twice with EtOAc. The combined organic layers were dried over NazSO4 and
+evaporated to dryness. Direct purification on RP-phase (5.5 g ISCO Redisep Gold Cis-column;
+eluent A: 0.1%NHs in H20, B: ACN, gradient: 10% to 100% B in 20 min, flow 18 mL/min)
+afforded the title compound as a mixture of two diastereomers which were separated by chiral
+SFC. The more potent diastereomer eluted first (peak 1): column: Chiralpak IG 5um
+
+-114-
+
+
+--- Page 116 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+WO 2026/139844 PCT/IB2025/063307
+100x4.6mm, modifier: 60% MeOH+0.05%NHs3, flow 3mL/min, ABPR 1800psi, 40°C; peak 1: ta=
+3.3 min, 99% ee, peak 2: tr= 4.2 min, 99% ee.
+
+Colorless powder: uPLC retention time 0.73 min (Method A); ‘H-NMR (600 MHz, DMSO) 5
+7.62 (br s, 1H), 7.38 (s, 1H), 7.33 — 7.27 (m, 2H), 4.79 (t, 1H), 4.70 (br s, 1H), 4.32 (d, 1H), 3.93
+— 3.88 (m, 1H), 3.64 (br s, 1H), 3.50 (td, 1H), 3.43 (dt, 1H), 3.36 (dd, 1H), 3.26 (dt, 1H), 2.89 (d,
+1H), 2.86 (s, 4H), 2.48 (d, 1H), 2.30 (s, 3H), 2.22 (s, 3H), 1.99 — 1.89 (m, 1H), 1.86 (dp, 1H),
+0.91 (t, 4H); MS (ESI): m/z = 470.3 [M+H]*.
+
+Example 68: 4-(5-(1-acetyl-1,2,3,4-tetrahydroquinoxalin-6-yl)-4-methylthiophene-2-carbonyl)-3-
+
+eet. (racemate)
+
+agape “footy Attn dioxane _ f
+THF
+exo, C tonne
+
+Step1 Step 2
+Intermediate 1-5
+
+Step 1: tert-butyl 4-acetyl-7-(5-(2-ethyl-4-methyl-3-oxopiperazine- 1-carbonyl)-3-methylthiophen-
+2-yl)-3,4-dihydroquinoxaline-1(2H)-carboxylate
+
+The target compound can be prepared by the same procedure as in example 63 using tert-
+butyl 4-acetyl-7-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)-3,4-dihydroquinoxaline-1(2H)-
+carboxylate (intermediate 1-5) and 4-(5-bromo-4-methylthiophene-2-carbonyl)-3-ethyl-1-
+methylpiperazin-2-one as starting materials: uPLC retention time 0.95 min (Method A); MS
+(ESI): m/z = 541.4 [M+H]’.
+
+Step 2: 4-(5-(1-acetyl-1,2,3,4-tetrahydroquinoxalin-6-yl)-4-methylthiophene-2-carbonyl)-3-ethyl-
+1-methylpiperazin-2-one
+
+Tert-butyl 4-acetyl-7-(5-(2-ethyl-4-methyl-3-oxopiperazine-1-carbonyl)-3-methylthiophen-2-
+yl)-3,4-dihydroquinoxaline-1(2H)-carboxylate (110 mg, 0.17 mmol) was dissolved in 4M HCI in
+dioxane (2 mL) and stirred at rt for 1h. The reaction mixture was absorbed on ISOLURE® and
+the volatiles were removed in vacuo. After RP-chromatography (50 g ISCO Redisep Gold Cis-
+column; eluent A: 0.1%formic acid in H2O, B: ACN, gradient: 0% to 50% B in 17 min, flow 40
+mL/min) the title compound was obtained as colorless powder: uPLC retention time 0.72 min
+(Method A); ‘H-NMR (600 MHz, DMSO) 6 7.63 (br s, 1H), 7.35 (s, 1H), 7.20 (br s, 1H), 6.75 (s,
+1H), 6.63 — 6.59 (m, 1H), 6.44 (br s, 1H), 4.70 (broad s, 1H), 4.32 (d, 1H), 3.68 (t, 2H), 3.64 (br
+s, 1H), 3.50 (td, 1H), 3.28 — 3.22 (m, 1H), 2.86 (s, 3H), 2.29 (s, 3H), 2.19 (s, 3H), 1.93 (tq, 1H),
+1.86 (dq, 1H), 0.91 (t, 3H); MS (ESI): m/z = 441.4 [M+H]*.
+
+Example 69: 4-(5-(1-acetyl-4-methyl-1,2,3,4-tetrahydroquinoxalin-6-yl)-4-methylthiophene-2-
+carbonyl)-3-ethyl-1-methylpiperazin-2-one (eutomer, peak2)
+
+-115-
+
+
+--- Page 117 ---
+WO 2026/139844 PCT/IB2025/063307
+fo) ° o °
+ad s Le CH,0, NaBH3CN Chiral Separation ~ Ss. Ae
+io VI aN MeOH io \ NN
+Ni
+
+4-(5-(1-acetyl-1,2,3,4-tetrahydroquinoxalin-6-yl)-4-methylthiophene-2-carbonyl)-3-ethyl-1-
+methylpiperazin-2-one (example 64, 45 mg, 0.1 mmol) was dissolved in MeOH (2 mL). After
+formaldehyde was added (76 uL, 1.02 mmol, 37% solution in H20), the solution was stirred at rt
+5 for 1h. Then, NaBH3sCN was added (19 mg, 0.31 mmol) and stirring was continued at rt for 1h.
+The reaction mixture was concentrated and directly subjected to RP-HPLC (C1s-column 30x100
+mm; eluent A: 0.1%TFA in H20, B: ACN, gradient: 2% to 48% B in 16 min, flow 50 mL/min). The
+lyophilizate obtained was directly subjected to chiral separation: SFC, column Chiralpak IB 5um
+100x4.6mm, modifier: eluent: 40% MeOH+0.05%NHs, flow: 3mL/min ABPR 1300psi, 40°C;
+10 peak 1: tr=1.6 min, >99% ee, peak 2: ta= 2.3 min, >99% ee.
+Colorless powder: uPLC retention time 0.72 min (Method A); ‘H-NMR (600 MHz, DMSO-de)
+57.31 - 7.45 (m, 1H), 6.63 - 6.80 (m, 2 H), 4.57 - 4.85 (m, 1H), 4.23 - 4.41 (m, 1H), 3.74 - 3.87
+(m, 2 H), 3.55 - 3.74 (m, 1H), 3.45 - 3.55 (m, 1H), 3.35 - 3.41 (m, 3H), 2.89 - 2.98 (m, 3H),
+2.86 (s, 3 H), 2.31 (s, 1H), 2.24 - 2.38 (m, 3H), 2.13 - 2.23 (m, 3H), 1.76 - 2.02 (m, 2 H), 0.85 -
+15 0.98 (m, 3H); MS (ESI): m/z = 455.2 [M+H]’.
+Example 70: (S)-3-(4-hydroxybenzyl)-1-methyl-4-(4-methyl-5-(4-(2-oxopyrrolidin-1-
+yl)phenyl)thiophene-2-carbonyl)piperazin-2-one
+
+°
+
+é
+-d(PPhs)4)
+
+°
+s
+Ht OMe
+ome “<r
+° IP 2 °
+——___—_- s. i) Sn s. co}
+HNN? ay oN ee an
+lo HATU,TEA, DMF \ LON KCOq, dioxane:H,O 5:1 \ LON,
+N
+
+Step 1 Step 2
+
+OMe
+
+oH
+1M Br,” OOM P °
+Dem os aed
+\F LN
+Step 3
+
+Step 1: (S)-4-(5-bromo-4-methylthiophene-2-carbonyl)-3-(4-methoxybenzyl)- 1-methylpiperazin-
+20 = 2-one
+To a solution of (S)-3-(4-methoxybenzyl)-1-methylpiperazin-2-one (intermediate 2-8, 127
+mg, 0.54 mmol) and 5-bromo-4-methylthiophene-2-carboxylic acid (200 mg, 0.90 mmol) in dry
+DMF (5 mL) was added TEA (1 mL, 7.2 mmol), and HATU (351 mg, 0.92 mmol). The reaction
+
+-116-
+
+
+--- Page 118 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+WO 2026/139844 PCT/IB2025/063307
+mixture was stirred at rt for 45 min. Then, the solvent was evaporated in high vacuum and the
+residue was purified by flash chromatography (0%-5% MeOH/DC\) to afford the title
+compound: uPLC retention time 1.02 min (Method A); MS (ESI): m/z = 437.1, 439.1 [M+H]*.
+
+Step 2: (S)-3-(4-methoxybenzyl)-1-methyl-4-(4-methyl-5-(4-(2-oxopyrrolidin-1-
+yl)phenyl)thiophene-2-carbonyl)piperazin-2-one
+
+To a solution of (S)-4-(5-bromo-4-methylthiophene-2-carbonyl)-3-(4-methoxybenzyl)-1-
+methylpiperazin-2-one (61 mg, 0.14 mmol) and 1-(4-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-
+yl)phenyl)pyrrolidin-2-one (CAS: 1003309-09-8, 88 mg, 31 mmol) in a mixture of dioxane (3 mL)
+and H2O (0.6 mL) was added K2COs; (161 mg, 1.16 mmol). The suspension was flushed with
+argon followed by the addition of Pd(PPhs)4 (10.2 mg, 8.8 umol). The reaction mixture was
+heated in sealed vial at 115 °C for 1h. After reaching rt, saturated aqueous NaHCO3 was added
+and the mixture twice extracted with EtOAc. The combined organic phase were dried over
+NazSOsg and evaporated to dryness. Flash chromatography (0%-100% EtOAc/heptane, 0%-5%
+MeOH/DCM) afforded the desired product: uPLC retention time 0.87 min (Method A); MS (ESI):
+m/z = 518.3 [M+H]".
+
+Step 3: (S)-3-(4-hydroxybenzyl)-1-methyl-4-(4-methyl-5-(4-(2-oxopyrrolidin-1-
+yl)phenyl)thiophene-2-carbonyl)piperazin-2-one
+
+To a colorless solution of (S)-3-(4-methoxybenzyl)-1-methyl-4-(4-methyl-5-(4-(2-
+oxopyrrolidin-1-yl)phenyl)thiophene-2-carbonyl)piperazin-2-one (55 mg,0.64 mmol) in dry DCM
+(3 mL) cooled down to 0-5°C under Ar was slowly injected 1M BBrs in DCM (0.64 mL, 0.64
+mmol) through the septum. The resulting solution was stirred at 0-5°C for 3.5hr. Then the
+reaction was quenched by adding MeOH (2 mL). A small amount of H2O was added and the
+mixture was evaporated in vacuo. RP-chromatography (15.5 g ISCO Redisep Gold C:s-column;
+eluent A: 0.1%NHs in H2O, B: ACN, gradient: 0% to 50% B in 15 min, 50% to 100% B in 6 min,
+flow 30 mL/min) afforded the final product as colorless powder: uPLC retention time 0.75 min
+(Method A); 1H NMR (600 MHz, DMSO-de) 5 9.27 (s, 1H), 7.78 — 7.73 (m, 2H), 7.47 (d, 2H),
+7.08 (br s, 1H), 6.98 — 6.93 (m, 2H), 6.67 (d, 2H), 4.83 (br s, 1H), 4.21 (brs, 1H), 3.86 (t, 2H),
+3.42 (d, 1H), 3.29 (br s, 1H), 3.15 (m, 2H), 3.03 (dd, 1H), 2.87 (s, 3H), 2.52 (t, 2H), 2.22 (s, 3H),
+2.12 — 2.04 (m, 2H); MS/ESI: m/z = 504.3 [M+H]’.
+
+Example 72: (R)-7-(2-((S)-2-ethyl-4-methy|-3-oxopiperazine- 1-carbonyl)-4-methylthiazol-5-yl)-
+N,2-dimethyl-2,3-dihydro-4H-benzo[b][1,4]oxazine-4-carboxamide
+
+Ae ,
+
+-117-
+
+
+--- Page 119 ---
+10
+
+15
+
+20
+
+25
+
+WO 2026/139844 PCT/IB2025/063307
+Prepared using (R)-N,2-dimethyl-7-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)-2,3-dihydro-4H-
+benzo[b][1,4]oxazine-4-carboxamide (synthesis analogous to intermediate 1-7), methyl 5-
+bromo-4-methyl-1,3-thiazole-2-carboxylate (CAS: 79247-79-3), and intermediate 2-3.
+
+Beige solid: uPLC retention time 0.87 min (Method A); ‘'H NMR (400 MHz, DMSO-de ) 5
+7.73 (d, 1H), 6.98-7.05 (m, 3H) 5.55 (br d, 1H) 4.77 (br dd, 1H) 4.20-4.28 (m, 1H) 3.99 (dd, 1H)
+3.62-3.73 (m, 1H) 3.41-3.59 (m, 1H) 3.31 (br s, 8H) 3.19 (dd, 1H) 2.86 (s, 3H) 2.65-2.69 (m, 3H)
+1.82-2.04 (m, 2H) 1.30 (d, 4H) 0.84-0.96 (m, 4H); MS (ESI): m/z = 472.2 [MH*], 943.3 [MzH’].
+Example 74:
+
+(S)-4-(5-(4-((3R, 5R)-3,5-dimethyl-2-oxopyrrolidin-1-yl)phenyl)-4-methylthiazole-2-carbonyl)-1,3-
+dimethylpiperazin-2-one; (S)-4-(5-(4-((3R,5S)-3,5-dimethyl-2-oxopyrrolidin-1-yl) phenyl)-4-
+methylthiazole-2-carbonyl)-1,3-dimethylpiperazin-2-one; (S)-4-(5-(4-((3S,5S)-3,5-dimethyl-2-
+oxopyrrolidin- 1-yl)phenyl)-4-methylthiazole-2-carbonyl)-1,3-dimethylpiperazin-2-one; or (S)-4-(5-
+(4-((3S,5R)-3,5-dimethyl-2-oxopyrrolidin-1-yl) phenyl)-4-methylthiazole-2-carbonyl)-1,3-
+dimethylpiperazin-2-one (single diastereomer, peak 4)
+
+(R) ee
+
+Prepared using 3,5-dimethyl-1-(4-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)phenyl)pyrrolidin-
+2-one (obtained from 3,5-dimethylpyrrolidin-2-one and (4-chlorophenyl)boronic acid), 5-bromo-
+4-methyl-1,3-thiazole-2-carboxylate (CAS: 79247-79-3), and (S)-1,3-dimethylpiperazin-2-one
+(CAS: 1240300-34-8). The desired product was obtained as a mixture of 4 diastereomers which
+
+were separated by chiral SFC. The most potent diastereomer eluted last (peak 4): column:
+Chiralpak IH 5um 100x4.6mm, eluent: 40% IPA+0.05%NH3, Flow: 3mL/min, ABPR 1800psi,
+40°C; peak 1: tg= 1.48 min, 99.5% de; peak 2 : tr= 1.89 min, 99.5% de; peak 3: tg = 2.07 min,
+96.4% de ; peak 4: tr = 4.72 min, 99.5% de.
+
+uPLC retention time: 0.88 min (Method A); 'H NMR (600 MHz, DMSO-de) 5 7.58 (cm, 2H),
+7.50 (cm, 2H), 5.81, 5.53 (2x d, 1H), 4.77, 4.46 (2x d, 1H), 4.26-4.37 (m, 1H), 3.70, 3.59 (2x br t,
+
+-118-
+
+
+--- Page 120 ---
+10
+
+15
+
+20
+
+WO 2026/139844 PCT/IB2025/063307
+4H), 3.48, 3.38 (2x br t, 1H), 2.88 (br d, 3H), 2.53-2.63 (m, 2H), 2.52 (s, 3H), 1.54, 1.42 (2x d,
+3H), 1.26-1.35 (m, 1H), 1.18 (d, 3H), 1.15 (d, 3H); MS (ESI): m/z = 441.2 [MH*], 903.3 [M2Na*].
+
+Example 75: (S)-3-(4-(3-((S)-2-Ethyl-4-methyl-3-oxopiperazine-1-carbonyl)-1-methyl-1H-
+pyrazol-5-yl)phenyl)-5-methyloxazolidin-2-one or (R)-3-(4-(3-((S)-2-Ethyl-4-methy|-3-
+oxopiperazine-1-carbonyl)-1-methyl-1H-pyrazol-5-yl) phenyl)-5-methyloxazolidin-2-one (single
+diastereomer, peak 2)
+
+LeeoP coo ot
+
+Prepared using 5-methyl-3-(4-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)phenyl)oxazolidin-2-
+one (obtained 5-methyloxazolidin-2-one from and 1,4-dibromobenzene), 5-bromo-1-methyl-1H-
+pyrazole-3-carboxylic acid (CAS: 1222174-93-7), and intermediate 2-3.
+
+The desired product was obtained as a mixture of 2 diastereomers which were separated
+by chiral SFC. The more potent diastereomer eluded last (peak 2): Chiralpak IB 5um
+100x4.6mm, eluent: 35% MeOH+0.05%NHS3, Flow: 3mL/min, ABPR 1800psi, 40°C; peak 1: tr=
+1.97 min, 95.2% ee; peak 2 : tr= 2.18 min, 95.8% ee.
+
+uPLC retention time 0.58 min (Method A); 'H NMR (600 MHz, DMSO-de) 5 7.69 (m, 2H),
+7.61 (m, 2H), 6.75 (s, 1H), 4.95 (br d, 1H) 4.81-4.87 (m, 2H), 4.22 (t, 1H), 3.91 (s, 3H), 3.72 (dd,
+1H), 3.56-3.63 (m, 1H), 3.45-3.52 (m, 1H), 3.23-3.31 (m, 1H), 2.86 (s, 3H), 1.92-1.98 (m, 1H),
+1.79-1.90 (m, 1H), 1.44 (d, 3H), 0.90 (t, 3H); MS (ESI): m/z = 426.4 [MH*], 851.6 [MoH], 873.6
+[M2Na*].
+
+Example 76: 2-((1E,3E)-5-((E)-1-((S)-1-(5-(4-acetamidophenyl)-4-chlorothiophen-2-yl)-3-(4-
+hydroxybenzyl)-1,4,18-trioxo-8, 11, 14-trioxa-2,5, 17-triazatricosan-23-yl)-3,3-dimethyl-5-
+sulfoindolin-2-ylidene)penta-1,3-dien-1-yl)-1-ethyl-3,3-dimethyl-3H-indol-1-ium-5-sulfonate
+
+Fluorescence labeled STAT6 binder for TR-FRET biochemical assay
+
+-119-
+
+

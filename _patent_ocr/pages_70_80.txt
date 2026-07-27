@@ -1,0 +1,763 @@
+--- Page 70 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+WO 2026/139844 PCT/IB2025/063307
+
+LiOH
+
+M
+
+Me
+MeOH
+mg
+
+mmol
+
+MS
+
+min
+
+mL
+
+mz
+
+nm
+
+nM
+
+N
+NazSOx
+NaH
+NaHCO;
+NaHMDS
+NaOH
+NH.Cl
+NMM
+4-NPC
+Pd(dppf)Clz
+Pd(dtbpf\Cle
+PE
+POCIs
+RT, rt or r.t.
+sat.
+
+SEM
+SFC
+
+TsP
+TBAB
+TBAF
+TBDMS
+TEA
+TEMED
+TFA
+
+THF
+
+Ts
+
+lithium hydroxide
+
+molar
+
+methyl
+
+methanol
+
+milligram
+
+millimole
+
+mass spectrometry
+
+minutes
+
+milliliter(s)
+
+mass to charge ratio
+
+nanometer
+
+nanomolar
+
+normal
+
+sodium sulfate
+
+sodium hydride
+
+sodium bicarbonate
+
+sodium bis(trimethylsilyl)amide
+sodium hydroxide
+
+ammonium chloride
+N-methylmorpholine
+
+4-Nitrophenyl chloroformate
+[1,1’-bis(diphenylphosphino)ferrocene]palladium(I|) dichloride
+[1,1’-bis(di-t-butylphosphino)ferrocene]palladium(I|) dichloride
+petroleum ether
+
+phosphorous oxychloride
+
+room temperature
+
+saturated
+2-(Trimethylsilyl)ethoxymethyl
+supercritical fluid chromatography
+propylphosphonic anhydride solution
+tetrabutylammonium bromide
+tetrabutylammonium fluoride
+tert-butyldimethylsilyl
+
+triethyl amine
+N,N,N’,N’-Tetramethylethylenediamine
+trifluoroacetic acid
+
+tetrahydrofuran
+
+tosyl
+
+-69-
+
+
+--- Page 71 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+WO 2026/139844 PCT/IB2025/063307
+
+uPLC ultra performance liquid chromatography
+
+GENERAL CONDITIONS:
+
+NMR Spectroscopy: NMR spectra were obtained using Bruker Ultrashield™ spectrometers.
+All ‘H-NMR spectra are reported in 5 units (ppm) and were recorded in e.g. CDCls, DMSO-ds or
+CD;OD and referenced to the solvent peaks. Spectra splitting patterns are designated as singlet
+(s), doublet (d), doublet of doublets (dd), doublet of triplets (dt), doublet of quartets (dq), triplet
+(t), triplet of doublets (td), quartet (q), quartet of doublets (qd), quintet (quint), septet (sep),
+multiplet, unresolved or overlapping signals (m), broad signal (br).
+
+Analytical liquid chromatography: Waters Acquity uUPLC/MS systems (Waters, Milford, MA)
+equipped with a binary solvent manager, a sample manager, a column manager, a photodiode
+array detector (PDA) and a Waters ZQ2000 MS detector. UV absorption was monitored at A =
+210-450 nM. The MS detector was operated in continuously positive/negative ESI alternating
+mode with full scan from 120-1200 Da in 0.3 seconds. Mass spectra were acquired and stored
+in centroid mode. MS based confirmation of molecular weight was based on the formation of the
+pseudo-molecular ions [M+H]* in positive mode. In case of chlorine and bromine containing
+compounds the m/z values for the two naturally occurring isotope are reported.
+
+Analytical HPLC, Method A: Column: CORTECS™ Cy8+ 2.7 um, column dimension: 2.1x50
+mm, column temperature: 80 °C; gradient: from 5 to 50% B in 1.4 min; 50 to 98% B in 0.3 min,
+flow: 1.0 mL/min; Eluent A: water + 0.05% formic acid + 3.75 mM ammonium acetate; Eluent B:
+isopropanol + 0.05% formic acid.
+
+Analytical HPLC, Method B: Column: XBridge™ BEH C18 2.5 um, column dimension:
+2.1x50 mm, column temperature: 80 °C; gradient: from 2 to 98% B in 1.4 min, 98% B 0.4 min,
+flow: 1.0 mL/min; Eluent A: water + 5 mM Ns, eluent B: acetonitrile + 5 mM NHs.
+
+PREPARATION OF INTERMEDIATES:
+Intermediate 1-1: 1-(6-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)-3,4-dihydro-quinolin-1(2H)-
+
+yl)ethan-1-one
+o,
+a on ne
+Co, AcCl N [Pd(dppf)Cl2"CH2Cly,] °
+B
+Br
+
+DIPEA, Dom pcm KOAc, dioxane 6.
+
+Step 1 Step2
+
+Step 1: 1-(6-bromo-3,4-dihydroquinolin-1(2H)-yl)ethan-1-one
+
+To a solution of 6-bromo-1,2,3,4-tetrahydroquinoline (75 g, 0.36 mol) and DIPEA (115 g,
+0.89 mol) in DCM (750 mL) at 0 °C, was added AcCl (31 g, 0.39 mol) in dropwise way. The
+reaction mixture was stirred at room temperature for 1.5 h. The reaction mixture was quenched
+
+-70-
+
+
+--- Page 72 ---
+10
+
+15
+
+WO 2026/139844 PCT/IB2025/063307
+with water (3.25 L). The aq. layer was extracted with DCM (7.5 L); the combined organic layer
+was washed with brine (3.25 L), dried over NazSO, and concentrated in vacuo to give the title
+compound as a light red oil: H-NMR (300 MHz, CDCI3) 5 7.14-7.10 (m, 3H), 3.61-3.57 (m, 2H),
+2.56-2.52 (m, 2H), 2.05 (s, 3H), 1.83-1.74 (m, 2H); MS (ESI): m/z = 254.0, 256.0 [M+H]*.
+
+Step 2: 1-(6-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)-3,4-dihydro-quinolin-1(2H)-yl)ethan-1-
+one
+
+A solution of 1-(6-bromo-3,4-dihydroquinolin-1(2H)-yl)ethan-1-one (75 g, 0.3 mol),
+bis(pinacolato) diboron (113 g, 0.44 mol), KOAc (93 g, 0.95 mol) and Pd(dppf)Cl2eCH2Cle (24 g,
+0.03 mol) in dioxane (0.75 L) was heated to 90 °C for 1.5 h. After the mixture reached rt, it was
+filtered, concentrated, and purified by flash chromatography (0%-90% EtOAc/PE). The crude
+product was triturated with n-heptane to afford the title compound as a colorless solid: 'H NUR
+(300 MHz, DMSO-de) 5 7.48-7.46 (m, 3H), 3.67-3.65 (m, 2H), 2.72-2.69 (m, 2H), 2.17 (s, 3H),
+1.87-1.84 (m, 2H), 1.28 (s, 12H); MS (ESI): m/z = 302.2 [M+H]*.
+
+The following intermediates 1 can be prepared by the same procedure using the appropriate
+starting materials:
+
+LC te [min] MS (ESI
+(Method) m/z [M+H]*
+
+N
+1.02
+1-2 ° 304.2
+Be (A)
+
+Structure
+
+fo)
+YY
+N
+1-3 1.09 320.2
+Bo @)
+fo)
+
+1-4 wes 128 332.2
+7: o BO. (A) :
+6
+
+1-5
+
+Ol 1.23 425.2
+BO (A) [M+Nay*
+
+-71-
+
+
+--- Page 73 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+WO 2026/139844 PCT/IB2025/063307
+Intermediate 1-6: 1-(3-methyl-6-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)-3,4-
+dihydroquinolin-1(2H)-yl)ethan-1-one
+
+°
+u
+—- ——_- —_Paldpenciel °
+DMF bem LOL KOAe, dioxane ‘a
+Br er x i
+Step 1 Step 2 Step 3
+
+Step 1: 6-bromo-3-methyl-1,2,3,4-tetrahydroquinoline
+
+To a solution of 3-methyl-1,2,3,4-tetrahydroquinoline (Enamine EN300-69783 CAS 20668-
+20-6, 418 mg, 92 wt%, 2.61 mmol, 1 eq) in DCM (10 mL) was added portion wise NBS (456 mg,
+2.56 mmol, 0.98 eq) at 0°C and stirring was continued for 10 min at 0°C. Then, saturated
+aqueous NaHCOs (25 mL) and heptane (25 mL) was added. The organic phase was washed
+three times with water, once with brine, dried over Na2SOu, and evaporated to dryness. The
+crude product was purified by flash chromatography on silica gel (80 g cartridge, DCM / heptane
+gradient) to afford the desired product as colorless oil: uPLC retention time: 1.30 min (method
+A); MS (ESI): m/z = 226.1 / 228.1 [M+H]*.
+
+Step 2: 1-(6-bromo-3-methyl-3,4-dihydroquinolin-1(2H)-yl)ethan-1-one
+
+To a solution of 6-bromo-3-methyl-1,2,3,4-tetrahydroquinoline (440 mg, 1.95 mmol, 1 eq) in
+DCM (15 mL) was added triethylamine (0.81 mL, 0.59 g, , 5.84 mmol, 3 eq) and acetyl chloride
+(0.18 mL, 0.2 g, 2.53 mmol, 1.3 eq). The reaction mixture was stirred for 5 min at RT and then
+quenched by adding saturated aqueous NaHCOs (25 mL). The aqueous layer was extracted
+once with DCM. The combined organic layers were dried over NazSO, and evaporated to
+dryness. The crude product was purified by flash chromatography on silica gel (40 g cartridge,
+MeOH / DCM gradient) to afford the title compound as colorless oil: uPLC retention time: 1.11
+min (method A); MS (ESI): m/z = 268.0 / 270.0 [M+H]’.
+
+Step 3: 1-(3-methyl-6-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)-3,4-dihydroquinolin-1(2H)-
+yl)ethan-1-one
+
+To an argon flushed solution of 1-(6-bromo-3-methyl-3,4-dihydroquinolin-1(2H)-yl)ethan-1-
+one (448 mg, 1.67 mmol, 1 eq) in 1,4-dioxane (10 mL) was added bis(pinacolato)diboron (509
+mg, 2.00 mmol, 1.2 eq), PdCla(dppf) OCH2Clz adduct (96 mg, 0.12 mmol, 7 mol%) and
+potassium acetate (492 mg, 5.01 mmol, 3 eq). The reaction mixture was stirred at 90°C for 12h
+under argon in a sealed vial. The reaction mixture was evaporated to dryness and taken up in
+EtOAc (50 mL). The solution was washed with saturated aqueous NaHCO3 and brine. The
+organic layer was dried over Na2SO, and evaporated to dryness. Flash chromatography of the
+crude on silica gel (80 g cartridge, EtOAc / heptane gradient) afforded the title compound as
+colorless oil: uPLC retention time: 1.23 min (method A); MS (ESI): m/z = 277.0 / 278.0 [M+H]*.
+
+Intermediate 1-7: (R)-1-(2-methyl-7-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)-2,3-dihydro-
+4H-benzo|b][1,4]oxazin-4-yl)ethan-1-one
+
+-72-
+
+
+--- Page 74 ---
+10
+
+15
+
+20
+
+WO 2026/139844 PCT/IB2025/063307
+
+IL,»
+6
+
+The title compound was prepared according to the procedure for intermediate 1-6 starting
+from (R)-7-bromo-2-methyl-3,4-dihydro-2H-benzo[b][1,4]oxazine (G. Zhou et al., ACS Med.
+Chem. Lett. 2014, 5, 544-549, CAS 1245708-21-7).
+
+Colorless solid: uPLC retention time 1.13 min (Method A); ‘H-NMR (400 MHz, DMSO-de) 5
+
+7.78 (br s, 1H), 7.15 (dd, 1H), 7.09 (d, 1H), 4.32 (cm, 1H), 4.03-4.22 (br m, 1H), 3.22-3.45 (br m,
+4H), 2.25 (s, 3H), 1.27 (s, 12H); m/z = 318.3 [M+H]’.
+
+Intermediate 1-8: methyl (R)-2-methyl-7-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)-2,3-
+dihydro-4H-benzo[b][1,4]oxazine-4-carboxylate
+Zo. fe)
+
+aa
+
+eI.
+6.
+
+The title compound was prepared according to the procedure for intermediate 1-6 starting
+from (R)-7-bromo-2-methyl-3,4-dihydro-2H-benzo[b][1,4Joxazine (G. Zhou et al., ACS Med.
+Chem. Lett. 2014, 5, 544-549, CAS 1245708-21-7) and substituting acetyl chloride by methyl
+chloro-formate in step2.
+
+Yellowish oil: uPLC retention time 1.24 min (method A); ‘H-NMR (400 MHz, DMSO-de) 5
+7.86 (d, 1H), 7.17 (dd, 1H), 7.08 (d, 1H), 4.27 (ddd, 1H), 4.12 (dd, 1H), 3.74 (s, 3H), 3.27 (dd,
+1H), 1.27 (s, 12H), 1.08 (d, 3H); m/z = 334.2 [M+H]*.
+
+Intermediate 1-9: (R)-2-methyl-4-(methylsulfonyl)-7-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-
+yl)-3,4-dihydro-2H-benzo[b][1 ,4Joxazine
+
+°
+ae)
+
+6.
+
+The title compound was prepared according to the procedure for intermediate 1-6 starting
+from (R)-7-bromo-2-methyl-3,4-dihydro-2H-benzo[b][1,4]oxazine (G. Zhou et al., ACS Med.
+Chem. Lett. 2014, 5, 544-549, CAS 1245708-21-7) and substituting acetyl chloride by
+methanesulfonylchloride in step 2.
+
+-73-
+
+
+--- Page 75 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+WO 2026/139844 PCT/IB2025/063307
+
+Beige solid: uPLC retention time 1.11 min (Method A); ‘H-NMR (400 MHz, DMSO-ds) 5 7.62
+(d, 1H), 7.19 (dd, 1H), 7.06 (d, 1H), 4.28 (cm, 1H), 4.09 (dd, 1H), 3.21 (dd, 1H), 3.14 (s, 3H),
+4.27 (s, 12H); m/z = 371.2 [M+NH4]*.
+
+Intermediate 1-10: 1-(3-(((tert-butyldimethylsilyl)oxy)methyl)-6-(4,4,5,5-tetramethyl-1,3,2-
+dioxaborolan-2-yl)-3,4-dihydroquinolin-1(2H)-yl)ethan-1-one
+
+H H
+TBDMS-Cl, Imidazole
+
+Hq
+N. LAH N N,
+wer, THE w TL, MF reowso_ LICL,
+
+Step1 Step 2
+Oo of.
+‘B-B
+So OT 0
+° Bs
+Ac,0 / ACOH me [Pd(dppfyCl2"*CH2Cl2,)
+—_————— __ TBpMso, 0.
+THF / DCM TBDMSO. re
+Br
+
+KOAc, dioxane By
+Step 3 Step 4
+
+Step 1: 6-bromo-1,2,3,4-tetrahydroquinolin-3-yl)methanol
+
+To a mixture of 2M LiAIHg in THF (1.22 mL, 2.44 mmol, 2.5 eq) and dry THF (3 mL) was
+slowly added a solution of 6-bromo-1,2,3,4-tetrahydroquinoline-3-carboxylic acid (J&W
+PharmLab JWPH3249EA71, CAS: 885278-13-7, 250 mg, 0.98 mmol, 1 eq) in dry THF (3 mL) at
+0 °C under argon. The reaction mixture was then stirred at RT for 3h. The reaction was
+quenched by careful addition of water at 0°C. The obtained mixture was extracted with ethyl
+acetate. The organic layer was washed with saturated aqueous NaHCO: and the aqueous layer
+back extracted twice with ethyl acetate. The combined organic phases were dried over NazSO4
+and evaporated under reduced pressure. The high vacuum dried material was sufficiently pure
+to be used in the next step: uPLC retention time: 0.75 min (method A); MS (ESI): m/z = 242.1 /
+244.1 [M+H]*.
+
+Step 2: 6-bromo-3-(((tert-butyldimethylsilyl)oxy)methyl)-1,2,3,4-tetrahydroquinoline
+
+A mixture of (6-bromo-1,2,3,4-tetrahydroquinolin-3-yl)methanol (80 mg, 0.31 mmol, 1 eq),
+TBDMS-Cl (99 mg, 0.66 mmol, 2.1 eq) and imidazole (75 mg, 1.10 mmol, 3.5 eq) in anhydrous
+DMF (1 mL) was stirred at RT for 4.5h. Then, the reaction mixture was poured into saturated
+aqueous NaHCO; and extracted twice with ethyl acetate. The organic extracts were dried over
+NazSO, and evaporated under reduced pressure. The crude material was purified by flash
+chromatography on silica gel (12 g cartridge, EtOAc / cyclohexane gradient) to afford the title
+compound: uPLC retention time 1.72 min (method A); MS (ESI): m/z = 356.2 / 358.2 [M+H]*.
+Step 3: 1-(6-bromo-3-(((tert-butyldimethylsilyl)oxy)methyl)-3,4-dihydroquinolin-1(2H)-yl)ethan-1-
+one
+
+To a solution of 6-bromo-3-(((tert-butyldimethylsilyl)oxy)methyl)-1,2,3,4-tetrahydroquinoline
+(90 mg, 0.25 mmol, 1 eq) in DCM (3 mL) and THF (1 mL) was added acetic acid (1 mL) followed
+by acetic anhydride (0.12 mL, 1.26 mmol). After stirring for 2h at RT the reaction mixture was
+
+-74-
+
+
+--- Page 76 ---
+10
+
+15
+
+20
+
+25
+
+WO 2026/139844 PCT/IB2025/063307
+poured into saturated aqueous NaHCOs and extracted twice with ethyl acetate. The organic
+layer was dried over NazSO, and evaporated to dryness under reduced pressure. Purification by
+flash chromatography on silica gel (12 g cartridge, EtOAc / cyclohexane gradient) afforded the
+title compound: uPLC retention time: 1.65 min (method A); MS (ESI): m/z = 398.2 / 400.2
+[M+H]*.
+
+Step 4: 1-(3-(((tert-butyldimethylsilyl)oxy)methyl)-6-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)-
+3,4-dihydroquinolin-1(2H)-yl)ethan-1-one
+
+To a solution of 1-(6-bromo-3-(((tert-butyldimethylsilyl) oxy)methyl)-3,4-dihydroquinolin-
+1(2H)-yl)ethan-1-one (99 mg, 0.25 mmol, 1 eq) in 1,4-dioxane (4 mL) was added
+4,4,4',4',5,5,5' 5'-octamethyl-2,2'-bi(1,3,2-dioxaborolane) (63 mg, 0.25 mmol, 1 eq) potassium
+acetate (73 mg, 0.75 mmol, 3 eq) and Pd(dppf)Cl2 (18 mg, 25 umol, 0.1 eq). After purging with
+argon the reaction mixture was stirred at 100 °C for 3h. After reaching RT the reaction mixture
+was diluted with ethyl acetate and then washed with water. The organic layer was dried with
+NazSOq and evaporated under vacuum. The crude product was purified by flash
+chromatography on silica gel (12 g cartridge, EtOAc / cyclohexane gradient) to afford the title
+compound: uPLC retention time: 1.68 min (method A); MS (ESI): m/z = 446.3 [M+H]*.
+
+Intermediate 1-11: 1-(4-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)phenyl)-1,3-dihydro-2H-
+imidazo[4,5-b]pyridin-2-one
+
+HAN.
+
+NO, CG No; NH, HN.
+- Br 7H Hp, Raney-Ni 4 Imco t
+cy ——_- ns —- ns r \
+q l MeOH:THE 1:1 ACN:DMF 5:3 \_,
+Z DMSO f Br f Br Br
+
+Step 1 Step 2 Step 3
+
+°
+
+N=
+*CH2Cl
+[Pd(dppf)Cl"CH2Cla.] + a
+BO
+
+KOAc, dioxane
+
+Step 4
+
+Step 1: N-(4-bromophenyl)-2-nitropyridin-3-amine
+
+In a vial were introduced under argon 3-Fluoro-2-nitropyridine (Apollo PC3369, CAS 54231-
+35-5, 200 mg, 1.41 mmol, 1 eq), 4-bromoaniline (485 mg, 2.82 mmol, 2 eq) and anhydrous
+DMSO (1mL). The mixture is then stirred at 80°C for 24h. The reaction mixture was taken up in
+a water (60 mL) / brine (10 mL) mixture and well sonicated. The resulting suspension was
+filtered and the cake was washed with some water, before being dissolved in EtOAc (70 mL).
+The organic layer was washed with brine (20 mL), dried over NazSO,, filtered and evaporated to
+dryness to obtain the product as orange solid which was used in the next step without further
+purification: uPLC retention time: 0.99 min (method A); MS (ESI): m/z = 293.9 / 295.9 [M+H’].
+
+Step 2: N°-(4-bromophenyl)pyridine-2,3-diamine
+
+-75-
+
+
+--- Page 77 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+WO 2026/139844 PCT/IB2025/063307
+
+In a two-necked flask were introduced under nitrogen N-(4-bromophenyl)-2-nitropyridin-3-
+amine (420 mg, 1.41mmol, 1 eq), MeOH (15 mL), THF (15 mL), and Raney-Ni (500 mg, 8.52
+mmol, 6 eq). The reaction mixture was then flushed with hydrogen and stirred under this
+atmosphere (~1.1bar) for 20 min at RT. The reaction mixture was filtered over Celite and the
+catalyst was rinsed with some MeOH. The filtrate was evaporated and the residue was dried
+under vacuum to afford the product which was used in the next step without further purification:
+uPLC retention time: 0.48 min (method A); MS (ESI): m/z = 263.9 / 265.9 [M+H]*.
+
+Step 3: 1-(4-bromophenyl)-1,3-dihydro-2H-imidazo[4,5-b]pyridin-2-one
+
+To a solution of N3-(4-bromophenyl)pyridine-2,3-diamine (374 mg, 1.41 mmol, 1 eq) in
+acetonitrile (5 mL) and DMF (3 mL) was added CDI (345 mg, 2.13 mmol, 1.5 eq). The mixture
+was stirred at RT for 15.75h. The obtained suspension was diluted with water (40 mL) and well
+sonicated. The precipitated solid was filtered off, washed with water, redissolved in EtOAc / THF
+1:1, washed with brine (20 mL), dried over NazSO,, filtered and evaporated to dryness. The
+residue was used in the next step without further purification: uPLC retention time: 0.85 min
+(method A); MS (ESI): m/z = 288.0 / 290.0 [M+H]*.
+
+Step 4: 1-(4-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)phenyl)-1,3-dihydro-2H-imidazo[4,5-
+b]pyridin-2-one
+
+In a vial was added under Ar 1-(4-bromophenyl)-1,3-dihydro-2H-imidazo[4,5-b]pyridin-2-one
+(120 mg, 0.41 mmol, 1 eq), bis(pinacolato)diboron (135 mg, 0.53 mmol, 1.3 eq), and potassium
+acetate (125 mg, 1.27 mmol, 3.1 eq) to dioxane (5mL). The reaction mixture was flushed with Ar
+and Pd(dppf)Clz (22 mg, 0.030 mmol, 7 mol%) was added. The vial was sealed and the reaction
+mixture was stirred for 17.5h at 90°C. Partial conversion was shown by LC/MS. Therefore, DMF
+(2mL) was added, followed by bis(pinacolato)diboron (85 mg, 0.34 mmol, 0.8 eq) and
+Pd(dppf)Clz (22 mg, 0.030 mmol, 7 mol%). Stirring was continued under argon at 90°C for 23h.
+Then, the reaction mixture was taken up in EtOAc (80 mL), washed with brine (20ml), dried over
+NazSOu, and evaporated to dryness. The residue was purified by flash chromatography on silica
+gel (4 g cartridge, DCM / EtOAc gradient to obtain the desired product as a beige solid: uPLC
+retention time: 1.04 min; MS (ESI): m/z = 338.0 [M+H]*.
+
+Intermediate 1-12: 5-methyl-1-(4-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)phenyl)-3-((2-
+(trimethylsilyl)ethoxy)methyl)imidazolidine-2,4-dione
+8 ‘be’ ot sem
+
+° se
+
+HN. SEM-CI 1. NaH Me
+
+ont DIPEA ot 2. Mel hy [Pa(app)cte"CH2b la] aol
+Br Br
+
+Step 1 Step 2 Step 3
+
+Step 1: 1-(4-bromophenyl)-3-((2-(trimethylsilyl)ethoxy)methyl)imidazolidine-2,4-dione
+To a solution of 1-(4-bromophenyl)imidazolidine-2,4-dione (BLD Pharmatech BD00988673,
+CAS: 32549-34-1, 100 mg, 0.37 mmol, 1 eq) and DIPEA (100 uL, 74 mg, 0.57 mmol, 1.5 eq) in
+
+Cye
+
+-76-
+
+
+--- Page 78 ---
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+WO 2026/139844 PCT/IB2025/063307
+DCM / DMF 1:1 (3 mL) was added SEM-CI (70 mg, 0.41 mmol, 1.1 eq) within 5 min at 0°C.
+under argon. Stirring was continued at 0°C for 30min. Then, additional DIPEA (35 pL, 26 mg,
+0.20 mmol, 0.54 eq) and SEM-Cl (25 mg, 0.15 mmol, 0.4 eq) was added. After stirring at 0°C for
+2.5h, the reaction mixture was poured into saturated aqueous NaHCO; (30 mL) and extracted
+with EtOAc 2x 40 mL). The combined organic layers were washed with brine (2x 30mL), dried
+over NazSOug, and evaporated to dryness. The crude product was purified by flash
+chromatography on silica gel (12 g cartridge, EtOAc / cyclohexane gradient) to afford an off-
+white solid: uPLC retention time: 1.39 min (method A); MS (ESI): m/z = 406.9 / 408.8 [M+Na]*.
+
+Step 2: 1-(4-bromophenyl)-5-methyl-3-((2-(trimethylsilyl)ethoxy)methyl)imidazolidine-2,4-dione
+To a solution of 1-(4-bromophenyl)-3-((2-(trimethylsilyl)ethoxy)methyl)imidazolidine-2,4-
+dione (139 mg, 0.36 mmol, 1 eq) in anhydrous DMF (3 mL) was added NaH (60% in oil, 15 mg,
+
+0.38 mmol, 1.05 eq) at O°C under argon and stirred at 0°C for 15 min. Then, iodomethane (23
+wl, 52 mg, 0.37 mmol, 1.03 eq) and stirring was continued at RT for 1.25h. The reaction mixture
+was diluted with saturated aqueous NaHCO; (20 mL) and extracted with EtOAc (2x 40mL). The
+combined organic layers were washed with brine (2x 20mL), dried over NazSO., and
+evaporated to dryness. The residue was purified by preparative RP-HPLC (column: Waters
+XSelect CSH Cis OBD, 5um, 30x100mm; flow: 30mL/min; gradient: A H2O[+0.1% TFA], B
+MeCN 50:50 to 0:100 in 15min.) to afford a brown syrup (still containing 45% starting material):
+uPLC retention time: 1.44 min (method A); MS (ESI): m/z = 420.9 / 422.8 [M+Na]*.
+
+Step 3: 5-methyl-1-(4-(4,4,5,5-tetramethyl-1 ,3,2-dioxaborolan-2-yl)phenyl)-3-((2-(trimethylsilyl)-
+ethoxy)methyl)imidazolidine-2,4-dione
+
+To a solution of 1-(4-bromophenyl)-5-methyl-3-((2-
+(trimethylsilyl)ethoxy)methyl)imidazolidine-2,4-dione (110 mg, 0.28 mmol, 1 eq) and
+bis(pinacolato)diboron (91 mg, 0.36 mmol, 1.3 eq) in dioxane (2.5 mL) was added potassium
+acetate (81mg, 0.83 mmol, 3 eq). The reaction mixture was flushed with Ar and Pd(dppf)Cl2
+(16mg, 0.022 mmol, 8 mol%) was added. The vial was sealed and the reaction mixture was
+stirred at 90°C for 17h. at 90°C. The reaction mixture was taken up in EtOAc (70 mL), washed
+with brine (20 mL), dried over NasSOx, and evaporated to dryness. The residue was purified by
+flash chromatography on silica gel (4 g cartridge, EtOAc / cyclohexane gradient) afforded a
+colorless syrup: uPLC retention time: 1.53 min (method A); MS (ESI): m/z = 915.2 [M2Na]*
+(Purity 55%, product contains 42% 1-(4-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)phenyl)-3-
+((2-(trimethylsilyl)ethoxy)methy|)imidazolidine-2,4-dione: uPLC retention time: 1.49 min; MS
+(ESI): m/z = 455.0 [M+H]*, 887.1 [M2Na]*).
+
+Intermediate 1-13: 4-phenyl-1-(4-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)phenyl) pyrrolidin-
+2-one
+
+-77-
+
+
+--- Page 79 ---
+10
+
+15
+
+20
+
+25
+
+WO 2026/139844 PCT/IB2025/063307
+
+Br. ~_\2 et
+a
+je]
+Ion ° co ono.
+© cul, TEMED on [Pa(dppncie*CH2Cla)
+
+K,COs, dioxane KOA, dioxane
+Br
+
+Step1 Step 2
+
+Step 1: 1-(4-bromophenyl)-4-phenylpyrrolidin-2-one
+
+To a solution of 1,4-dibromobenzene (1 g, 4.24 mmol, 1 eq) dioxane (10 mL) was added 4-
+phenylpyrrolidin-2-one (Synthonix P32385, CAS: 1198-47-6, 1.37 g, 8.48 mmol, 2 eq) and
+K2COs (1.17 g, 8.48 mmol, 2 eq). The reaction mixture was degassed and purged with argon for
+10min. Then, TEMED (0.38 mL, 295 mg, 2.54 mmol, 0.6eq) and Cul (242 mg, 1.27 mmol, 0.3
+eq) was added and the reaction mixture was stirred at 100°C for 6.5h. Then, DCM (50 mL) was
+added and washed with water (50 mL). The organic phase was dried (phase separator) and
+evaporated to dryness. The residue was purified by flash chromatography on silica gel (40 g
+cartridge, EtOAc / cyclohexane gradient) to afford a colorless solid: uPLC retention time: 1.25
+min (method A); MS (ESI): m/z = 316.1 / 318.1 [M+H]*, 631.2 / 633.2 / 635.2 [Mo+H]*.
+
+Step 2: 4-phenyl-1-(4-(4,4,5,5-tetramethyl-1 ,3,2-dioxaborolan-2-yl) phenyl)pyrrolidin-2-one
+
+Under argon, to a solution of 1-(4-bromophenyl)-4-phenylpyrrolidin-2-one (624 mg, 81% wt,
+1.60 mmol, 1 eq) in dioxane (5 mL) was added 4,4,4',4',5,5,5',5'-octamethyl-2,2'-bi(1,3,2-
+dioxaborolane) (812 mg, 3.20 mmol, 2eq), potassium acetate (471 mg, 4.80 mmol, 3 eq), and
+Pd(dppf)Clz (117 mg, 0.16 mmol, 0.1 eq). The reaction mixture is stirred at 100 °C for 20h.
+Then, DCM (50 mL) was added and washed with water (50 mL). The organic phase was dried
+(phase separator) and evaporated to dryness. The residue was purified by flash
+chromatography on silica gel (40 g cartridge, EtOAc / cyclohexane gradient) to afford
+intermediate 1-12 as a colorless solid: uPLC retention time: 1.36 min (method A); MS (ESI): m/z
+= 364.3 [M+H]*.
+
+Intermediate 1-14: 1-(6-(tributylstannyl)-3,4-dihydro-1,5-naphthyridin-1(2H)-yl)ethan-1-one
+
+fe}
+H
+NOU AcCl, DMAP me (BusSn)2, Pd(dtbpfyCly
+DMF
+N7™Br N7SBr
+Step1 Step 2
+
+Step 1: 1-(6-bromo-3,4-dihydro-1,5-naphthyridin-1(2H)-yl)ethan-1-one
+
+To a solution of 6-bromo-1,2,3,4-tetrahydro-1,5-naphthyridine (Enamine EN300-235213,
+CAS: 1219022-46-4, 300 mg, 1.41 mmol, 1 eq) in DME (10 mL) was added acetyl chloride (0.3
+mL, 332 mg, 4.22 mmol, 3 eq), and DMAP (9 mg, 70 pmol, 5 mol%). The reaction mixture was
+stirred at RT for 1h.min. Then, diethyl ether (10 mL) was added and precipitate filtered off. The
+filtrate was evaporated to dryness leaving a pale yellow oil which was used without further
+
+-78-
+
+
+--- Page 80 ---
+WO 2026/139844 PCT/IB2025/063307
+purification in the next step: uPLC retention time: 0.55 min (method A); MS (ESI): m/z = 255.1 /
+257.1 [M+H]*.
+
+Step 2: 1-(6-(tributylstannyl)-3,4-dihydro-1,5-naphthyridin-1(2H)-yl)ethan-1-one
+To a solution of 1-(6-bromo-3,4-dihydro-1,5-naphthyridin-1(2H)-yl)ethan-1-one (80 mg, 0.31
+5 mmol 1 eq) in DMF (4 mL) was added 1,1,1,2,2,2-hexabutyldistannane (174 uL, 200 mg, 0.34 ,
+
+mmol, 1.1 eq) and Pd(dtbpf)Clz (39 mg, 60 pmol, 0.19 eq). The reaction mixture was purged
+with argon and stirred at 95°C for 12h. Then, saturated aqueous NaHCOs (20 mL) was added
+and extracted with heptane (30 mL). The organic phase was washed with brine (30 mL), dried
+over NazSO, and evaporated to dryness. The crude product was purified by flash
+
+10 chromatography on silica gel (24 g cartridge, EtOAc / heptane gradient) to afford intermediate 1-
+13 as yellow oil: uPLC retention time: 1.51 min (method A); MS (ESI): m/z =
+463.2/465.2/467.2/468.2 [M+H]*.
+
+Intermediate 1-15: 1-(6-(tributylstannyl)-2,3-dihydro-1H-pyrido[2,3-b][1 ,4]oxazin-1-yl)ethan-1-
+one
+oO
+
+ri
+
+The target compound can be prepared by the same procedure as for 1-14 using 6-bromo-
+
+15 ‘SnBuz
+
+2,3-dihydro-1H-pyrido[2,3-b][1,4]Joxazine as starting material.
+Yellow oil: uPLC retention time: 1.67 min (method A); MS (ESI): m/z = 465.2 / 467.2 / 469.2 /
+470.2 [M+H]’.
+
+20 Intermediate 2-1: (S)-2-amino-3-(4-hydroxyphenyl)-N-methylpropanamide (HCI-salt)
+
+Step 1: tert-butyl (S)-(3-(4-(benzyloxy)phenyl)-1-(methylamino)-1-oxopropan-2-yl)carbamate
+
+OBn (2M in THF) OBn OBn
+MenH, 2M i THF),
+HATU TFA
+Oo OO
+BocHN Nz? DIPEA, DMF BocHNs) DcM H.N7S)
+H HN HN
+
+Step1 ~ Step2 ~
+
+OH
+Hp, Pd/C (10%),
+
+MeOH, rt, 18h HANS
+
+Step3 HN
+
+DIPEA (20.2 mL, 116 mmol) was added to a solution of (S)-3-(4-(benzyloxy)phenyl)-2-((tert-
+butoxycarbonyl)amino)propanoic acid (21.5 g, 57.9 mmol) and HATU (24.2 g, 63.7 mmol) in
+25 DMF (100 mL) at rt under Ar and this solution was stirred for 25 min. Then, 2M methyl amine in
+
+-79-
+
+

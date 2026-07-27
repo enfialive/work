@@ -359,6 +359,208 @@ def main():
                 s_elm = row.cells[ci]._element.get_or_add_tcPr()
                 s_elm.append(s_elm.makeelement(qn('w:shd'), {qn('w:fill'): 'E2EFDA', qn('w:val'): 'clear'}))
 
+    # ── Patent Specification Text ──
+    # Build lookups
+    seq2id = {}  # sequence → SEQ ID NO
+    for sid, typ, seq, desc in all_unique:
+        if seq not in seq2id:
+            seq2id[seq] = sid
+
+    def get_cdr_sid(label, cdr_name, scheme):
+        """获取指定变体+CDR+方案的 SEQ ID NO"""
+        for lb, ct, cn, sc, seq in cdr_raw:
+            if lb == label and cn == cdr_name and sc == scheme:
+                return seq2id.get(seq)
+        return None
+
+    # Separate VH and VL labels
+    vh_labels = [l for l, ct, s in detected if ct == 'VH']
+    vl_labels = [l for l, ct, s in detected if ct in ('VK', 'VL')]
+
+    # ── Function: Build CDR profile paragraphs ──
+    def build_cdr_profile_text(doc, scheme, target_name='X'):
+        """生成 Kabat/IMGT CDR 定义变体的专利文字"""
+        cdr_names_h = ['CDR-H1', 'CDR-H2', 'CDR-H3']
+        cdr_names_l = ['CDR-L1', 'CDR-L2', 'CDR-L3']
+
+        # Collect CDR profiles per variant
+        profiles = {}  # key: (h1,h2,h3,l1,l2,l3) tuple of SEQ ID NOs → list of variant labels
+        for l, ct, s in detected:
+            profile = tuple(get_cdr_sid(l, cn, scheme) for cn in cdr_names_h + cdr_names_l)
+            profiles.setdefault(profile, []).append(l)
+
+        if not profiles:
+            return
+
+        h = doc.add_paragraph()
+        r = h.add_run(f'CDR 定义实施方案（{scheme} 规则）')
+        r.bold = True; r.font.size = Pt(11)
+
+        intro = doc.add_paragraph()
+        r = intro.add_run(
+            f'本发明提供了特异性结合{target_name}的抗{target_name}抗体及其抗原结合片段，其包含：')
+        r.font.size = Pt(10)
+
+        unique_profiles = list(profiles.items())
+        for idx, (profile, labels) in enumerate(unique_profiles):
+            h1, h2, h3, l1, l2, l3 = profile
+            p = doc.add_paragraph()
+            r = p.add_run(
+                f'{idx+1}）包含如SEQ ID NO: {h1}、{h2}和{h3}所示序列，或相对于所述序列含有一个或多个且'
+                f'不超过3个氨基酸的氨基酸取代(例如保守性取代)、缺失或插入的序列的HCDR1、HCDR2、HCDR3；'
+                f'和如SEQ ID NO: {l1}、{l2}和{l3}所示序列，或相对于所述序列含有一个或多个且'
+                f'不超过3个氨基酸的氨基酸取代(例如保守性取代)、缺失或插入的序列的LCDR1、LCDR2、LCDR3；')
+            r.font.size = Pt(10)
+
+        closer = doc.add_paragraph()
+        r = closer.add_run(
+            f'其中，1）~{len(unique_profiles)}）所述的CDR氨基酸序列是按照{scheme}规则定义的。')
+        r.font.size = Pt(10)
+        doc.add_paragraph()
+
+    # ── Function: Build V-region overview ──
+    def build_vregion_overview(doc, target_name='X'):
+        h = doc.add_paragraph()
+        r = h.add_run('重链可变区和轻链可变区（全景覆盖）')
+        r.bold = True; r.font.size = Pt(11)
+
+        p = doc.add_paragraph()
+        vh_ids = sorted(set(vseq_to_id[s] for l, ct, s in detected if ct == 'VH'))
+        vl_ids = sorted(set(vseq_to_id[s] for l, ct, s in detected if ct in ('VK', 'VL')))
+        vh_str = '、'.join(str(x) for x in vh_ids)
+        vl_str = '、'.join(str(x) for x in vl_ids)
+
+        r = p.add_run(
+            f'本发明提供了特异性结合{target_name}的抗{target_name}抗体及其抗原结合片段，'
+            f'其包含重链可变区和轻链可变区，其中：'
+            f'所述重链可变区包含SEQ ID NO：{vh_str}任一项所示的重链可变区包含的HCDR1、HCDR2和HCDR3，'
+            f'所述轻链可变区包含SEQ ID NO：{vl_str}任一项所示的轻链可变区包含的LCDR1、LCDR2和LCDR3。')
+        r.font.size = Pt(10)
+
+        note = doc.add_paragraph()
+        r = note.add_run('在一个实施方案中，上述CDR按照Kabat、IMGT、AbM或Chothia规则定义。')
+        r.font.size = Pt(10)
+        doc.add_paragraph()
+
+    # ── Function: Build individual VH listing ──
+    def build_vh_listing(doc, target_name='X'):
+        h = doc.add_paragraph()
+        r = h.add_run('重链可变区')
+        r.bold = True; r.font.size = Pt(11)
+
+        intro = doc.add_paragraph()
+        r = intro.add_run(
+            f'在一个实施方案中，本发明提供了特异性结合{target_name}的抗{target_name}抗体及其抗原结合片段，'
+            f'其包含重链可变区，其中：')
+        r.font.size = Pt(10)
+
+        unique_vh = {}
+        for l, ct, s in detected:
+            if ct == 'VH':
+                unique_vh.setdefault(s, []).append(l)
+        for idx, (seq, labels) in enumerate(unique_vh.items()):
+            sid = vseq_to_id[seq]
+            p = doc.add_paragraph()
+            r = p.add_run(
+                f'{idx+1}）所述重链可变区包含如SEQ ID NO：{sid}所示氨基酸序列，'
+                f'或与SEQ ID NO：{sid}的氨基酸序列具有至少90%、91%、92%、93%、94%、95%、96%、97%、98%'
+                f'或99%同一性的氨基酸序列，或由SEQ ID NO：{sid}组成；')
+            r.font.size = Pt(10)
+        doc.add_paragraph()
+
+    # ── Function: Build individual VL listing ──
+    def build_vl_listing(doc, target_name='X'):
+        h = doc.add_paragraph()
+        r = h.add_run('轻链可变区')
+        r.bold = True; r.font.size = Pt(11)
+
+        intro = doc.add_paragraph()
+        r = intro.add_run(
+            f'在一个实施方案中，本发明提供了特异性结合{target_name}的抗{target_name}抗体及其抗原结合片段，'
+            f'其包含轻链可变区，其中：')
+        r.font.size = Pt(10)
+
+        unique_vl = {}
+        for l, ct, s in detected:
+            if ct in ('VK', 'VL'):
+                unique_vl.setdefault(s, []).append(l)
+        for idx, (seq, labels) in enumerate(unique_vl.items()):
+            sid = vseq_to_id[seq]
+            p = doc.add_paragraph()
+            r = p.add_run(
+                f'{idx+1}）所述轻链可变区包含如SEQ ID NO：{sid}所示氨基酸序列，'
+                f'或与SEQ ID NO：{sid}的氨基酸序列具有至少90%、91%、92%、93%、94%、95%、96%、97%、98%'
+                f'或99%同一性的氨基酸序列，或由SEQ ID NO：{sid}组成；')
+            r.font.size = Pt(10)
+        doc.add_paragraph()
+
+    # ── Function: Build VH+VL pairing listing ──
+    def build_pairing_listing(doc, target_name='X'):
+        h = doc.add_paragraph()
+        r = h.add_run('重链可变区与轻链可变区配对组合')
+        r.bold = True; r.font.size = Pt(11)
+
+        intro = doc.add_paragraph()
+        r = intro.add_run(
+            f'在另一个实施方案中，本发明提供了特异性结合{target_name}的抗{target_name}抗体及其抗原结合片段，'
+            f'其包含重链可变区和轻链可变区，其中：')
+        r.font.size = Pt(10)
+
+        # Match VH and VL from same variant label prefix
+        # Extract base name (e.g. "M1 VH" → "M1")
+        vh_map = {}  # base_name → (label, seq)
+        vl_map = {}  # base_name → (label, seq)
+        for l, ct, s in detected:
+            parts = l.split()
+            base = parts[0] if parts else l
+            if ct == 'VH':
+                vh_map[base] = (l, s)
+            elif ct in ('VK', 'VL'):
+                vl_map[base] = (l, s)
+
+        idx = 0
+        for base in sorted(set(list(vh_map.keys()) + list(vl_map.keys()))):
+            vh = vh_map.get(base)
+            vl = vl_map.get(base)
+            if vh and vl:
+                idx += 1
+                vh_sid = vseq_to_id[vh[1]]
+                vl_sid = vseq_to_id[vl[1]]
+                p = doc.add_paragraph()
+                r = p.add_run(
+                    f'{idx}）所述重链可变区包含如SEQ ID NO：{vh_sid}所示氨基酸序列，'
+                    f'或与SEQ ID NO：{vh_sid}的氨基酸序列具有至少90%、91%、92%、93%、94%、95%、96%、97%、98%'
+                    f'或99%同一性的氨基酸序列，或由SEQ ID NO：{vh_sid}组成，'
+                    f'所述轻链可变区包含如SEQ ID NO：{vl_sid}所示氨基酸序列，'
+                    f'或与SEQ ID NO：{vl_sid}的氨基酸序列具有至少90%、91%、92%、93%、94%、95%、96%、97%、98%'
+                    f'或99%同一性的氨基酸序列，或由SEQ ID NO：{vl_sid}组成；')
+                r.font.size = Pt(10)
+
+        if idx == 0:
+            p = doc.add_paragraph()
+            r = p.add_run('（根据输入数据中 VH/VL 的对应关系填入配对）')
+            r.font.size = Pt(10); r.italic = True
+        doc.add_paragraph()
+
+    # ── Generate patent text sections ──
+    target = 'X'  # placeholder, edit after generation
+
+    sep = doc.add_paragraph()
+    r = sep.add_run('═' * 50)
+    r.font.size = Pt(8); r.font.color.rgb = RGBColor(150, 150, 150)
+
+    title_section = doc.add_paragraph()
+    r = title_section.add_run('专利申请说明书文字（根据 cdrno 序列表自动生成）')
+    r.bold = True; r.font.size = Pt(13)
+
+    build_cdr_profile_text(doc, 'Kabat', target)
+    build_cdr_profile_text(doc, 'IMGT', target)
+    build_cdr_profile_text(doc, 'AbM', target)
+    build_vregion_overview(doc, target)
+    build_vh_listing(doc, target)
+    build_vl_listing(doc, target)
+    build_pairing_listing(doc, target)
+
     # ── Save ──
     output_path = os.path.join(os.getcwd(), 'CDRNO_SEQ_ID_NO_List.docx')
     doc.save(output_path)

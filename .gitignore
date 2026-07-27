@@ -21,6 +21,15 @@ cnipa_*
 # Cloudflare wrangler 缓存
 .wrangler/
 
+# Python 编译缓存
+__pycache__/
+*.pyc
+
+# 临时 Office 文件
+~$*.docx
+~$*.xlsx
+~$*.pptx
+
 # 预算管理系统 - 数据库和上传文件
 budget-app/data/
 budget-app/uploads/

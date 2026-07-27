@@ -123,7 +123,7 @@ textarea#input-sequence:focus{outline:none;border-color:var(--primary);box-shado
 <tr><td>L1</td><td>L24--L34</td><td>L24--L34</td><td>L24--L34</td><td>L30--L36</td><td>L27--L32</td></tr>
 <tr><td>L2</td><td>L50--L56</td><td>L50--L56</td><td>L50--L56</td><td>L46--L55</td><td>L50--L51</td></tr>
 <tr><td>L3</td><td>L89--L97</td><td>L89--L97</td><td>L89--L97</td><td>L89--L96</td><td>L89--L97</td></tr>
-<tr><td>H1</td><td>H31--H35B (Kabat编号)</td><td>H26--H35B</td><td>H26--H32..34</td><td>H30--H35B</td><td>H26--H35B</td></tr>
+<tr><td>H1</td><td>H31--H35B (Kabat编号)</td><td>H26--H35B</td><td>H26--H32..34</td><td>H30--H35B</td><td>H26--H33</td></tr>
 <tr><td>H1</td><td>H31--H35 (Chothia编号)</td><td>H26--H35</td><td>H26--H32</td><td>H30--H35</td><td>H26--H33</td></tr>
 <tr><td>H2</td><td>H50--H65</td><td>H50--H58</td><td>H52--H56</td><td>H47--H58</td><td>H51--H56</td></tr>
 <tr><td>H3</td><td>H95--H102</td><td>H95--H102</td><td>H95--H102</td><td>H93--H101</td><td>H93--H102</td></tr>
@@ -266,8 +266,8 @@ const CDR_DEFS = {
   Chothia: {
     H: [
       {name:'FR1',start:1,end:25},
-      {name:'CDR-H1',start:26,end:35.9},  // 可变末端32-34
-      {name:'FR2',start:36,end:51},
+      {name:'CDR-H1',start:26,end:32.9},  // 严格Chothia: H26-H32
+      {name:'FR2',start:33,end:51},
       {name:'CDR-H2',start:52,end:56.9},
       {name:'FR3',start:57,end:94},
       {name:'CDR-H3',start:95,end:102.9},
@@ -286,10 +286,10 @@ const CDR_DEFS = {
   IMGT: {
     H: [
       {name:'FR1',start:1,end:25},
-      {name:'CDR-H1',start:26,end:35.9},
-      {name:'FR2',start:36,end:50},
-      {name:'CDR-H2',start:51,end:56.9},
-      {name:'FR3',start:57,end:92},
+      {name:'CDR-H1',start:26,end:33.9},
+      {name:'FR2',start:34,end:50},
+      {name:'CDR-H2',start:51,end:57.9},
+      {name:'FR3',start:58,end:92},
       {name:'CDR-H3',start:93,end:102.9},
       {name:'FR4',start:103,end:113}
     ],
@@ -297,8 +297,8 @@ const CDR_DEFS = {
       {name:'FR1',start:1,end:26},
       {name:'CDR-L1',start:27,end:32.9},
       {name:'FR2',start:33,end:49},
-      {name:'CDR-L2',start:50,end:51.9},
-      {name:'FR3',start:52,end:88},
+      {name:'CDR-L2',start:50,end:52.9},
+      {name:'FR3',start:53,end:88},
       {name:'CDR-L3',start:89,end:97.9},
       {name:'FR4',start:98,end:107}
     ]

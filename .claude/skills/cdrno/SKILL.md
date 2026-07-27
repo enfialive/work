@@ -54,7 +54,7 @@ argument-hint: "[抗体序列 或 含多条序列的文本]"
 本技能依赖两个核心脚本：
 
 - **`work/cdr_batch.py`** — CDR 标注引擎：Needleman-Wunsch 全局比对 + Kabat 编号转移 + CDR 区域提取
-- **`work/cdrno_generate_docx.py`** — 通用 Word 导出脚本：接收 FASTA 文本（stdin 或文件路径），自动完成链检测→CDR 标注→SEQ ID NO 分配→Word 输出全流程
+- **`work/cdrno_generate_docx.py`** — 通用 Word 导出脚本：接收 FASTA 文本（stdin 或文件路径），自动完成链检测→CDR+FR 标注→SEQ ID NO 分配（V-region → CDR → FR 三级编号）→Word 输出全流程
 
 ```bash
 # 方式1：管道传入 FASTA
@@ -69,12 +69,14 @@ python work/cdrno_generate_docx.py input.fasta
 
 支持四种 CDR 定义方案：
 
-| 定义方案 | 说明 | 重链 CDR 边界 |
-|---------|------|---------------|
-| **Kabat** | 基于序列可变性，最广泛使用 | H1: 31–35, H2: 50–65, H3: 95–102 |
-| **Chothia** | 基于结构 loop 区 | H1: 26–32/34, H2: 52–56, H3: 95–102 |
-| **IMGT** | 基于种系基因，标准化 | H1: 26–33, H2: 51–56, H3: 93–102 |
-| **AbM** | Chothia 扩展版 (Martin) | H1: 26–35, H2: 50–58, H3: 95–102 |
+| 定义方案 | 说明 | 重链 CDR 边界 | 轻链 CDR 边界 |
+|---------|------|:-------------:|:-------------:|
+| **Kabat** | 基于序列可变性，最广泛使用 | H1: 31–35, H2: 50–65, H3: 95–102 | L1: 24–34, L2: 50–56, L3: 89–97 |
+| **Chothia** | 基于结构 loop 区 | H1: 26–32, H2: 52–56, H3: 95–102 | L1: 24–34, L2: 50–56, L3: 89–97 |
+| **IMGT** | 基于种系基因，标准化 | H1: 26–33, H2: 51–57, H3: 93–102 | L1: 27–32, L2: 50–52, L3: 89–97 |
+| **AbM** | Chothia 扩展版 (Martin) | H1: 26–35, H2: 50–58, H3: 95–102 | L1: 24–34, L2: 50–56, L3: 89–97 |
+
+> **注**：以上边界均基于 Kabat 编号体系。Chothia H1 的结束位置在部分文献中可能延伸至 H34（取决于 H35 位插入情况），本工具使用严格的 Chothia 定义（H26–H32）。AbM 使用与 Chothia 相同起点的扩展范围（H26–H35），即 Martin/Enhanced Chothia 惯例。
 
 ## 处理流程
 
@@ -106,13 +108,36 @@ result = analyze_cdr(seq, def_name)
 
 ### 第三步：分配 SEQ ID NO
 
-**范围**：对用户提供的每条完整抗体可变区序列以及所有提取的 CDR 序列统一分配 SEQ ID NO。
+**范围**：对用户提供的每条完整抗体可变区序列以及所有提取的 CDR 和 FR 序列统一分配 SEQ ID NO。
 
 1. **先为完整 V-region 序列分配编号**：按用户输入顺序，每条唯一序列一个 SEQ ID NO（相同序列复用同一编号）
 2. **再为 CDR 序列分配编号**：收集所有 `(变体名, CDR标签, 定义方案, 序列)`，从 V-region 编号最大值之后接续
-3. 建立 `序列 → SEQ ID NO` 映射字典
-4. **相同序列 = 相同 SEQ ID NO**（跨方案、跨变体、跨轻重链均去重）
-5. 编号从 1 开始递增
+3. **最后为 FR 序列分配编号**：收集所有 `(变体名, FR标签, 定义方案, 序列)`，从 CDR 编号最大值之后接续
+4. 建立 `序列 → SEQ ID NO` 映射字典
+5. **相同序列 = 相同 SEQ ID NO**（跨方案、跨变体、跨轻重链、跨 CDR/FR 均去重）
+6. 编号从 1 开始递增
+
+> **FR 区域说明**：每个 CDR 定义方案在定义 CDR 边界的同时也隐含定义了 FR 边界。FR1–FR4 的边界因方案而异：
+>
+> **重链 VH：**
+>
+> | 区域 | Kabat | Chothia | IMGT | AbM |
+> |------|:-----:|:-------:|:----:|:---:|
+> | FR1 | 1–30 | 1–25 | 1–25 | 1–25 |
+> | FR2 | 36–49 | 33–51 | 34–50 | 36–49 |
+> | FR3 | 66–94 | 57–94 | 58–92 | 59–94 |
+> | FR4 | 103–113 | 103–113 | 103–113 | 103–113 |
+>
+> **轻链 VL：**
+>
+> | 区域 | Kabat | Chothia | IMGT | AbM |
+> |------|:-----:|:-------:|:----:|:---:|
+> | FR1 | 1–23 | 1–23 | 1–26 | 1–23 |
+> | FR2 | 35–49 | 35–49 | 33–49 | 35–49 |
+> | FR3 | 57–88 | 57–88 | 53–88 | 57–88 |
+> | FR4 | 98–107 | 98–107 | 98–107 | 98–107 |
+>
+> 由于不同方案下同一 FR 的序列可能不同（如 Kabat FR2 vs Chothia FR2），它们各自独立分配 SEQ ID NO。
 
 ### 第四步：输出汇总表（Markdown 对话 + Word 文件）
 
@@ -152,6 +177,29 @@ result = analyze_cdr(seq, def_name)
 - 每个单元格 = 对应的 SEQ ID NO
 - 若某变体与参考变体（该链类型第一条）在该位置不同，用 **粗体** 标记
 
+**表格三：FR 标注对照表（重链+轻链合并为一张表）**
+
+- 格式与表格一一致，重链 FR1/FR2/FR3/FR4 在前，轻链在后
+
+| Variant | FR | Kabat | Chothia | IMGT | AbM |
+|:-------:|:--:|:-----:|:-------:|:----:|:---:|
+| **H1** | FR1 | SEQ ID NO: X | SEQ ID NO: Y | ... | ... |
+| | FR2 | ... | ... | ... | ... |
+| | FR3 | ... | ... | ... | ... |
+| | FR4 | ... | ... | ... | ... |
+| **H2** | FR1 | ... | ... | ... | ... |
+| ... | ... | ... | ... | ... | ... |
+| **L1** | FR1 | SEQ ID NO: X | SEQ ID NO: Y | ... | ... |
+| | FR2 | ... | ... | ... | ... |
+| | FR3 | ... | ... | ... | ... |
+| | FR4 | ... | ... | ... | ... |
+
+- 每行 = 一个变体的一个 FR（每个变体占 4 行）
+- 每列 = 一种定义方案
+- 每个单元格 = 对应的 SEQ ID NO
+- 若某变体与参考变体（该链类型第一条）在该位置不同，用 **粗体** 标记
+- 由于不同方案下同一 FR 的边界不同（如 Kabat FR2 vs Chothia FR2），各方案的 FR 序列可能不同，各自独立分配 SEQ ID NO
+
 **表格二：SEQ ID NO 序列清单（轻重链共用，统一编号）**
 
 | SEQ ID NO | Source Variant(s) | Sequence | Length |
@@ -161,12 +209,19 @@ result = analyze_cdr(seq, def_name)
 | 3 | [CDR-H1] M1 VH (Kabat) | `SYWMN` | 5 |
 | 4 | [CDR-H1] M1 VH (Chothia), M1 VH (IMGT), M1 VH (AbM) | `GYAFSSYWMN` | 10 |
 | ... | ... | ... | ... |
+| 5 | [FR1] M1 VH (Kabat) | `EVQLLESGGGLVQPGGSLRLSCAAS` | 25 |
+| 6 | [FR1] M1 VH (Chothia), M1 VH (IMGT), M1 VH (AbM) | `EVQLLESGGGLVQPGGSLRLSCAASGFTFS` | 30 |
+| ... | ... | ... | ... |
 
 - 列顺序：SEQ ID NO → Source Variant(s) → Sequence → Length
-- **Source Variant(s)** 列包含类型前缀 `[V-region]` 或 `[CDR-H1]` 等，后跟来源变体与方案
+- **Source Variant(s)** 列包含类型前缀 `[V-region]`、`[CDR-H1]`、`[FR1]` 等，后跟来源变体与方案
 - **Sequence** 列使用等宽字体（Consolas），固定列宽、**自动换行**，不通过拉大列宽来容纳长序列
-- V-region 行与 CDR 行以不同底色区分（V-region 蓝底，CDR 白底）
-- 按 SEQ ID NO 编号递增排列
+- 行底色按类别区分：
+  - V-region：**浅蓝底**（`D6E4F0`）
+  - CDR：**白底**
+  - FR：**浅绿底**（`E2EFDA`）
+- 排序规则：按 SEQ ID NO 编号递增排列（即 V-region → CDR → FR 的自然编号顺序）
+- FR 序列与 CDR 序列之间不刻意插入空行或分节标记，以编号递增顺序自然衔接
 
 ### （可选）第五步：突变分析
 

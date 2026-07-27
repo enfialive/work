@@ -92,14 +92,17 @@ def main():
             elif last == 'L' and ct not in ('VK', 'VL'):
                 mismatches.append((label, 'VL', ct))
 
-    # Step 2: Analyze CDRs
+    # Step 2: Analyze CDRs & FRs
     cdr_raw = []
+    fr_raw = []
     for label, ct, seq in detected:
         for d in SCHEMES:
             r = analyze_cdr(seq, d)
             for reg in r['regions']:
                 if reg['name'].startswith('CDR'):
                     cdr_raw.append((label, ct, reg['name'], d, reg['sequence']))
+                elif reg['name'].startswith('FR'):
+                    fr_raw.append((label, ct, reg['name'], d, reg['sequence']))
 
     # Step 3: Assign SEQ ID NOs
     vseq_to_id = {}
@@ -113,6 +116,12 @@ def main():
     for lb, ct, cn, sc, seq in cdr_raw:
         if seq not in cdr_seq_to_id:
             cdr_seq_to_id[seq] = nid
+            nid += 1
+
+    fr_seq_to_id = {}
+    for lb, ct, fn, sc, seq in fr_raw:
+        if seq not in vseq_to_id and seq not in cdr_seq_to_id and seq not in fr_seq_to_id:
+            fr_seq_to_id[seq] = nid
             nid += 1
 
     # Build all_unique
@@ -136,6 +145,18 @@ def main():
                     srcs.append(f'{lb} ({sc})')
                     seen.add(k)
         all_unique.append((sid, ctype, seq, ', '.join(srcs)))
+
+    for seq, sid in sorted(fr_seq_to_id.items(), key=lambda x: x[1]):
+        srcs = []; seen = set(); ftype = 'FR'
+        for lb, ct, fn, sc, seq2 in fr_raw:
+            if seq2 == seq:
+                ftype = fn
+                k = (lb, sc)
+                if k not in seen:
+                    srcs.append(f'{lb} ({sc})')
+                    seen.add(k)
+        all_unique.append((sid, ftype, seq, ', '.join(srcs)))
+
     all_unique.sort(key=lambda x: x[0])
 
     # ── Build DOCX ──
@@ -160,7 +181,7 @@ def main():
     vl_n = sum(1 for _, ct, _ in detected if ct in ('VK', 'VL'))
     ip = doc.add_paragraph()
     rr = ip.add_run(
-        f'Total unique: {len(all_unique)} (V-region: {len(vmeta)}, CDR: {len(cdr_seq_to_id)})  |  '
+        f'Total unique: {len(all_unique)} (V-region: {len(vmeta)}, CDR: {len(cdr_seq_to_id)}, FR: {len(fr_seq_to_id)})  |  '
         f'Input: {len(detected)} sequences ({vh_n} VH + {vl_n} VL)  |  '
         f'Schemes: Kabat / Chothia / IMGT / AbM'
     )
@@ -245,6 +266,49 @@ def main():
                 if diff: r.bold = True; r.font.color.rgb = RGBColor(180, 0, 0)
         doc.add_paragraph()
 
+    # ── Table 3: Merged FR ──
+    def build_fr_rows(chain_type, fr_names):
+        vlist = [(l, ct, s) for l, ct, s in detected if ct == chain_type]
+        if not vlist: return []
+        ref = vlist[0][0]; rows = []
+        for l, ct, s in vlist:
+            for fn in fr_names:
+                cells = []
+                for d in SCHEMES:
+                    fm = [(seq, fr_seq_to_id.get(seq)) for lb, ct2, fn2, sc, seq in fr_raw
+                          if lb == l and fn2 == fn and sc == d]
+                    sid = fm[0][1] if fm else None
+                    rf = [(seq2, fr_seq_to_id.get(seq2)) for lb2, ct3, fn3, sc3, seq2 in fr_raw
+                          if lb2 == ref and fn3 == fn and sc3 == d]
+                    rsid = rf[0][1] if rf else None
+                    cells.append((sid, l != ref and sid != rsid))
+                rows.append((l, fn, cells))
+        return rows
+
+    vh_fr_rows = build_fr_rows('VH', ['FR1', 'FR2', 'FR3', 'FR4'])
+    vl_fr_rows = build_fr_rows('VK', ['FR1', 'FR2', 'FR3', 'FR4']) + \
+                 build_fr_rows('VL', ['FR1', 'FR2', 'FR3', 'FR4'])
+    all_fr_rows = vh_fr_rows + vl_fr_rows
+
+    if all_fr_rows:
+        h3 = doc.add_paragraph()
+        rr = h3.add_run('Table 3: FR Annotation — All Chains'); rr.bold = True; rr.font.size = Pt(11)
+
+        t3 = doc.add_table(rows=1, cols=7); t3.style = 'Table Grid'
+        t3.alignment = WD_TABLE_ALIGNMENT.CENTER
+        add_header_row(t3, ['Variant', 'FR'] + SCHEMES,
+                       [Cm(2.5), Cm(2.0)] + [Cm(3.5)] * 4)
+
+        for l, fn, cells in all_fr_rows:
+            row = t3.add_row()
+            p0 = row.cells[0].paragraphs[0]; r0 = p0.add_run(l); r0.font.size = Pt(8)
+            p1 = row.cells[1].paragraphs[0]; r1 = p1.add_run(fn); r1.font.size = Pt(8)
+            for di, (sid, diff) in enumerate(cells):
+                p = row.cells[di+2].paragraphs[0]; p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                r = p.add_run(f'SEQ ID NO: {sid}' if sid else '—'); r.font.size = Pt(8)
+                if diff: r.bold = True; r.font.color.rgb = RGBColor(180, 0, 0)
+        doc.add_paragraph()
+
     # ── Table 2: Complete SEQ ID NO List ──
     h2 = doc.add_paragraph()
     rr = h2.add_run(f'Table 2: Complete SEQ ID NO Sequence List ({len(all_unique)} entries)')
@@ -280,12 +344,16 @@ def main():
             for ci in range(4):
                 s_elm = row.cells[ci]._element.get_or_add_tcPr()
                 s_elm.append(s_elm.makeelement(qn('w:shd'), {qn('w:fill'): 'D6E4F0', qn('w:val'): 'clear'}))
+        elif typ.startswith('FR'):
+            for ci in range(4):
+                s_elm = row.cells[ci]._element.get_or_add_tcPr()
+                s_elm.append(s_elm.makeelement(qn('w:shd'), {qn('w:fill'): 'E2EFDA', qn('w:val'): 'clear'}))
 
     # ── Save ──
     output_path = os.path.join(os.getcwd(), 'CDRNO_SEQ_ID_NO_List.docx')
     doc.save(output_path)
     print(f'Done: {output_path}')
-    print(f'V-region: {len(vmeta)} unique | CDR: {len(cdr_seq_to_id)} unique | Total: {len(all_unique)}')
+    print(f'V-region: {len(vmeta)} unique | CDR: {len(cdr_seq_to_id)} unique | FR: {len(fr_seq_to_id)} unique | Total: {len(all_unique)}')
     if mismatches:
         print(f'\n[!] Chain mismatches detected:')
         for ml, exp, got in mismatches:

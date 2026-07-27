@@ -53,16 +53,16 @@ argument-hint: "[抗体序列 或 含多条序列的文本]"
 
 本技能依赖两个核心脚本：
 
-- **`work/cdr_batch.py`** — CDR 标注引擎：Needleman-Wunsch 全局比对 + Kabat 编号转移 + CDR 区域提取
-- **`work/cdrno_generate_docx.py`** — 通用 Word 导出脚本：接收 FASTA 文本（stdin 或文件路径），自动完成链检测→CDR+FR 标注→SEQ ID NO 分配（V-region → CDR → FR 三级编号）→Word 输出全流程
+- **`cdr_batch.py`** — CDR 标注引擎：Needleman-Wunsch 全局比对 + Kabat 编号转移 + CDR 区域提取
+- **`cdrno_generate_docx.py`** — 通用 Word 导出脚本：接收 FASTA 文本（stdin 或文件路径），自动完成链检测→CDR+FR 标注→SEQ ID NO 分配（V-region → CDR → FR 三级编号）→Word 输出全流程
 
 ```bash
 # 方式1：管道传入 FASTA
 echo ">M1 VH
-EVQLLESGGGLVQPGGSLRLSCAAS..." | python work/cdrno_generate_docx.py
+EVQLLESGGGLVQPGGSLRLSCAAS..." | python cdrno_generate_docx.py
 
 # 方式2：文件传入
-python work/cdrno_generate_docx.py input.fasta
+python cdrno_generate_docx.py input.fasta
 ```
 
 输出文件：`CDRNO_SEQ_ID_NO_List.docx`（当前目录）
@@ -94,7 +94,7 @@ python work/cdrno_generate_docx.py input.fasta
 **首选方式**：将用户 FASTA 输入写入临时文件，调用通用脚本一键生成 Word：
 
 ```bash
-python work/cdrno_generate_docx.py input.fasta
+python cdrno_generate_docx.py input.fasta
 ```
 
 **备选方式**（仅需对话中 Markdown 摘要时）：从 Python 直接导入核心函数：

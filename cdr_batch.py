@@ -164,8 +164,8 @@ CDR_DEFS = {
             ('FR1', 1, 30),
             ('CDR-H1', 31, 35.9),
             ('FR2', 36, 49),
-            ('CDR-H2', 50, 65.9),
-            ('FR3', 66, 94),
+            ('CDR-H2', 50, 66.0),
+            ('FR3', 67, 94),
             ('CDR-H3', 95, 102.9),
             ('FR4', 103, 113),
         ],
@@ -184,8 +184,8 @@ CDR_DEFS = {
             ('FR1', 1, 25),
             ('CDR-H1', 26, 32.9),
             ('FR2', 33, 51),
-            ('CDR-H2', 52, 56.9),
-            ('FR3', 57, 94),
+            ('CDR-H2', 52, 57.0),
+            ('FR3', 58, 94),
             ('CDR-H3', 95, 102.9),
             ('FR4', 103, 113),
         ],
@@ -204,8 +204,8 @@ CDR_DEFS = {
             ('FR1', 1, 25),
             ('CDR-H1', 26, 33.9),
             ('FR2', 34, 50),
-            ('CDR-H2', 51, 57.9),
-            ('FR3', 58, 92),
+            ('CDR-H2', 51, 58.0),
+            ('FR3', 59, 92),
             ('CDR-H3', 93, 102.9),
             ('FR4', 103, 113),
         ],
@@ -224,8 +224,8 @@ CDR_DEFS = {
             ('FR1', 1, 25),
             ('CDR-H1', 26, 35.9),
             ('FR2', 36, 49),
-            ('CDR-H2', 50, 58.9),
-            ('FR3', 59, 94),
+            ('CDR-H2', 50, 59.0),
+            ('FR3', 60, 94),
             ('CDR-H3', 95, 102.9),
             ('FR4', 103, 113),
         ],
@@ -432,6 +432,101 @@ def extract_regions(numbering, chain, definition_scheme):
     return regions
 
 
+# ==================== 保守基序锚点校正 ====================
+
+def find_vh_anchors(seq):
+    """
+    在 VH 序列中用保守基序定位关键锚点，返回 (c22_pos, w36_pos, c92_pos, w103_pos)。
+    成功返回4个0-based位置，失败返回 None。
+    """
+    import re
+
+    # FR4 锚点: WGxG 基序中的 W (应为 ~H103)
+    # 使用 WG.G 匹配 W-G-x-G 保守核心，适应 WGQGT/WGQGTQ 等变异
+    wgxg = re.search(r'WG.G', seq)
+    if not wgxg:
+        return None
+    w103_pos = wgxg.start()
+
+    # FR3 保守 Cys: YxC 模式中的 C (应为 ~H92)
+    # 取 WGxG 之前的最后一个 YxC
+    c92_pos = None
+    for m in re.finditer(r'Y[A-Z]C', seq):
+        candidate = m.start() + 2
+        if candidate < w103_pos - 5:
+            c92_pos = candidate
+    if c92_pos is None:
+        return None
+
+    # FR2 锚点: WVR / WVK / WMR 中的 W (应为 ~H36)
+    w36_pos = None
+    for m in re.finditer(r'W[VM][RK]', seq):
+        if m.start() > 25 and m.start() < c92_pos - 20:
+            w36_pos = m.start()
+            break
+    if w36_pos is None:
+        return None
+
+    # FR1 保守 Cys: 序列中第一个 C (应为 ~H22)
+    c22_match = re.search(r'C', seq)
+    if not c22_match or c22_match.start() > 30:
+        return None
+    c22_pos = c22_match.start()
+
+    return (c22_pos, w36_pos, c92_pos, w103_pos)
+
+
+def fix_vh_cdr3_by_anchors(regions, seq, definition_scheme):
+    """
+    用保守基序锚点校正 VH CDR-H3 / FR3 / FR4。
+    当 NW 比对在长 CDR-H3 或异常 FR4 区域失效时，此函数用 WGxG
+    和 YxC 基序精确定位 CDR-H3 边界并替换错误提取的区域。
+    """
+    import re
+    anchors = find_vh_anchors(seq)
+    if anchors is None:
+        return regions
+    _, _, c92_pos, w103_pos = anchors
+
+    # 根据定义方案确定 CDR-H3 和 FR 的序列边界
+    if definition_scheme == 'IMGT':
+        h3_seq_start = c92_pos + 1      # H93
+        fr3_seq_end   = c92_pos - 1     # FR3 ends at residue before C92
+    elif definition_scheme == 'Chothia':
+        h3_seq_start = c92_pos + 3      # H95
+        fr3_seq_end   = c92_pos + 2     # FR3 ends at C92+2
+    else:  # Kabat, AbM
+        h3_seq_start = c92_pos + 3      # H95
+        fr3_seq_end   = c92_pos + 2     # FR3 ends at C92+2
+
+    h3_seq_end = w103_pos - 1           # CDR-H3 ends one residue before W103
+    fr4_seq_start = w103_pos            # FR4 starts at W103
+
+    if h3_seq_end < h3_seq_start:
+        return regions
+
+    expected_h3 = seq[h3_seq_start:h3_seq_end + 1]
+    expected_fr4 = seq[fr4_seq_start:]
+
+    # 修正 regions 中的 CDR-H3 / FR3 / FR4
+    for i, r in enumerate(regions):
+        if r['name'] == 'CDR-H3' and r['sequence'] != expected_h3:
+            regions[i] = {**r, 'sequence': expected_h3, 'length': len(expected_h3)}
+        elif r['name'] == 'FR4' and r['sequence'] != expected_fr4:
+            regions[i] = {**r, 'sequence': expected_fr4, 'length': len(expected_fr4)}
+        elif r['name'] == 'FR3':
+            # FR3: 保持原起点，仅将终点截断至 fr3_seq_end
+            old_fr3 = r['sequence']
+            if old_fr3:
+                fr3_seq_start = seq.find(old_fr3[:6])
+                if fr3_seq_start >= 0:
+                    new_fr3 = seq[fr3_seq_start:fr3_seq_end + 1]
+                    if new_fr3 and new_fr3 != old_fr3:
+                        regions[i] = {**r, 'sequence': new_fr3, 'length': len(new_fr3)}
+
+    return regions
+
+
 # ==================== 分析一条序列 ====================
 
 def analyze_cdr(seq, defscheme):
@@ -444,6 +539,10 @@ def analyze_cdr(seq, defscheme):
     aln1, aln2, score = nw_align(s, ref['seq'], 8)
     numbering = transfer_numbering(aln1, aln2, ref)
     regions = extract_regions(numbering, chain, defscheme)
+
+    # 保守基序锚点校正：修正 NW 比对在长 CDR-H3 / 异常 FR4 处的定位错误
+    if chain == 'H':
+        regions = fix_vh_cdr3_by_anchors(regions, s, defscheme)
 
     return {
         'chain_type': chain_type,

@@ -30,6 +30,13 @@ __pycache__/
 ~$*.xlsx
 ~$*.pptx
 
+# CDRNO 临时文件
+cdr_input.fasta
+CDRNO_SEQ_ID_NO_List.docx
+
+# 临时工具
+get-pip.py
+
 # 预算管理系统 - 数据库和上传文件
 budget-app/data/
 budget-app/uploads/

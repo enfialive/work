@@ -68,6 +68,42 @@ TARGET_CATEGORIES = {"化学药小分子", "抗体", "抗体偶联物（ADC）",
 # 清单中折叠的类别（非药品/非早期研发，只留计数）
 COLLAPSED_CATEGORIES = {"其他"}
 
+# ---------------- 重点公司观察名单 ----------------
+# 用户要求：全球综合性 MNC 药企与国内龙头公司的条目在周报中单独成表全量罗列
+# （不限药物类别，含"其他"类）。匹配在归一化申请人名（大写）上做子串匹配，
+# 含主要上市子公司/关联实体名；名单可维护扩充。
+COMPANY_GROUPS = {
+    "MNC": [
+        "PFIZER", "NOVARTIS", "HOFFMANN-LA ROCHE", "GENENTECH", "CHUGAI",
+        "MERCK SHARP", "MERCK & CO", "MERCK SHARPE", "MERCK KGAA", "MSD ",
+        "ASTRAZENECA", "SANOFI", "GENZYME", "GLAXOSMITHKLINE", "GSK ",
+        "JANSSEN", "JOHNSON & JOHNSON", "ELI LILLY", "LILLY AND COMPANY",
+        "BRISTOL-MYERS SQUIBB", "BRISTOL MYERS", "AMGEN", "GILEAD", "ABBVIE",
+        "BAYER ", "BOEHRINGER INGELHEIM", "TAKEDA", "NOVO NORDISK",
+        "REGENERON", "VERTEX", "MODERNA", "BIOGEN", "UCB", "ASTELLAS",
+        "DAIICHI SANKYO", "EISAI", "OTSUKA", "SERVIER", "IPSEN", "TEVA",
+        "CSL ", "ONO PHARMACEUTICAL", "SHIONOGI", "SUMITOMO PHARMA",
+        "MITSUBISHI TANABE", "LUNDBECK", "FERRING", "KYOWA",
+    ],
+    "国内龙头": [
+        "HENGRUI", "BEIGENE", "BEONE ", "INNOVENT", "JUNSHI", "AKESO",
+        "ZAI LAB", "HUTCHMED", "HUTCHISON CHINA", "CHIA TAI TIANQING",
+        "CSPC", "HANSOH", "KELUN", "3SBIO", "REMEGEN", "HENLIUS", "DIZAL",
+        "ASCENTAGE", "INNOCARE", "CHIPSCREEN", "BETTA", "SIMCERE", "QILU",
+        "FOSUN PHARMA", "LUYE", "HUADONG MEDICINE", "LIVZON", "ZELGEN",
+        "SUNSHINE LAKE", "SYSTIMMUNE", "SICHUAN BAILI", "KEYMED",
+    ],
+}
+
+_GROUP_RES = {g: [re.compile(re.escape(n)) for n in names]
+              for g, names in COMPANY_GROUPS.items()}
+
+
+def match_company_groups(norm_applicant):
+    """返回命中的公司组列表（可多空），无命中返回空列表。"""
+    return [g for g, res in _GROUP_RES.items()
+            if any(rx.search(norm_applicant) for rx in res)]
+
 
 def classify(rec):
     title = rec.get("title", "")
@@ -95,6 +131,7 @@ TARGETS = [
     "SRC", "ABL", "FLT3", "IDH1", "IDH2", "EZH2", "BET", "BRD4", "HDAC",
     "WEE1", "ATR", "ATM", "CHK1", "PLK", "Aurora", "MYC", "RAS", "SHP2",
     "SOS1", "USP1", "WRN", "PRMT5", "MAT2A", "KAT6", "menin", "PIM",
+    "NIK", "NFKB",
     # 代谢/内分泌
     "GLP-1", "GIP", "glucagon", "GCG", "insulin", "amylin", "SGLT2", "SGLT1",
     "DPP-4", "PCSK9", "FGF21", "THR", "ACC", "DGAT", "ApoC", "ANGPTL3",
@@ -116,6 +153,8 @@ TARGETS = [
     "spike protein", "capsid", "helicase", "gyrase", "penicillin-binding",
     # 细胞表面分子（抗体靶点）
     "CD19", "CD20", "CD22", "CD30", "CD38", "CD40", "CD3", "CD5", "CD7",
+    "CD28", "CD93", "CD200R1", "TL1A", "TSLPR", "LAYN", "LTBP4",
+    "CDH6", "CDH17", "STEAP2", "GPR87", "ActRII", "ACVR2A", "ACVR2B",
     "BCMA", "GPRC5D", "FcRH5", "TROP2", "Trop-2", "nectin-4", "claudin",
     "CLDN", "DLL3", "B7-H3", "B7-H4", "MSLN", "mesothelin", "CEA", "CEACAM",
     "PSMA", "FAP", "EpCAM", "MUC1", "GPC3", "ROR1", "ROR2", "LIV-1",
@@ -130,12 +169,21 @@ TARGETS = [
 # 预编译：长词优先，避免 "CDK4" 命中前先中 "RAS" 之类
 _TARGET_RES = []
 for t in sorted(set(TARGETS), key=len, reverse=True):
-    _TARGET_RES.append((t, re.compile(r"(?<![A-Za-z0-9])" + re.escape(t) + r"(?![a-z])(?!\s*-?\s*like)", re.I)))
+    # 前后都要求非字母数字边界，避免 CD20 命中 CD200R1、HER2 命中 HER2- 类
+    _TARGET_RES.append((t, re.compile(r"(?<![A-Za-z0-9])" + re.escape(t) + r"(?![A-Za-z0-9])(?!\s*-?\s*like)", re.I)))
 
 # 通用模式："<X> inhibitor/antagonist/agonist" 中的 X
 GENERIC_TARGET_RE = re.compile(
     r"\b([A-Z][A-Za-z0-9]{1,15}(?:[-/][A-Za-z0-9]{1,10})?)\s+"
     r"(?:inhibitor|antagonist|agonist|modulator|degrader|blocker|activator)s?\b")
+
+# 特殊靶点模式（正则；label 为 None 时取实际匹配文本，否则用 label 作为靶点名）
+SPECIAL_TARGET_RES = [
+    (re.compile(r"\bSLC\d{1,2}A\d{1,2}\b"), None),   # SLC 转运体家族，如 SLC6A19
+    # c-KIT：必须出现在药物语境，排除 "combination and kit thereof"（试剂盒）之类
+    (re.compile(r"anti[- ]?KIT\b|c[- ]?KIT\b|\bKIT\s+(?:inhibitor|antagonist|agonist|modulator|antibod)", re.I), "KIT"),
+    (re.compile(r"\b[A-Z]{2,5}\d{1,2}[A-Z]?\d*\s*\((?:solute carrier)[^)]*\)", re.I), None),
+]
 
 
 def extract_targets(title):
@@ -143,6 +191,12 @@ def extract_targets(title):
     for name, rx in _TARGET_RES:
         if rx.search(title):
             found.append(name)
+    for rx, label in SPECIAL_TARGET_RES:
+        m = rx.search(title)
+        if m:
+            t = label if label else m.group(0)
+            if t not in found:
+                found.append(t)
     if not found:
         m = GENERIC_TARGET_RE.search(title)
         if m:
@@ -172,7 +226,12 @@ def main():
         a = re.sub(r"\s+", " ", a).strip()
         return a
 
+    for r in recs:
+        r["company_groups"] = match_company_groups(norm_app(r.get("applicant", "")))
+
     app_stat = Counter(norm_app(r.get("applicant", "")) for r in recs if r.get("applicant"))
+    group_stat = {g: sum(1 for r in recs if g in r["company_groups"])
+                  for g in COMPANY_GROUPS}
 
     analysis = {
         "publication_day": data["publication_day"],
@@ -180,6 +239,7 @@ def main():
         "category_stat": dict(cat_stat.most_common()),
         "target_stat": dict(target_stat.most_common()),
         "applicant_stat": dict(app_stat.most_common(40)),
+        "company_group_stat": group_stat,
         "records": recs,
     }
     with open(f"{folder}/analysis.json", "w", encoding="utf-8") as f:
@@ -216,6 +276,7 @@ def main():
     print("识别到靶点的条目:", sum(1 for r in recs if r['targets']), "/", len(recs))
     print("靶点 TOP20:", json.dumps(dict(target_stat.most_common(20)), ensure_ascii=False))
     print("申请人 TOP15:", json.dumps(dict(app_stat.most_common(15)), ensure_ascii=False))
+    print("重点公司组:", json.dumps(group_stat, ensure_ascii=False))
 
 
 if __name__ == "__main__":

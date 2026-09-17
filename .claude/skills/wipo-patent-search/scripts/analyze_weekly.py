@@ -92,6 +92,7 @@ COMPANY_GROUPS = {
         "ASCENTAGE", "INNOCARE", "CHIPSCREEN", "BETTA", "SIMCERE", "QILU",
         "FOSUN PHARMA", "LUYE", "HUADONG MEDICINE", "LIVZON", "ZELGEN",
         "SUNSHINE LAKE", "SYSTIMMUNE", "SICHUAN BAILI", "KEYMED",
+        "GAN & LEE", "GAN AND LEE", "UNIRISE", "INVENTISBIO",
     ],
 }
 
@@ -133,18 +134,20 @@ TARGETS = [
     "SOS1", "USP1", "WRN", "PRMT5", "MAT2A", "KAT6", "menin", "PIM",
     "NIK", "NFKB",
     # 代谢/内分泌
-    "GLP-1", "GIP", "glucagon", "GCG", "insulin", "amylin", "SGLT2", "SGLT1",
+    "GLP-1", "GIP", "glucagon", "GCG", "insulin", "amylin", "AMY1", "SGLT2", "SGLT1",
     "DPP-4", "PCSK9", "FGF21", "THR", "ACC", "DGAT", "ApoC", "ANGPTL3",
     "LP(a)", "CETP", "PPAR", "FXR", "GCGR", "GIPR", "GLP1R",
     # 免疫炎症
     "TNF", "IL-1", "IL-2", "IL-4", "IL-5", "IL-6", "IL-7", "IL-10", "IL-12",
     "IL-13", "IL-15", "IL-17", "IL-23", "IL-33", "IL-36", "TSLP", "BAFF",
     "APRIL", "ROR", "IRAK4", "NLRP3", "S1P", "integrin", "selectin",
+    "STAT3", "STAT5", "STAT6",
     "FcRn", "Fc gamma", "complement", "C5a", "C3b",
     # 神经/精神
     "amyloid", "tau", "alpha-synuclein", "LRRK2", "TDP-43", " huntingtin",
     "dopamine", "serotonin", "5-HT", "GABA", "NMDA", "AMPA", "orexin",
     "mu opioid", "MOR", "KOR", "Nav1.", "Kv7", "TRP", "P2X", "sigma",
+    "TREM2",
     # 血液/心血管
     "factor X", "factor XI", "thrombin", "TPA", "GPVI", "vWF", "S1PR",
     "endothelin", "renin", "ACE2", "NEP ", "sGC", "myosin", "troponin",
@@ -175,7 +178,17 @@ for t in sorted(set(TARGETS), key=len, reverse=True):
 # 通用模式："<X> inhibitor/antagonist/agonist" 中的 X
 GENERIC_TARGET_RE = re.compile(
     r"\b([A-Z][A-Za-z0-9]{1,15}(?:[-/][A-Za-z0-9]{1,10})?)\s+"
-    r"(?:inhibitor|antagonist|agonist|modulator|degrader|blocker|activator)s?\b")
+    r"(?:inhibitor|antagonist|agonist|modulator|degrader|blocker|activator)s?\b",
+    re.I)  # 必须忽略大小写：PCT 标题多为全大写
+
+# 通用兜底抓到的显然不是靶点的词（大写比较），直接丢弃
+GENERIC_TARGET_STOPWORDS = {
+    "AND/OR", "AN", "A", "THE", "DUAL", "PARTIAL", "SELECTIVE", "NOVEL", "NEW",
+    "PROTEIN", "MINIPROTEIN", "RECEPTOR", "DERIVATIVE", "COMPOUND", "AGENT",
+    "NEURON", "ELONGATION", "STAMP", "CHECKPOINT", "TYR", "PYRAZINONE",
+    "LACTAMASE", "H1FX", "HT2C", "TREG", "CELL", "FACTOR", "PATHWAY",
+    "ORAL", "PARENTERAL", "POTENT", "SMALL", "CYCLIC", "FUSED", "RING",
+}
 
 # 特殊靶点模式（正则；label 为 None 时取实际匹配文本，否则用 label 作为靶点名）
 SPECIAL_TARGET_RES = [
@@ -184,6 +197,18 @@ SPECIAL_TARGET_RES = [
     (re.compile(r"anti[- ]?KIT\b|c[- ]?KIT\b|\bKIT\s+(?:inhibitor|antagonist|agonist|modulator|antibod)", re.I), "KIT"),
     (re.compile(r"\b[A-Z]{2,5}\d{1,2}[A-Z]?\d*\s*\((?:solute carrier)[^)]*\)", re.I), None),
 ]
+
+# 通用标题预警：小分子专利常故意用"HETEROCYCLIC COMPOUNDS AND USES THEREOF"
+# 之类不含靶点/适应症的标题隐藏核心信息（典型：PROTAC/降解剂早期布局）。
+# 化学药小分子 + 标题未识别到靶点 + 标题为 compound/derivative 类通用表述 →
+# vague_title=True，周报中单独成表提示"需人工看摘要"，避免重点公司条目漏报。
+VAGUE_TITLE_RE = re.compile(r"\b(COMPOUNDS?|DERIVATIVES?)\b", re.I)
+
+
+def is_vague_title(rec):
+    return (rec.get("category") == "化学药小分子"
+            and not rec.get("targets")
+            and bool(VAGUE_TITLE_RE.search(rec.get("title", ""))))
 
 
 def extract_targets(title):
@@ -199,8 +224,8 @@ def extract_targets(title):
                 found.append(t)
     if not found:
         m = GENERIC_TARGET_RE.search(title)
-        if m:
-            found.append(m.group(1) + "（推测）")
+        if m and m.group(1).upper() not in GENERIC_TARGET_STOPWORDS:
+            found.append(m.group(1).upper() + "（推测）")
     return found
 
 
@@ -228,6 +253,8 @@ def main():
 
     for r in recs:
         r["company_groups"] = match_company_groups(norm_app(r.get("applicant", "")))
+    for r in recs:
+        r["vague_title"] = is_vague_title(r)
 
     app_stat = Counter(norm_app(r.get("applicant", "")) for r in recs if r.get("applicant"))
     group_stat = {g: sum(1 for r in recs if g in r["company_groups"])
@@ -240,6 +267,7 @@ def main():
         "target_stat": dict(target_stat.most_common()),
         "applicant_stat": dict(app_stat.most_common(40)),
         "company_group_stat": group_stat,
+        "vague_title_count": sum(1 for r in recs if r["vague_title"]),
         "records": recs,
     }
     with open(f"{folder}/analysis.json", "w", encoding="utf-8") as f:

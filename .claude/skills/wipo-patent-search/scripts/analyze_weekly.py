@@ -13,9 +13,12 @@ analyze_weekly.py — 对 wipo_weekly_fetch.py 的输出做二级分析：
     <目录>/analysis.json     每条记录附加 category / targets 字段 + 各项统计
     <目录>/listing.md        按类别+IPC 大组分组的全量清单
 注意：分类仅基于第一 IPC 分类与标题关键词，属初筛口径，个例可能误分。
+若目录中存在 fetch_abstracts.py 生成的 abstracts.json 缓存，标题未命中
+靶点的条目会在摘要级再识别一次，命中靶点加"（摘要）"后缀。
 """
 
 import json
+import os
 import re
 import sys
 import io
@@ -193,6 +196,7 @@ GENERIC_TARGET_STOPWORDS = {
 # 特殊靶点模式（正则；label 为 None 时取实际匹配文本，否则用 label 作为靶点名）
 SPECIAL_TARGET_RES = [
     (re.compile(r"\bSLC\d{1,2}A\d{1,2}\b"), None),   # SLC 转运体家族，如 SLC6A19
+    (re.compile(r"\bSTAT[1-6]?S?\b"), None),          # STAT 家族，含 "STATs-targeting" 写法
     # c-KIT：必须出现在药物语境，排除 "combination and kit thereof"（试剂盒）之类
     (re.compile(r"anti[- ]?KIT\b|c[- ]?KIT\b|\bKIT\s+(?:inhibitor|antagonist|agonist|modulator|antibod)", re.I), "KIT"),
     (re.compile(r"\b[A-Z]{2,5}\d{1,2}[A-Z]?\d*\s*\((?:solute carrier)[^)]*\)", re.I), None),
@@ -211,7 +215,9 @@ def is_vague_title(rec):
             and bool(VAGUE_TITLE_RE.search(rec.get("title", ""))))
 
 
-def extract_targets(title):
+def extract_targets(title, allow_generic=True, suffix=""):
+    """从文本识别靶点。allow_generic=False 时不启用通用兜底（用于摘要级识别，
+    避免摘要长文本产生大量"（推测）"噪声）；suffix 用于标注来源（如"（摘要）"）。"""
     found = []
     for name, rx in _TARGET_RES:
         if rx.search(title):
@@ -219,13 +225,15 @@ def extract_targets(title):
     for rx, label in SPECIAL_TARGET_RES:
         m = rx.search(title)
         if m:
-            t = label if label else m.group(0)
+            t = label if label else m.group(0).upper()
             if t not in found:
                 found.append(t)
-    if not found:
+    if not found and allow_generic:
         m = GENERIC_TARGET_RE.search(title)
         if m and m.group(1).upper() not in GENERIC_TARGET_STOPWORDS:
             found.append(m.group(1).upper() + "（推测）")
+    if suffix:
+        found = [t + suffix for t in found]
     return found
 
 
@@ -234,10 +242,33 @@ def main():
     data = json.load(open(f"{folder}/publications.json", encoding="utf-8"))
     recs = data["records"]
 
+    # 摘要缓存（fetch_abstracts.py 生成）：doc_id -> 摘要文本。
+    # 标题未命中靶点的条目，若已有摘要缓存，则在摘要级再识别一次，
+    # 命中靶点统一加"（摘要）"后缀标注来源。
+    abstracts = {}
+    abstract_path = f"{folder}/abstracts.json"
+    if os.path.exists(abstract_path):
+        abstracts = json.load(open(abstract_path, encoding="utf-8"))
+
     for r in recs:
         r["category"] = classify(r)
-        r["targets"] = (extract_targets(r.get("title", ""))
-                        if r["category"] in TARGET_CATEGORIES else [])
+        if r["category"] in TARGET_CATEGORIES:
+            r["targets"] = extract_targets(r.get("title", ""))
+            ab = abstracts.get(r.get("doc_id", ""), "")
+            if ab:
+                r["abstract"] = ab
+                # 标题未命中，或仅命中家族级泛称（如 STATS）时，查摘要补全具体成员
+                FAMILY_LEVEL = {"STAT", "STATS"}
+                if not r["targets"] or all(t in FAMILY_LEVEL
+                                           for t in r["targets"]):
+                    for t in extract_targets(ab, allow_generic=False,
+                                             suffix="（摘要）"):
+                        base = t.replace("（摘要）", "")
+                        if base not in {x.replace("（摘要）", "")
+                                        for x in r["targets"]}:
+                            r["targets"].append(t)
+        else:
+            r["targets"] = []
 
     cat_stat = Counter(r["category"] for r in recs)
     target_stat = Counter()

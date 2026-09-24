@@ -45,10 +45,28 @@ C:/Users/admin/AppData/Local/Programs/Python/Python312/python.exe \
 
 **通用标题预警（vague_title）**：小分子专利常故意用"杂环化合物及用途"式通用标题隐去靶点（PROTAC/降解剂早期布局尤甚）。脚本对"化学药小分子 + 标题无靶点 + 仅 compound/derivative 类表述"的条目标记 `vague_title=True`，周报中须在靶点章节单列预警表（公司组内及重点关注条目全列，其余给计数），提示人工看摘要——避免恒瑞/益方式"标题无信息"的重点条目漏报。
 
+## 摘要级靶点识别（fetch_abstracts.py）
+
+标题级词表天然抓不到"标题隐去靶点"的条目。`scripts/fetch_abstracts.py` 用本机 Chrome 无头模式（`--headless=new --disable-blink-features=AutomationControlled --user-agent=<真实UA> --virtual-time-budget=25000 --dump-dom`，缺反检测参数会 403）渲染 PATENTSCOPE 详情页、解析 `<div class="patent-abstract">` 中的英文摘要，写入 `<目录>/abstracts.json` 缓存。
+
+```bash
+# 默认范围：化学药小分子 + 标题未命中靶点（含全部 vague_title 条目）
+python scripts/fetch_abstracts.py wipo_reports/wipo_<公开日> --workers 2
+# 然后必须重跑 analyze_weekly.py，摘要级靶点才生效
+python scripts/analyze_weekly.py wipo_reports/wipo_<公开日>
+```
+
+- 摘要级命中的靶点在 analysis.json/listing.md 中带**"（摘要）"后缀**，与标题级命中区分；摘要级识别不启用"（推测）"通用兜底（避免长文本噪声）。
+- 用户口径（2026-09-24 确认）：流水线**只覆盖化学药小分子**，其余类别不批量抓摘要。
+- 缓存落盘后可增量续抓；`--force` 重抓、`--doc WO<号>` 单件调试。
+- 抓取失败的条目保持 vague_title 预警，周报预警表中注明"摘要抓取失败需人工查看"。
+- 约 2 workers 时 150 件需 15–25 分钟；不要加大并发，避免触发 PATENTSCOPE 反爬。
+
 ## 周报撰写流程（Claude 执行）
 
 1. 运行抓取脚本（若用户未指定日期则默认最近周四）。脚本耗时数分钟，告知用户正在抓取。
 2. 运行二级分析脚本。
+2b. 运行 `fetch_abstracts.py`（仅小分子口径）补抓摘要，然后**重跑一次** `analyze_weekly.py`。若当周时间紧或用户明确不要求摘要补抓，可跳过，但 vague_title 预警表必须保留。
 3. 读取 `analysis.json`，生成周报写入 `wipo_reports/wipo_<公开日>/weekly_report.md`，结构：
    - **头部**：公开日、检索式、总条数、方法与局限说明
    - **药物类型分布表**（上述 10 类 + 占比）

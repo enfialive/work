@@ -305,7 +305,7 @@ def main():
         json.dump(analysis, f, ensure_ascii=False, indent=2)
 
     # 分组全量清单
-    lines = [f"# WIPO PCT 新公开全量清单（{data['publication_day']}，A61/C07，共 {len(recs)} 件）\n"]
+    lines = [f"# WIPO PCT 新公开全量清单（{data['publication_day']}，C07，共 {len(recs)} 件）\n"]
     by_cat = defaultdict(list)
     for r in recs:
         by_cat[r["category"]].append(r)
